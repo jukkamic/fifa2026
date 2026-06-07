@@ -81,6 +81,7 @@ class BetfairMarketClient {
         var filterBuilder = new java.util.HashMap<String, Object>();
         filterBuilder.put("eventTypeIds", List.of(SOCCER_EVENT_TYPE_ID));
         filterBuilder.put("marketTypeCodes", List.of("MATCH_ODDS")); // <-- MOVED HERE
+        filterBuilder.put("competitionIds", List.of("12469077"));
 
         if (textQuery != null && !textQuery.isBlank()) {
             filterBuilder.put("textQuery", textQuery);

@@ -1,13 +1,11 @@
-# Betfair runner names extracted 2026-06-07T23:17:26.195264900
+# Betfair runner names extracted 2026-06-07T23:32:05.585036100
 # Query: "World Cup" and "FIFA" - MATCH_ODDS markets only
-# Total unique team names: 74
+# Total unique team names: 48
 
-Albania (W)
 Algeria
 Argentina
 Australia
 Austria
-Austria (W)
 Belgium
 Bosnia
 Brazil
@@ -17,62 +15,38 @@ Colombia
 Croatia
 Curacao
 Czechia
-Czechia (W)
 DR Congo
-Denmark (W)
 Ecuador
 Egypt
 England
-Finland (W)
 France
-France (W)
 Germany
-Germany (W)
 Ghana
 Haiti
-Iceland (W)
 Iran
 Iraq
-Italy (W)
 Ivory Coast
 Japan
 Jordan
-Latvia (W)
-Malta (W)
 Mexico
-Montenegro (W)
 Morocco
 Netherlands
-Netherlands (W)
 New Zealand
-Northern Ireland (W)
 Norway
-Norway (W)
 Panama
 Paraguay
-Poland (W)
 Portugal
-Portugal (W)
 Qatar
-Rep of Ireland (W)
 Saudi Arabia
 Scotland
 Senegal
-Serbia (W)
-Slovakia (W)
-Slovenia (W)
 South Africa
 South Korea
 Spain
-Spain (W)
 Sweden
-Sweden (W)
 Switzerland
-Switzerland (W)
 Tunisia
-Turkey (W)
 Türkiye
 USA
 Uruguay
 Uzbekistan
-Wales (W)

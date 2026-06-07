@@ -1,0 +1,57 @@
+package dev.scaffoldkit.fifa.betfair;
+
+import java.util.Map;
+import static java.util.Map.entry;
+
+public class BetfairNamesToCodes {
+    // Maps Betfair's specific string -> Our internal 3-letter FIFA code
+    public static final Map<String, String> BETFAIR_TO_FIFA = Map.ofEntries(
+            entry("Algeria", "ALG"),
+            entry("Argentina", "ARG"),
+            entry("Australia", "AUS"),
+            entry("Austria", "AUT"),
+            entry("Belgium", "BEL"),
+            entry("Bosnia", "BIH"),
+            entry("Brazil", "BRA"),
+            entry("Canada", "CAN"),
+            entry("Cape Verde", "CPV"),
+            entry("Colombia", "COL"),
+            entry("Croatia", "CRO"),
+            entry("Curacao", "CUW"),
+            entry("Czechia", "CZE"),
+            entry("DR Congo", "COD"),
+            entry("Ecuador", "ECU"),
+            entry("Egypt", "EGY"),
+            entry("England", "ENG"),
+            entry("France", "FRA"),
+            entry("Germany", "GER"),
+            entry("Ghana", "GHA"),
+            entry("Haiti", "HAI"),
+            entry("Iran", "IRN"),
+            entry("Iraq", "IRQ"),
+            entry("Ivory Coast", "CIV"),
+            entry("Japan", "JPN"),
+            entry("Jordan", "JOR"),
+            entry("Mexico", "MEX"),
+            entry("Morocco", "MAR"),
+            entry("Netherlands", "NED"),
+            entry("New Zealand", "NZL"),
+            entry("Norway", "NOR"),
+            entry("Panama", "PAN"),
+            entry("Paraguay", "PAR"),
+            entry("Portugal", "POR"),
+            entry("Qatar", "QAT"),
+            entry("Saudi Arabia", "KSA"),
+            entry("Scotland", "SCO"),
+            entry("Senegal", "SEN"),
+            entry("South Africa", "RSA"),
+            entry("South Korea", "KOR"),
+            entry("Spain", "ESP"),
+            entry("Sweden", "SWE"),
+            entry("Switzerland", "SUI"),
+            entry("Tunisia", "TUN"),
+            entry("Türkiye", "TUR"),
+            entry("USA", "USA"),
+            entry("Uruguay", "URU"),
+            entry("Uzbekistan", "UZB"));
+}

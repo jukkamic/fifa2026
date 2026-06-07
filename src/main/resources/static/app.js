@@ -341,5 +341,33 @@ async function resetAll() {
     await loadBracket();
 }
 
+// ===== BETFAIR SIMULATION =====
+async function simulateBetfairGroups() {
+    const btn = document.getElementById('btn-simulate-betfair');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Simulating via Betfair Odds...';
+
+    try {
+        const result = await apiPost('/api/betfair/simulate-groups');
+        if (result.success) {
+            btn.innerHTML = '✅ ' + result.message;
+            btn.classList.add('btn-success');
+            await loadGroupStage();
+            await loadBracket();
+        } else {
+            btn.innerHTML = '❌ Simulation failed';
+        }
+    } catch (err) {
+        btn.innerHTML = '❌ Error: ' + err.message;
+    }
+
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.classList.remove('btn-success');
+    }, 3000);
+}
+
 // ===== STARTUP =====
 init();

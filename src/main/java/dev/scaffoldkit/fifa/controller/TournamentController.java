@@ -1,5 +1,6 @@
 package dev.scaffoldkit.fifa.controller;
 
+import dev.scaffoldkit.fifa.betfair.BetfairIntegrationService;
 import dev.scaffoldkit.fifa.model.GroupMatch;
 import dev.scaffoldkit.fifa.model.GroupStanding;
 import dev.scaffoldkit.fifa.model.KnockoutMatch;
@@ -33,11 +34,14 @@ public class TournamentController {
 
     private final GroupStageService groupStageService;
     private final BracketService bracketService;
+    private final BetfairIntegrationService betfairService;
 
     public TournamentController(GroupStageService groupStageService,
-                                BracketService bracketService) {
+                                BracketService bracketService,
+                                BetfairIntegrationService betfairService) {
         this.groupStageService = groupStageService;
         this.bracketService = bracketService;
+        this.betfairService = betfairService;
     }
 
     // ── Teams ────────────────────────────────────────────────────────────
@@ -245,6 +249,27 @@ public class TournamentController {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("matches", matchList);
         return result;
+    }
+
+    // ── Betfair Simulation ───────────────────────────────────────────────
+
+    @PostMapping("/betfair/simulate-groups")
+    public ResponseEntity<Map<String, Object>> simulateGroupsWithBetfair() {
+        Map<String, GroupMatch> groupMatches = groupStageService.getGroupMatches();
+        Map<String, int[]> simulated = betfairService.simulateGroupStageOdds(groupMatches);
+
+        int updated = 0;
+        for (var entry : simulated.entrySet()) {
+            groupStageService.setGroupMatchScore(
+                    entry.getKey(), entry.getValue()[0], entry.getValue()[1]);
+            updated++;
+        }
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("success", true);
+        result.put("matchesSimulated", updated);
+        result.put("message", "Group stage simulated from Betfair odds (%d matches)".formatted(updated));
+        return ResponseEntity.ok(result);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────
