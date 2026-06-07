@@ -8,7 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Top-level orchestrator for the Betfair Exchange API integration.
@@ -217,5 +220,73 @@ public class BetfairIntegrationService {
         log.info("═══════════════════════════════════════════════════════════");
         log.info("  Betfair integration ready – connection verified.");
         log.info("═══════════════════════════════════════════════════════════");
+    }
+
+    // ── Diagnostic: dump Betfair runner names for World Cup markets ───────
+
+    /** Matches score-line patterns like "0 - 0", "1 - 2", etc. */
+    private static final Pattern SCORE_LINE = Pattern.compile("\\d+\\s*-\\s*\\d+");
+
+    /**
+     * Searches for World Cup / FIFA soccer MATCH_ODDS markets and returns a
+     * deduplicated set of runner names that look like actual team names
+     * (filters out "Draw", "The Draw", score lines, Over/Under, etc.).
+     * <p>
+     * Temporary diagnostic intended to be removed once we have a stable
+     * code-to-name mapping.
+     */
+    Set<String> collectWorldCupRunnerNames() {
+        Set<String> teamNames = new LinkedHashSet<>();
+
+        for (String query : List.of("World Cup", "FIFA")) {
+            try {
+                String json = marketClient.listMarketCatalogue(sessionToken, query);
+                if (json == null) continue;
+
+                var markets = objectMapper.readTree(json);
+
+                for (var market : markets) {
+                    // Only process MATCH_ODDS markets (team vs team)
+                    String marketName = market.path("marketName").asText();
+                    if (!"Match Odds".equals(marketName)) continue;
+
+                    var runners = market.path("runners");
+                    if (runners.isMissingNode() || runners.isEmpty()) continue;
+
+                    for (var runner : runners) {
+                        String name = runner.path("runnerName").asText("").trim();
+                        if (name.isBlank()) continue;
+                        if (looksLikeTeamName(name)) {
+                            teamNames.add(name);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Failed to query textQuery='{}': {}", query, e.getMessage());
+            }
+        }
+        return teamNames;
+    }
+
+    private boolean looksLikeTeamName(String name) {
+        // Filter out "The Draw" / "Draw"
+        if (name.equalsIgnoreCase("Draw") || name.equalsIgnoreCase("The Draw")) return false;
+        // Filter out score lines like "0 - 0", "1 - 2"
+        if (SCORE_LINE.matcher(name).matches()) return false;
+        // Filter out Over/Under
+        if (name.startsWith("Over ") || name.startsWith("Under ")) return false;
+        // Filter out generic betting labels
+        if (name.equals("Yes") || name.equals("No")) return false;
+        if (name.equals("Odd") || name.equals("Even")) return false;
+        // Filter out handicap suffixes like "+1", "-2"
+        if (name.matches(".*\\s[+-]\\d$")) return false;
+        // Filter out combined-result patterns like "Team/Draw", "Team/Over 2.5 Goals"
+        if (name.contains("/") && (name.contains("Over") || name.contains("Under")
+                || name.contains("Draw") || name.contains("Yes") || name.contains("No"))) return false;
+        // Filter out "Any Other ..." and "Any Unquoted"
+        if (name.startsWith("Any ")) return false;
+        // Filter out "Home or ...", "Draw or ..."
+        if (name.startsWith("Home or ") || name.startsWith("Draw or ")) return false;
+        return true;
     }
 }

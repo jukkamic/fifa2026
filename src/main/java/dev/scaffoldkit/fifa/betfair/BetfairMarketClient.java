@@ -1,24 +1,32 @@
 package dev.scaffoldkit.fifa.betfair;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Communicates with the Betfair Exchange Betting REST API.
  *
- * <p>Provides methods to:
+ * <p>
+ * Provides methods to:
  * <ul>
- *   <li>{@link #listMarketCatalogue(String)} — discover soccer match-odds markets</li>
- *   <li>{@link #listMarketBook(String, List)} — fetch current odds for specific markets</li>
+ * <li>{@link #listMarketCatalogue(String)} — discover soccer match-odds
+ * markets</li>
+ * <li>{@link #listMarketBook(String, List)} — fetch current odds for specific
+ * markets</li>
  * </ul>
  */
 @Component
@@ -38,7 +46,7 @@ class BetfairMarketClient {
     private final ObjectMapper objectMapper;
 
     BetfairMarketClient(BetfairProperties properties,
-                        @Qualifier("betfairApiRestTemplate") RestTemplate apiRestTemplate) {
+            @Qualifier("betfairApiRestTemplate") RestTemplate apiRestTemplate) {
         this.properties = properties;
         this.apiRestTemplate = apiRestTemplate;
         this.objectMapper = new ObjectMapper()
@@ -52,24 +60,39 @@ class BetfairMarketClient {
      * @return raw JSON string of the market catalogue response
      */
     String listMarketCatalogue(String sessionToken) {
-        log.info("Fetching market catalogue for soccer match odds");
+        return listMarketCatalogue(sessionToken, null);
+    }
+
+    /**
+     * Fetches the market catalogue for soccer match-odds markets,
+     * optionally filtered by a text query (e.g. "World Cup").
+     *
+     * @param sessionToken the active Betfair session token
+     * @param textQuery    optional text to search for in market/event names (may be
+     *                     null)
+     * @return raw JSON string of the market catalogue response
+     */
+    String listMarketCatalogue(String sessionToken, String textQuery) {
+        log.info("Fetching market catalogue for soccer match odds (textQuery={})", textQuery);
 
         HttpHeaders headers = apiHeaders(sessionToken);
 
-        Map<String, Object> filter = Map.of(
-                "eventTypeIds", List.of(SOCCER_EVENT_TYPE_ID)
-        );
+        // 1. Build the filter with BOTH event type and market type inside it
+        var filterBuilder = new java.util.HashMap<String, Object>();
+        filterBuilder.put("eventTypeIds", List.of(SOCCER_EVENT_TYPE_ID));
+        filterBuilder.put("marketTypeCodes", List.of("MATCH_ODDS")); // <-- MOVED HERE
 
-        // Request a reasonable set of markets with competition/event info
+        if (textQuery != null && !textQuery.isBlank()) {
+            filterBuilder.put("textQuery", textQuery);
+        }
+
+        // 2. Build the main body (filter is now fully populated)
         Map<String, Object> body = Map.of(
-                "filter", filter,
-                "marketTypeCodes", List.of("MATCH_ODDS"),
+                "filter", filterBuilder,
                 "maxResults", 100,
                 "marketProjection", List.of(
                         "COMPETITION", "EVENT", "EVENT_TYPE",
-                        "MARKET_START_TIME", "RUNNER_DESCRIPTION"
-                )
-        );
+                        "MARKET_START_TIME", "RUNNER_DESCRIPTION"));
 
         try {
             String jsonBody = objectMapper.writeValueAsString(body);
@@ -108,9 +131,7 @@ class BetfairMarketClient {
                 "marketIds", marketIds,
                 "priceProjection", Map.of(
                         "priceData", List.of("EX_BEST_OFFERS"),
-                        "exBestOffersOverrides", Map.of("bestPricesDepth", 3)
-                )
-        );
+                        "exBestOffersOverrides", Map.of("bestPricesDepth", 3)));
 
         try {
             String jsonBody = objectMapper.writeValueAsString(body);
