@@ -65,6 +65,221 @@
             margin-top: 4px;
         }
 
+        .header-buttons {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-block;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-muted);
+        }
+
+        .btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent);
+            background: var(--bg-card-hover);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-glow);
+            border-color: var(--accent-glow);
+        }
+
+        /* ===== TABS ===== */
+        .tab-bar {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        .tab-btn {
+            padding: 10px 24px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-glow);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== GROUP STAGE ===== */
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .group-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .group-card-header {
+            background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05));
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-glow);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .standings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .standings-table th {
+            padding: 6px 8px;
+            text-align: left;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .standings-table th:not(:first-child) {
+            text-align: center;
+        }
+
+        .standings-table td {
+            padding: 5px 8px;
+            border-bottom: 1px solid rgba(42,58,92,0.3);
+        }
+
+        .standings-table td:not(:first-child) {
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .standings-table tr:nth-child(1) td:first-child,
+        .standings-table tr:nth-child(2) td:first-child {
+            color: var(--win);
+        }
+
+        .standings-table tr:nth-child(3) td:first-child {
+            color: var(--draw);
+        }
+
+        .group-matches {
+            padding: 8px;
+        }
+
+        .group-match-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 6px;
+            font-size: 12px;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+
+        .group-match-row:hover {
+            background: rgba(59,130,246,0.08);
+        }
+
+        .group-match-teams {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .group-match-score {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .score-input {
+            width: 28px;
+            height: 24px;
+            text-align: center;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 700;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .score-input:focus {
+            border-color: var(--accent);
+        }
+
+        .score-input:disabled {
+            opacity: 0.3;
+        }
+
+        .match-separator {
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .team-flag-small {
+            width: 18px;
+            height: 12px;
+            border-radius: 1px;
+        }
+
+        .team-code {
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 28px;
+        }
+
         /* ===== BRACKET CONTAINER ===== */
         .bracket-wrapper {
             padding: 20px 10px;
@@ -117,62 +332,6 @@
             letter-spacing: 1.2px;
             color: var(--text-muted);
             margin-bottom: 10px;
-        }
-
-        /* ===== CONNECTORS ===== */
-        .round-left .match-wrap {
-            position: relative;
-        }
-
-        .round-left .match-wrap::after {
-            content: '';
-            position: absolute;
-            right: -7px;
-            top: 50%;
-            width: 7px;
-            height: 0;
-            border-top: 2px solid var(--border-color);
-        }
-
-        .round-right .match-wrap {
-            position: relative;
-        }
-
-        .round-right .match-wrap::before {
-            content: '';
-            position: absolute;
-            left: -7px;
-            top: 50%;
-            width: 7px;
-            height: 0;
-            border-top: 2px solid var(--border-color);
-        }
-
-        /* Vertical connectors between rounds */
-        .connector-col {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            width: 7px;
-            position: relative;
-        }
-
-        .connector-col-left {
-            /* Draw vertical + horizontal lines connecting pairs */
-        }
-
-        .connector-col-right {
-        }
-
-        .connector-pair {
-            position: relative;
-            height: 0;
-        }
-
-        .connector-pair::before {
-            content: '';
-            position: absolute;
-            /* will be sized by JS or fixed */
         }
 
         /* ===== MATCH CARD ===== */
@@ -406,44 +565,6 @@
             height: 100%;
         }
 
-        /* ===== SVG CONNECTORS ===== */
-        .connectors-svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .connectors-svg line, .connectors-svg path {
-            stroke: var(--border-color);
-            stroke-width: 2;
-            fill: none;
-        }
-
-        /* ===== RESET BUTTON ===== */
-        .reset-btn {
-            display: inline-block;
-            margin-top: 8px;
-            padding: 6px 16px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .reset-btn:hover {
-            color: var(--text-primary);
-            border-color: var(--accent);
-            background: var(--bg-card-hover);
-        }
-
         /* ===== SCROLL HINT ===== */
         .scroll-hint {
             text-align: center;
@@ -457,386 +578,210 @@
                 display: none;
             }
         }
+
+        /* ===== LOADING ===== */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🏆 World Cup Knockout Predictor</h1>
-        <p>Click any score to edit — winners advance automatically</p>
-        <button class="reset-btn" onclick="resetAll()">Reset All Scores</button>
+        <h1>🏆 FIFA 2026 World Cup</h1>
+        <p>Group Stage & Knockout Bracket Predictor</p>
+        <div class="header-buttons">
+            <button class="btn btn-primary" onclick="seedBracket()">Seed Bracket from Groups</button>
+            <button class="btn" onclick="resetAll()">Reset All</button>
+        </div>
     </div>
-    <div class="scroll-hint">← Scroll horizontally to see the full bracket →</div>
-    <div class="bracket-wrapper">
-        <div class="bracket" id="bracket"></div>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" onclick="showTab('groups')">Group Stage</button>
+        <button class="tab-btn" onclick="showTab('bracket')">Knockout Bracket</button>
+    </div>
+
+    <!-- GROUP STAGE TAB -->
+    <div id="tab-groups" class="tab-content active">
+        <div class="groups-grid" id="groups-container">
+            <div class="loading">Loading groups...</div>
+        </div>
+    </div>
+
+    <!-- BRACKET TAB -->
+    <div id="tab-bracket" class="tab-content">
+        <div class="scroll-hint">← Scroll horizontally to see the full bracket →</div>
+        <div class="bracket-wrapper">
+            <div class="bracket" id="bracket"></div>
+        </div>
     </div>
 
     <script>
-        // ===== DATA MODEL =====
-        // FIFA code → team info (name, group, flagcdn code)
-        const TEAMS = {
-            // Group A
-            MEX: { name: 'Mexico',              group: 'A', flag: 'mx' },
-            RSA: { name: 'South Africa',        group: 'A', flag: 'za' },
-            KOR: { name: 'South Korea',         group: 'A', flag: 'kr' },
-            CZE: { name: 'Czech Republic',      group: 'A', flag: 'cz' },
-            // Group B
-            CAN: { name: 'Canada',              group: 'B', flag: 'ca' },
-            BIH: { name: 'Bosnia and Herzegovina', group: 'B', flag: 'ba' },
-            QAT: { name: 'Qatar',               group: 'B', flag: 'qa' },
-            SUI: { name: 'Switzerland',         group: 'B', flag: 'ch' },
-            // Group C
-            BRA: { name: 'Brazil',              group: 'C', flag: 'br' },
-            MAR: { name: 'Morocco',             group: 'C', flag: 'ma' },
-            HAI: { name: 'Haiti',               group: 'C', flag: 'ht' },
-            SCO: { name: 'Scotland',            group: 'C', flag: 'gb-sct' },
-            // Group D
-            USA: { name: 'United States',       group: 'D', flag: 'us' },
-            PAR: { name: 'Paraguay',            group: 'D', flag: 'py' },
-            AUS: { name: 'Australia',           group: 'D', flag: 'au' },
-            TUR: { name: 'Türkiye',             group: 'D', flag: 'tr' },
-            // Group E
-            GER: { name: 'Germany',             group: 'E', flag: 'de' },
-            CUW: { name: 'Curaçao',             group: 'E', flag: 'cw' },
-            CIV: { name: 'Ivory Coast',         group: 'E', flag: 'ci' },
-            ECU: { name: 'Ecuador',             group: 'E', flag: 'ec' },
-            // Group F
-            NED: { name: 'Netherlands',         group: 'F', flag: 'nl' },
-            JPN: { name: 'Japan',               group: 'F', flag: 'jp' },
-            SWE: { name: 'Sweden',              group: 'F', flag: 'se' },
-            TUN: { name: 'Tunisia',             group: 'F', flag: 'tn' },
-            // Group G
-            BEL: { name: 'Belgium',             group: 'G', flag: 'be' },
-            EGY: { name: 'Egypt',               group: 'G', flag: 'eg' },
-            IRN: { name: 'Iran',                group: 'G', flag: 'ir' },
-            NZL: { name: 'New Zealand',         group: 'G', flag: 'nz' },
-            // Group H
-            ESP: { name: 'Spain',               group: 'H', flag: 'es' },
-            CPV: { name: 'Cabo Verde',          group: 'H', flag: 'cv' },
-            KSA: { name: 'Saudi Arabia',        group: 'H', flag: 'sa' },
-            URU: { name: 'Uruguay',             group: 'H', flag: 'uy' },
-            // Group I
-            FRA: { name: 'France',              group: 'I', flag: 'fr' },
-            SEN: { name: 'Senegal',             group: 'I', flag: 'sn' },
-            IRQ: { name: 'Iraq',                group: 'I', flag: 'iq' },
-            NOR: { name: 'Norway',              group: 'I', flag: 'no' },
-            // Group J
-            ARG: { name: 'Argentina',           group: 'J', flag: 'ar' },
-            ALG: { name: 'Algeria',             group: 'J', flag: 'dz' },
-            AUT: { name: 'Austria',             group: 'J', flag: 'at' },
-            JOR: { name: 'Jordan',              group: 'J', flag: 'jo' },
-            // Group K
-            POR: { name: 'Portugal',            group: 'K', flag: 'pt' },
-            COD: { name: 'DR Congo',            group: 'K', flag: 'cd' },
-            UZB: { name: 'Uzbekistan',          group: 'K', flag: 'uz' },
-            COL: { name: 'Colombia',            group: 'K', flag: 'co' },
-            // Group L
-            ENG: { name: 'England',             group: 'L', flag: 'gb-eng' },
-            CRO: { name: 'Croatia',             group: 'L', flag: 'hr' },
-            GHA: { name: 'Ghana',               group: 'L', flag: 'gh' },
-            PAN: { name: 'Panama',              group: 'L', flag: 'pa' },
-        };
+        // ===== STATE =====
+        let TEAMS = {};
+        let GROUPS = {};
+        let bracketData = null;
 
-        // Groups → ordered array of FIFA codes
-        const GROUPS = {
-            A: ['MEX', 'RSA', 'KOR', 'CZE'],
-            B: ['CAN', 'BIH', 'QAT', 'SUI'],
-            C: ['BRA', 'MAR', 'HAI', 'SCO'],
-            D: ['USA', 'PAR', 'AUS', 'TUR'],
-            E: ['GER', 'CUW', 'CIV', 'ECU'],
-            F: ['NED', 'JPN', 'SWE', 'TUN'],
-            G: ['BEL', 'EGY', 'IRN', 'NZL'],
-            H: ['ESP', 'CPV', 'KSA', 'URU'],
-            I: ['FRA', 'SEN', 'IRQ', 'NOR'],
-            J: ['ARG', 'ALG', 'AUT', 'JOR'],
-            K: ['POR', 'COD', 'UZB', 'COL'],
-            L: ['ENG', 'CRO', 'GHA', 'PAN'],
-        };
+        // ===== API HELPERS =====
+        async function apiGet(url) {
+            const res = await fetch(url);
+            return res.json();
+        }
 
-        // Flat array of all FIFA codes in group order (for bracket seeding)
-        const TEAM_CODES = Object.values(GROUPS).flat();
+        async function apiPost(url, body) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            return res.json();
+        }
 
-        // Helper: render a flag image element via FlagCDN
+        // ===== INIT =====
+        async function init() {
+            const data = await apiGet('/api/teams');
+            for (const [code, info] of Object.entries(data)) {
+                TEAMS[code] = info;
+            }
+            const groupsData = await apiGet('/api/groups');
+            GROUPS = groupsData.groups;
+            await loadGroupStage();
+            await loadBracket();
+        }
+
+        // ===== TAB SWITCHING =====
+        function showTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        // ===== FLAG HELPER =====
         function flagImg(code) {
             const t = TEAMS[code];
             if (!t) return '<span>⚽</span>';
-            return `<img src="https://flagcdn.com/w20/${t.flag}.png" 
-                         srcset="https://flagcdn.com/w40/${t.flag}.png 2x" 
-                         alt="${t.name}" title="${t.name}" width="22" height="15" 
+            return `<img src="https://flagcdn.com/w20/${t.flag}.png"
+                         srcset="https://flagcdn.com/w40/${t.flag}.png 2x"
+                         alt="${t.name}" title="${t.name}" width="18" height="12"
+                         style="display:block;border-radius:1px;">`;
+        }
+
+        function flagImgLarge(code) {
+            const t = TEAMS[code];
+            if (!t) return '<span>⚽</span>';
+            return `<img src="https://flagcdn.com/w20/${t.flag}.png"
+                         srcset="https://flagcdn.com/w40/${t.flag}.png 2x"
+                         alt="${t.name}" title="${t.name}" width="22" height="15"
                          style="display:block;border-radius:2px;">`;
         }
 
-        // Build tournament data
-        // Left side: indices 0-15, Right side: indices 16-31
-        // Rounds: R32 → R16 → QF → SF → Final → Champion
+        // ===== GROUP STAGE RENDERING =====
+        async function loadGroupStage() {
+            const data = await apiGet('/api/standings');
+            const matchesData = await apiGet('/api/group-matches');
 
-        let matches = {};
-        let matchIdCounter = 0;
-
-        function createMatch(team1Code, team2Code, round, side, matchIndex) {
-            const id = matchIdCounter++;
-            matches[id] = {
-                id,
-                team1: team1Code !== null ? { code: team1Code, name: TEAMS[team1Code].name, flag: flagImg(team1Code) } : null,
-                team2: team2Code !== null ? { code: team2Code, name: TEAMS[team2Code].name, flag: flagImg(team2Code) } : null,
-                score1: null,
-                score2: null,
-                round,
-                side,
-                matchIndex,
-                nextMatchId: null,
-                nextSlot: null, // 1 or 2
-            };
-            return id;
-        }
-
-        function initTournament() {
-            matches = {};
-            matchIdCounter = 0;
-
-            // Left side rounds
-            const leftR32 = [];
-            const leftR16 = [];
-            const leftQF = [];
-            const leftSF = [];
-
-            // Right side rounds
-            const rightR32 = [];
-            const rightR16 = [];
-            const rightQF = [];
-            const rightSF = [];
-
-            // Left R32: 8 matches (first 16 teams from TEAM_CODES)
-            for (let i = 0; i < 8; i++) {
-                const id = createMatch(TEAM_CODES[i * 2], TEAM_CODES[i * 2 + 1], 'R32', 'left', i);
-                leftR32.push(id);
-            }
-
-            // Left R16: 4 matches
-            for (let i = 0; i < 4; i++) {
-                const id = createMatch(null, null, 'R16', 'left', i);
-                leftR16.push(id);
-            }
-
-            // Left QF: 2 matches
-            for (let i = 0; i < 2; i++) {
-                const id = createMatch(null, null, 'QF', 'left', i);
-                leftQF.push(id);
-            }
-
-            // Left SF: 1 match
-            {
-                const id = createMatch(null, null, 'SF', 'left', 0);
-                leftSF.push(id);
-            }
-
-            // Right R32: 8 matches (teams 16-31 from TEAM_CODES)
-            for (let i = 0; i < 8; i++) {
-                const idx = 16 + i * 2;
-                const id = createMatch(TEAM_CODES[idx], TEAM_CODES[idx + 1], 'R32', 'right', i);
-                rightR32.push(id);
-            }
-
-            // Right R16: 4 matches
-            for (let i = 0; i < 4; i++) {
-                const id = createMatch(null, null, 'R16', 'right', i);
-                rightR16.push(id);
-            }
-
-            // Right QF: 2 matches
-            for (let i = 0; i < 2; i++) {
-                const id = createMatch(null, null, 'QF', 'right', i);
-                rightQF.push(id);
-            }
-
-            // Right SF: 1 match
-            {
-                const id = createMatch(null, null, 'SF', 'right', 0);
-                rightSF.push(id);
-            }
-
-            // Final
-            const finalId = createMatch(null, null, 'Final', 'center', 0);
-
-            // Wire up nextMatchId
-            // Left R32 → Left R16
-            for (let i = 0; i < 8; i++) {
-                const nextIdx = Math.floor(i / 2);
-                const slot = (i % 2) + 1;
-                matches[leftR32[i]].nextMatchId = leftR16[nextIdx];
-                matches[leftR32[i]].nextSlot = slot;
-            }
-
-            // Left R16 → Left QF
-            for (let i = 0; i < 4; i++) {
-                const nextIdx = Math.floor(i / 2);
-                const slot = (i % 2) + 1;
-                matches[leftR16[i]].nextMatchId = leftQF[nextIdx];
-                matches[leftR16[i]].nextSlot = slot;
-            }
-
-            // Left QF → Left SF
-            for (let i = 0; i < 2; i++) {
-                const nextIdx = Math.floor(i / 2);
-                const slot = (i % 2) + 1;
-                matches[leftQF[i]].nextMatchId = leftSF[nextIdx];
-                matches[leftQF[i]].nextSlot = slot;
-            }
-
-            // Left SF → Final
-            matches[leftSF[0]].nextMatchId = finalId;
-            matches[leftSF[0]].nextSlot = 1;
-
-            // Right R32 → Right R16
-            for (let i = 0; i < 8; i++) {
-                const nextIdx = Math.floor(i / 2);
-                const slot = (i % 2) + 1;
-                matches[rightR32[i]].nextMatchId = rightR16[nextIdx];
-                matches[rightR32[i]].nextSlot = slot;
-            }
-
-            // Right R16 → Right QF
-            for (let i = 0; i < 4; i++) {
-                const nextIdx = Math.floor(i / 2);
-                const slot = (i % 2) + 1;
-                matches[rightR16[i]].nextMatchId = rightQF[nextIdx];
-                matches[rightR16[i]].nextSlot = slot;
-            }
-
-            // Right QF → Right SF
-            for (let i = 0; i < 2; i++) {
-                const nextIdx = Math.floor(i / 2);
-                const slot = (i % 2) + 1;
-                matches[rightQF[i]].nextMatchId = rightSF[nextIdx];
-                matches[rightQF[i]].nextSlot = slot;
-            }
-
-            // Right SF → Final
-            matches[rightSF[0]].nextMatchId = finalId;
-            matches[rightSF[0]].nextSlot = 2;
-        }
-
-        // ===== WINNER LOGIC =====
-        function getWinner(match) {
-            if (match.score1 === null || match.score2 === null) return null;
-            if (match.score1 > match.score2) return match.team1;
-            if (match.score2 > match.score1) return match.team2;
-            return null; // Draw = no winner
-        }
-
-        function advanceWinner(matchId) {
-            const match = matches[matchId];
-            const winner = getWinner(match);
-            if (!winner || match.nextMatchId === null) return;
-
-            const next = matches[match.nextMatchId];
-            if (match.nextSlot === 1) {
-                next.team1 = { ...winner };
-            } else {
-                next.team2 = { ...winner };
-            }
-        }
-
-        function propagateForward(matchId) {
-            const match = matches[matchId];
-            advanceWinner(matchId);
-
-            // If this match's winner was already placed in next match,
-            // we need to re-evaluate the next match too
-            if (match.nextMatchId !== null) {
-                const next = matches[match.nextMatchId];
-                // Clear the next match's result since teams may have changed
-                next.score1 = null;
-                next.score2 = null;
-                advanceWinner(matchId);
-                propagateForward(next.id);
-            }
-        }
-
-        function onScoreChange(matchId) {
-            const match = matches[matchId];
-            const prevWinner = getWinner(match);
-
-            // Re-advance winner
-            if (match.nextMatchId !== null) {
-                const next = matches[match.nextMatchId];
-                // Clear the next match slot and its result
-                if (match.nextSlot === 1) {
-                    next.team1 = null;
-                    next.score1 = null;
-                } else {
-                    next.team2 = null;
-                    next.score2 = null;
-                }
-                advanceWinner(matchId);
-                propagateForward(match.nextMatchId);
-            }
-
-            render();
-        }
-
-        // ===== RENDERING =====
-        function renderTeamRow(team, score, matchId, slot, isWinner, isLoser) {
-            if (!team) {
-                return `<div class="team-row empty">
-                    <span class="team-flag">⚽</span>
-                    <span class="team-name">TBD</span>
-                    <span class="team-score">-</span>
-                </div>`;
-            }
-
-            let classes = 'team-row';
-            if (isWinner) classes += ' winner';
-            if (isLoser) classes += ' loser';
-
-            const scoreDisplay = score !== null ? score : '-';
-
-            return `<div class="${classes}">
-                <span class="team-flag" title="${team.name}">${team.flag}</span>
-                <span class="team-name">${team.code}</span>
-                <span class="team-score" onclick="editScore(${matchId}, ${slot}, this)" data-match="${matchId}" data-slot="${slot}">${scoreDisplay}</span>
-            </div>`;
-        }
-
-        function renderMatch(matchId) {
-            const m = matches[matchId];
-            const winner = getWinner(m);
-
-            const isTeam1Winner = winner && m.team1 && winner.name === m.team1.name;
-            const isTeam2Winner = winner && m.team2 && winner.name === m.team2.name;
-
-            let cls = 'match';
-            if (m.round === 'Final') cls += ' match-final';
-
+            const container = document.getElementById('groups-container');
             let html = '';
 
-            if (m.round === 'Final') {
-                html += `<div class="match-final-label">🏆 Final</div>`;
+            for (const group of ['A','B','C','D','E','F','G','H','I','J','K','L']) {
+                const standings = data.standings[group];
+                const groupMatches = matchesData.matches.filter(m => m.group === group);
+
+                html += `<div class="group-card">`;
+                html += `<div class="group-card-header">Group ${group}</div>`;
+
+                // Standings table
+                html += `<table class="standings-table">
+                    <thead><tr>
+                        <th>Team</th><th>P</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th>
+                    </tr></thead><tbody>`;
+
+                for (const s of standings) {
+                    const gd = s.goalDifference >= 0 ? `+${s.goalDifference}` : s.goalDifference;
+                    html += `<tr>
+                        <td style="display:flex;align-items:center;gap:4px;">
+                            ${flagImg(s.teamCode)}
+                            <span class="team-code">${s.teamCode}</span>
+                        </td>
+                        <td>${s.played}</td>
+                        <td>${s.goalsFor}</td>
+                        <td>${s.goalsAgainst}</td>
+                        <td>${gd}</td>
+                        <td style="font-weight:700;color:var(--text-primary)">${s.points}</td>
+                    </tr>`;
+                }
+                html += `</tbody></table>`;
+
+                // Matches
+                html += `<div class="group-matches">`;
+                for (const m of groupMatches) {
+                    html += `<div class="group-match-row">
+                        <div class="group-match-teams">
+                            ${flagImg(m.team1)}
+                            <span class="team-code">${m.team1}</span>
+                        </div>
+                        <div class="group-match-score">
+                            <input type="number" class="score-input" min="0" max="99"
+                                   value="${m.score1 !== null ? m.score1 : ''}"
+                                   placeholder="-"
+                                   onchange="setGroupScore('${m.id}', 1, this.value)"
+                                   onfocus="this.select()">
+                            <span class="match-separator">-</span>
+                            <input type="number" class="score-input" min="0" max="99"
+                                   value="${m.score2 !== null ? m.score2 : ''}"
+                                   placeholder="-"
+                                   onchange="setGroupScore('${m.id}', 2, this.value)"
+                                   onfocus="this.select()">
+                        </div>
+                        <div class="group-match-teams" style="justify-content:flex-end;">
+                            <span class="team-code">${m.team2}</span>
+                            ${flagImg(m.team2)}
+                        </div>
+                    </div>`;
+                }
+                html += `</div></div>`;
             }
 
-            html += renderTeamRow(m.team1, m.score1, m.id, 1, isTeam1Winner, isTeam2Winner && !isTeam1Winner);
-            html += renderTeamRow(m.team2, m.score2, m.id, 2, isTeam2Winner, isTeam1Winner && !isTeam2Winner);
-
-            return `<div class="match-wrap"><div class="${cls}" data-match="${m.id}">${html}</div></div>`;
+            container.innerHTML = html;
         }
 
-        function renderRound(matchIds, label, side) {
-            const matchHtmls = matchIds.map(id => renderMatch(id)).join('');
-            return `<div class="round round-${side}">
-                <div class="round-label">${label}</div>
-                <div class="match-list">${matchHtmls}</div>
-            </div>`;
+        async function setGroupScore(matchId, slot, value) {
+            // Find the current scores for this match from the inputs
+            const row = event.target.closest('.group-match-row');
+            const inputs = row.querySelectorAll('.score-input');
+            const s1 = inputs[0].value !== '' ? parseInt(inputs[0].value) : null;
+            const s2 = inputs[1].value !== '' ? parseInt(inputs[1].value) : null;
+
+            if (s1 === null || s2 === null) return; // Need both scores
+
+            await apiPost(`/api/groups/${matchId}/score`, { score1: s1, score2: s2 });
+            await loadGroupStage();
         }
 
-        function render() {
+        // ===== BRACKET RENDERING =====
+        async function loadBracket() {
+            const data = await apiGet('/api/bracket');
+            bracketData = data;
+            renderBracket();
+        }
+
+        function renderBracket() {
+            if (!bracketData) return;
+
+            const matches = {};
+            bracketData.matches.forEach(m => { matches[m.id] = m; });
+
             const bracket = document.getElementById('bracket');
 
-            // Collect matches by round and side
+            // Separate by round and side
             const leftR32 = [], leftR16 = [], leftQF = [], leftSF = [];
             const rightR32 = [], rightR16 = [], rightQF = [], rightSF = [];
             let finalMatch = null;
 
-            for (const id in matches) {
-                const m = matches[id];
+            for (const m of bracketData.matches) {
                 if (m.round === 'R32' && m.side === 'left') leftR32.push(m);
                 if (m.round === 'R16' && m.side === 'left') leftR16.push(m);
                 if (m.round === 'QF' && m.side === 'left') leftQF.push(m);
@@ -848,27 +793,19 @@
                 if (m.round === 'Final') finalMatch = m;
             }
 
-            // Sort by matchIndex
             const sortFn = (a, b) => a.matchIndex - b.matchIndex;
-            leftR32.sort(sortFn);
-            leftR16.sort(sortFn);
-            leftQF.sort(sortFn);
-            leftSF.sort(sortFn);
-            rightR32.sort(sortFn);
-            rightR16.sort(sortFn);
-            rightQF.sort(sortFn);
-            rightSF.sort(sortFn);
+            leftR32.sort(sortFn); leftR16.sort(sortFn); leftQF.sort(sortFn); leftSF.sort(sortFn);
+            rightR32.sort(sortFn); rightR16.sort(sortFn); rightQF.sort(sortFn); rightSF.sort(sortFn);
 
-            const finalId = finalMatch.id;
             const finalWinner = getWinner(finalMatch);
 
             let html = '';
 
             // LEFT SIDE
-            html += renderRound(leftR32.map(m => m.id), 'Round of 32', 'left');
-            html += renderRound(leftR16.map(m => m.id), 'Round of 16', 'left');
-            html += renderRound(leftQF.map(m => m.id), 'Quarter-Finals', 'left');
-            html += renderRound(leftSF.map(m => m.id), 'Semi-Finals', 'left');
+            html += renderRound(leftR32, 'Round of 32', 'left');
+            html += renderRound(leftR16, 'Round of 16', 'left');
+            html += renderRound(leftQF, 'Quarter-Finals', 'left');
+            html += renderRound(leftSF, 'Semi-Finals', 'left');
 
             // LEFT CONNECTOR → FINAL
             html += `<div class="final-connector final-connector-left"></div>`;
@@ -878,34 +815,96 @@
                 <div class="champion-card">
                     <div class="champion-trophy">🏆</div>
                     <div class="champion-label">Champion</div>
-                    <div class="champion-name" title="${finalWinner ? finalWinner.name : ''}">${finalWinner ? finalWinner.flag + ' ' + finalWinner.code : '???'}</div>
+                    <div class="champion-name" title="${finalWinner ? TEAMS[finalWinner]?.name || '' : ''}">
+                        ${finalWinner ? flagImgLarge(finalWinner) + ' ' + finalWinner : '???'}
+                    </div>
                 </div>
-                ${renderMatch(finalId)}
+                ${renderMatch(finalMatch)}
             </div>`;
 
             // RIGHT CONNECTOR → FINAL
             html += `<div class="final-connector final-connector-right"></div>`;
 
             // RIGHT SIDE
-            html += renderRound(rightSF.map(m => m.id), 'Semi-Finals', 'right');
-            html += renderRound(rightQF.map(m => m.id), 'Quarter-Finals', 'right');
-            html += renderRound(rightR16.map(m => m.id), 'Round of 16', 'right');
-            html += renderRound(rightR32.map(m => m.id), 'Round of 32', 'right');
+            html += renderRound(rightSF, 'Semi-Finals', 'right');
+            html += renderRound(rightQF, 'Quarter-Finals', 'right');
+            html += renderRound(rightR16, 'Round of 16', 'right');
+            html += renderRound(rightR32, 'Round of 32', 'right');
 
             bracket.innerHTML = html;
         }
 
-        // ===== SCORE EDITING =====
-        function editScore(matchId, slot, el) {
-            // Already editing?
+        function getWinner(match) {
+            if (!match || match.score1 === null || match.score2 === null) return null;
+            if (match.score1 > match.score2) return match.team1;
+            if (match.score2 > match.score1) return match.team2;
+            return null;
+        }
+
+        function renderTeamRow(teamCode, score, matchId, slot, isWinner, isLoser) {
+            if (!teamCode) {
+                return `<div class="team-row empty">
+                    <span class="team-flag">⚽</span>
+                    <span class="team-name">TBD</span>
+                    <span class="team-score">-</span>
+                </div>`;
+            }
+
+            let classes = 'team-row';
+            if (isWinner) classes += ' winner';
+            if (isLoser) classes += ' loser';
+
+            const scoreDisplay = score !== null && score !== undefined ? score : '-';
+
+            return `<div class="${classes}">
+                <span class="team-flag" title="${TEAMS[teamCode]?.name || teamCode}">${flagImgLarge(teamCode)}</span>
+                <span class="team-name">${teamCode}</span>
+                <span class="team-score" onclick="editKnockoutScore(${matchId}, ${slot}, this)"
+                      data-match="${matchId}" data-slot="${slot}">${scoreDisplay}</span>
+            </div>`;
+        }
+
+        function renderMatch(match) {
+            if (!match) return '';
+            const winner = getWinner(match);
+            const isTeam1Winner = winner && winner === match.team1;
+            const isTeam2Winner = winner && winner === match.team2;
+
+            let cls = 'match';
+            if (match.round === 'Final') cls += ' match-final';
+
+            let html = '';
+            if (match.round === 'Final') {
+                html += `<div class="match-final-label">🏆 Final</div>`;
+            }
+
+            html += renderTeamRow(match.team1, match.score1, match.id, 1,
+                isTeam1Winner, isTeam2Winner && !isTeam1Winner);
+            html += renderTeamRow(match.team2, match.score2, match.id, 2,
+                isTeam2Winner, isTeam1Winner && !isTeam2Winner);
+
+            return `<div class="match-wrap"><div class="${cls}" data-match="${match.id}">${html}</div></div>`;
+        }
+
+        function renderRound(matchList, label, side) {
+            const matchHtmls = matchList.map(m => renderMatch(m)).join('');
+            return `<div class="round round-${side}">
+                <div class="round-label">${label}</div>
+                <div class="match-list">${matchHtmls}</div>
+            </div>`;
+        }
+
+        // ===== KNOCKOUT SCORE EDITING =====
+        function editKnockoutScore(matchId, slot, el) {
             if (el.querySelector('input')) return;
 
-            const match = matches[matchId];
+            const match = bracketData.matches.find(m => m.id === matchId);
+            if (!match) return;
             const team = slot === 1 ? match.team1 : match.team2;
-            if (!team) return; // Can't edit TBD
+            if (!team) return;
 
             const currentVal = slot === 1 ? match.score1 : match.score2;
-            const displayVal = currentVal !== null ? currentVal : '';
+            const displayVal = currentVal !== null && currentVal !== undefined ? currentVal : '';
 
             el.classList.add('editing');
             el.innerHTML = `<input type="number" min="0" max="99" value="${displayVal}" />`;
@@ -913,64 +912,49 @@
             input.focus();
             input.select();
 
-            function commit() {
+            async function commit() {
                 let val = input.value.trim();
                 let numVal = val === '' ? null : parseInt(val, 10);
                 if (numVal !== null && isNaN(numVal)) numVal = null;
                 if (numVal !== null && numVal < 0) numVal = 0;
 
-                if (slot === 1) {
-                    match.score1 = numVal;
-                } else {
-                    match.score2 = numVal;
+                if (numVal !== null) {
+                    const s1 = slot === 1 ? numVal : match.score1;
+                    const s2 = slot === 2 ? numVal : match.score2;
+                    if (s1 !== null && s2 !== null) {
+                        await apiPost(`/api/bracket/${matchId}/score`, { score1: s1, score2: s2 });
+                        await loadBracket();
+                    }
                 }
 
                 el.classList.remove('editing');
-
-                onScoreChange(matchId);
             }
 
             input.addEventListener('blur', commit);
             input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    input.blur();
-                }
+                if (e.key === 'Enter') input.blur();
                 if (e.key === 'Escape') {
-                    // Cancel
                     el.classList.remove('editing');
                     const scoreDisplay = (slot === 1 ? match.score1 : match.score2);
-                    el.textContent = scoreDisplay !== null ? scoreDisplay : '-';
-                }
-                if (e.key === 'Tab') {
-                    e.preventDefault();
-                    input.blur();
-                    // Move to the other slot
-                    const otherSlot = slot === 1 ? 2 : 1;
-                    const otherTeam = otherSlot === 1 ? match.team1 : match.team2;
-                    if (otherTeam) {
-                        setTimeout(() => {
-                            const otherEl = document.querySelector(`.team-score[data-match="${matchId}"][data-slot="${otherSlot}"]`);
-                            if (otherEl) editScore(matchId, otherSlot, otherEl);
-                        }, 50);
-                    }
+                    el.textContent = scoreDisplay !== null && scoreDisplay !== undefined ? scoreDisplay : '-';
                 }
             });
         }
 
-        // ===== RESET =====
-        function resetAll() {
-            for (const id in matches) {
-                matches[id].score1 = null;
-                matches[id].score2 = null;
-            }
-            // Re-init to reset team placements
-            initTournament();
-            render();
+        // ===== SEED & RESET =====
+        async function seedBracket() {
+            await apiPost('/api/bracket/seed');
+            await loadBracket();
         }
 
-        // ===== INIT =====
-        initTournament();
-        render();
+        async function resetAll() {
+            await apiPost('/api/reset');
+            await loadGroupStage();
+            await loadBracket();
+        }
+
+        // ===== STARTUP =====
+        init();
     </script>
 </body>
 </html>
