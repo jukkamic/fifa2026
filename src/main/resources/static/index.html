@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Cup Knockout Predictor</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2236;
+            --bg-card-hover: #1e2a42;
+            --border-color: #2a3a5c;
+            --accent: #3b82f6;
+            --accent-glow: #60a5fa;
+            --gold: #f59e0b;
+            --gold-glow: #fbbf24;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --win: #22c55e;
+            --lose: #ef4444;
+            --draw: #f59e0b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: auto;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 50%);
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            text-align: center;
+            padding: 24px 20px 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(180deg, rgba(26, 34, 54, 0.9) 0%, transparent 100%);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-glow), var(--gold-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* ===== BRACKET CONTAINER ===== */
+        .bracket-wrapper {
+            padding: 20px 10px;
+            overflow-x: auto;
+        }
+
+        .bracket {
+            display: flex;
+            align-items: center;
+            width: fit-content;
+            margin: 0 auto;
+            gap: 0;
+        }
+
+        /* ===== SIDE (LEFT / RIGHT) ===== */
+        .side {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-left {
+            align-items: flex-end;
+        }
+
+        .side-right {
+            align-items: flex-start;
+        }
+
+        /* ===== ROUND COLUMN ===== */
+        .round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            position: relative;
+        }
+
+        .round-left {
+            padding-right: 14px;
+        }
+
+        .round-right {
+            padding-left: 14px;
+        }
+
+        .round-label {
+            text-align: center;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        /* ===== CONNECTORS ===== */
+        .round-left .match-wrap {
+            position: relative;
+        }
+
+        .round-left .match-wrap::after {
+            content: '';
+            position: absolute;
+            right: -7px;
+            top: 50%;
+            width: 7px;
+            height: 0;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .round-right .match-wrap {
+            position: relative;
+        }
+
+        .round-right .match-wrap::before {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 50%;
+            width: 7px;
+            height: 0;
+            border-top: 2px solid var(--border-color);
+        }
+
+        /* Vertical connectors between rounds */
+        .connector-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 7px;
+            position: relative;
+        }
+
+        .connector-col-left {
+            /* Draw vertical + horizontal lines connecting pairs */
+        }
+
+        .connector-col-right {
+        }
+
+        .connector-pair {
+            position: relative;
+            height: 0;
+        }
+
+        .connector-pair::before {
+            content: '';
+            position: absolute;
+            /* will be sized by JS or fixed */
+        }
+
+        /* ===== MATCH CARD ===== */
+        .match-wrap {
+            padding: 8px 0;
+        }
+
+        .match {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            width: 120px;
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+
+        .match:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        .match.match-final {
+            width: 140px;
+            border-color: var(--gold);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+        }
+
+        .match.match-final:hover {
+            box-shadow: 0 0 40px rgba(245, 158, 11, 0.35);
+        }
+
+        .match-final-label {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold);
+            padding: 8px 0 4px;
+        }
+
+        .team-row {
+            display: flex;
+            align-items: center;
+            padding: 0;
+            height: 32px;
+            transition: background 0.15s ease;
+        }
+
+        .team-row:first-of-type {
+            border-bottom: 1px solid rgba(42, 58, 92, 0.5);
+        }
+
+        .team-row.winner {
+            background: rgba(34, 197, 94, 0.08);
+        }
+
+        .team-row.loser {
+            opacity: 0.5;
+        }
+
+        .team-flag {
+            width: 22px;
+            height: 15px;
+            margin-left: 6px;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .team-name {
+            flex: 1;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 0 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
+
+        .team-row.winner .team-name {
+            color: var(--win);
+        }
+
+        .team-row.loser .team-name {
+            color: var(--text-muted);
+        }
+
+        .team-score {
+            min-width: 24px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 0 5px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            border-left: 1px solid rgba(42, 58, 92, 0.5);
+            color: var(--text-secondary);
+            user-select: none;
+        }
+
+        .team-score:hover {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-glow);
+        }
+
+        .team-score.editing {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .team-score input {
+            width: 20px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--accent-glow);
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            -moz-appearance: textfield;
+        }
+
+        .team-score input::-webkit-outer-spin-button,
+        .team-score input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .team-row.winner .team-score {
+            color: var(--win);
+        }
+
+        .team-row.loser .team-score {
+            color: var(--text-muted);
+        }
+
+        /* ===== EMPTY TEAM ===== */
+        .team-row.empty {
+            opacity: 0.3;
+        }
+
+        .team-row.empty .team-name {
+            color: var(--text-muted);
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        /* ===== CHAMPION ===== */
+        .champion-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 6px;
+        }
+
+        .champion-card {
+            background: linear-gradient(135deg, #1a2236, #1e2a42);
+            border: 2px solid var(--gold);
+            border-radius: 14px;
+            padding: 12px 16px;
+            text-align: center;
+            min-width: 110px;
+            box-shadow:
+                0 0 40px rgba(245, 158, 11, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .champion-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+
+        .champion-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gold-glow);
+            min-height: 22px;
+        }
+
+        .champion-trophy {
+            font-size: 30px;
+            margin-bottom: 4px;
+        }
+
+        /* ===== FINAL CONNECTORS ===== */
+        .final-connector {
+            width: 14px;
+            position: relative;
+        }
+
+        .final-connector::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            height: 0;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .final-connector-left::before {
+            left: 0;
+        }
+
+        .final-connector-right::before {
+            right: 0;
+        }
+
+        /* ===== ROUND HEIGHTS ===== */
+        .round-32 { min-height: 560px; }
+        .round-16 { min-height: 560px; }
+        .round-qf { min-height: 560px; }
+        .round-sf { min-height: 560px; }
+
+        .match-list {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            height: 100%;
+        }
+
+        /* ===== SVG CONNECTORS ===== */
+        .connectors-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .connectors-svg line, .connectors-svg path {
+            stroke: var(--border-color);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* ===== RESET BUTTON ===== */
+        .reset-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent);
+            background: var(--bg-card-hover);
+        }
+
+        /* ===== SCROLL HINT ===== */
+        .scroll-hint {
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        @media (min-width: 1100px) {
+            .scroll-hint {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏆 World Cup Knockout Predictor</h1>
+        <p>Click any score to edit — winners advance automatically</p>
+        <button class="reset-btn" onclick="resetAll()">Reset All Scores</button>
+    </div>
+    <div class="scroll-hint">← Scroll horizontally to see the full bracket →</div>
+    <div class="bracket-wrapper">
+        <div class="bracket" id="bracket"></div>
+    </div>
+
+    <script>
+        // ===== DATA MODEL =====
+        // FIFA code → team info (name, group, flagcdn code)
+        const TEAMS = {
+            // Group A
+            MEX: { name: 'Mexico',              group: 'A', flag: 'mx' },
+            RSA: { name: 'South Africa',        group: 'A', flag: 'za' },
+            KOR: { name: 'South Korea',         group: 'A', flag: 'kr' },
+            CZE: { name: 'Czech Republic',      group: 'A', flag: 'cz' },
+            // Group B
+            CAN: { name: 'Canada',              group: 'B', flag: 'ca' },
+            BIH: { name: 'Bosnia and Herzegovina', group: 'B', flag: 'ba' },
+            QAT: { name: 'Qatar',               group: 'B', flag: 'qa' },
+            SUI: { name: 'Switzerland',         group: 'B', flag: 'ch' },
+            // Group C
+            BRA: { name: 'Brazil',              group: 'C', flag: 'br' },
+            MAR: { name: 'Morocco',             group: 'C', flag: 'ma' },
+            HAI: { name: 'Haiti',               group: 'C', flag: 'ht' },
+            SCO: { name: 'Scotland',            group: 'C', flag: 'gb-sct' },
+            // Group D
+            USA: { name: 'United States',       group: 'D', flag: 'us' },
+            PAR: { name: 'Paraguay',            group: 'D', flag: 'py' },
+            AUS: { name: 'Australia',           group: 'D', flag: 'au' },
+            TUR: { name: 'Türkiye',             group: 'D', flag: 'tr' },
+            // Group E
+            GER: { name: 'Germany',             group: 'E', flag: 'de' },
+            CUW: { name: 'Curaçao',             group: 'E', flag: 'cw' },
+            CIV: { name: 'Ivory Coast',         group: 'E', flag: 'ci' },
+            ECU: { name: 'Ecuador',             group: 'E', flag: 'ec' },
+            // Group F
+            NED: { name: 'Netherlands',         group: 'F', flag: 'nl' },
+            JPN: { name: 'Japan',               group: 'F', flag: 'jp' },
+            SWE: { name: 'Sweden',              group: 'F', flag: 'se' },
+            TUN: { name: 'Tunisia',             group: 'F', flag: 'tn' },
+            // Group G
+            BEL: { name: 'Belgium',             group: 'G', flag: 'be' },
+            EGY: { name: 'Egypt',               group: 'G', flag: 'eg' },
+            IRN: { name: 'Iran',                group: 'G', flag: 'ir' },
+            NZL: { name: 'New Zealand',         group: 'G', flag: 'nz' },
+            // Group H
+            ESP: { name: 'Spain',               group: 'H', flag: 'es' },
+            CPV: { name: 'Cabo Verde',          group: 'H', flag: 'cv' },
+            KSA: { name: 'Saudi Arabia',        group: 'H', flag: 'sa' },
+            URU: { name: 'Uruguay',             group: 'H', flag: 'uy' },
+            // Group I
+            FRA: { name: 'France',              group: 'I', flag: 'fr' },
+            SEN: { name: 'Senegal',             group: 'I', flag: 'sn' },
+            IRQ: { name: 'Iraq',                group: 'I', flag: 'iq' },
+            NOR: { name: 'Norway',              group: 'I', flag: 'no' },
+            // Group J
+            ARG: { name: 'Argentina',           group: 'J', flag: 'ar' },
+            ALG: { name: 'Algeria',             group: 'J', flag: 'dz' },
+            AUT: { name: 'Austria',             group: 'J', flag: 'at' },
+            JOR: { name: 'Jordan',              group: 'J', flag: 'jo' },
+            // Group K
+            POR: { name: 'Portugal',            group: 'K', flag: 'pt' },
+            COD: { name: 'DR Congo',            group: 'K', flag: 'cd' },
+            UZB: { name: 'Uzbekistan',          group: 'K', flag: 'uz' },
+            COL: { name: 'Colombia',            group: 'K', flag: 'co' },
+            // Group L
+            ENG: { name: 'England',             group: 'L', flag: 'gb-eng' },
+            CRO: { name: 'Croatia',             group: 'L', flag: 'hr' },
+            GHA: { name: 'Ghana',               group: 'L', flag: 'gh' },
+            PAN: { name: 'Panama',              group: 'L', flag: 'pa' },
+        };
+
+        // Groups → ordered array of FIFA codes
+        const GROUPS = {
+            A: ['MEX', 'RSA', 'KOR', 'CZE'],
+            B: ['CAN', 'BIH', 'QAT', 'SUI'],
+            C: ['BRA', 'MAR', 'HAI', 'SCO'],
+            D: ['USA', 'PAR', 'AUS', 'TUR'],
+            E: ['GER', 'CUW', 'CIV', 'ECU'],
+            F: ['NED', 'JPN', 'SWE', 'TUN'],
+            G: ['BEL', 'EGY', 'IRN', 'NZL'],
+            H: ['ESP', 'CPV', 'KSA', 'URU'],
+            I: ['FRA', 'SEN', 'IRQ', 'NOR'],
+            J: ['ARG', 'ALG', 'AUT', 'JOR'],
+            K: ['POR', 'COD', 'UZB', 'COL'],
+            L: ['ENG', 'CRO', 'GHA', 'PAN'],
+        };
+
+        // Flat array of all FIFA codes in group order (for bracket seeding)
+        const TEAM_CODES = Object.values(GROUPS).flat();
+
+        // Helper: render a flag image element via FlagCDN
+        function flagImg(code) {
+            const t = TEAMS[code];
+            if (!t) return '<span>⚽</span>';
+            return `<img src="https://flagcdn.com/w20/${t.flag}.png" 
+                         srcset="https://flagcdn.com/w40/${t.flag}.png 2x" 
+                         alt="${t.name}" title="${t.name}" width="22" height="15" 
+                         style="display:block;border-radius:2px;">`;
+        }
+
+        // Build tournament data
+        // Left side: indices 0-15, Right side: indices 16-31
+        // Rounds: R32 → R16 → QF → SF → Final → Champion
+
+        let matches = {};
+        let matchIdCounter = 0;
+
+        function createMatch(team1Code, team2Code, round, side, matchIndex) {
+            const id = matchIdCounter++;
+            matches[id] = {
+                id,
+                team1: team1Code !== null ? { code: team1Code, name: TEAMS[team1Code].name, flag: flagImg(team1Code) } : null,
+                team2: team2Code !== null ? { code: team2Code, name: TEAMS[team2Code].name, flag: flagImg(team2Code) } : null,
+                score1: null,
+                score2: null,
+                round,
+                side,
+                matchIndex,
+                nextMatchId: null,
+                nextSlot: null, // 1 or 2
+            };
+            return id;
+        }
+
+        function initTournament() {
+            matches = {};
+            matchIdCounter = 0;
+
+            // Left side rounds
+            const leftR32 = [];
+            const leftR16 = [];
+            const leftQF = [];
+            const leftSF = [];
+
+            // Right side rounds
+            const rightR32 = [];
+            const rightR16 = [];
+            const rightQF = [];
+            const rightSF = [];
+
+            // Left R32: 8 matches (first 16 teams from TEAM_CODES)
+            for (let i = 0; i < 8; i++) {
+                const id = createMatch(TEAM_CODES[i * 2], TEAM_CODES[i * 2 + 1], 'R32', 'left', i);
+                leftR32.push(id);
+            }
+
+            // Left R16: 4 matches
+            for (let i = 0; i < 4; i++) {
+                const id = createMatch(null, null, 'R16', 'left', i);
+                leftR16.push(id);
+            }
+
+            // Left QF: 2 matches
+            for (let i = 0; i < 2; i++) {
+                const id = createMatch(null, null, 'QF', 'left', i);
+                leftQF.push(id);
+            }
+
+            // Left SF: 1 match
+            {
+                const id = createMatch(null, null, 'SF', 'left', 0);
+                leftSF.push(id);
+            }
+
+            // Right R32: 8 matches (teams 16-31 from TEAM_CODES)
+            for (let i = 0; i < 8; i++) {
+                const idx = 16 + i * 2;
+                const id = createMatch(TEAM_CODES[idx], TEAM_CODES[idx + 1], 'R32', 'right', i);
+                rightR32.push(id);
+            }
+
+            // Right R16: 4 matches
+            for (let i = 0; i < 4; i++) {
+                const id = createMatch(null, null, 'R16', 'right', i);
+                rightR16.push(id);
+            }
+
+            // Right QF: 2 matches
+            for (let i = 0; i < 2; i++) {
+                const id = createMatch(null, null, 'QF', 'right', i);
+                rightQF.push(id);
+            }
+
+            // Right SF: 1 match
+            {
+                const id = createMatch(null, null, 'SF', 'right', 0);
+                rightSF.push(id);
+            }
+
+            // Final
+            const finalId = createMatch(null, null, 'Final', 'center', 0);
+
+            // Wire up nextMatchId
+            // Left R32 → Left R16
+            for (let i = 0; i < 8; i++) {
+                const nextIdx = Math.floor(i / 2);
+                const slot = (i % 2) + 1;
+                matches[leftR32[i]].nextMatchId = leftR16[nextIdx];
+                matches[leftR32[i]].nextSlot = slot;
+            }
+
+            // Left R16 → Left QF
+            for (let i = 0; i < 4; i++) {
+                const nextIdx = Math.floor(i / 2);
+                const slot = (i % 2) + 1;
+                matches[leftR16[i]].nextMatchId = leftQF[nextIdx];
+                matches[leftR16[i]].nextSlot = slot;
+            }
+
+            // Left QF → Left SF
+            for (let i = 0; i < 2; i++) {
+                const nextIdx = Math.floor(i / 2);
+                const slot = (i % 2) + 1;
+                matches[leftQF[i]].nextMatchId = leftSF[nextIdx];
+                matches[leftQF[i]].nextSlot = slot;
+            }
+
+            // Left SF → Final
+            matches[leftSF[0]].nextMatchId = finalId;
+            matches[leftSF[0]].nextSlot = 1;
+
+            // Right R32 → Right R16
+            for (let i = 0; i < 8; i++) {
+                const nextIdx = Math.floor(i / 2);
+                const slot = (i % 2) + 1;
+                matches[rightR32[i]].nextMatchId = rightR16[nextIdx];
+                matches[rightR32[i]].nextSlot = slot;
+            }
+
+            // Right R16 → Right QF
+            for (let i = 0; i < 4; i++) {
+                const nextIdx = Math.floor(i / 2);
+                const slot = (i % 2) + 1;
+                matches[rightR16[i]].nextMatchId = rightQF[nextIdx];
+                matches[rightR16[i]].nextSlot = slot;
+            }
+
+            // Right QF → Right SF
+            for (let i = 0; i < 2; i++) {
+                const nextIdx = Math.floor(i / 2);
+                const slot = (i % 2) + 1;
+                matches[rightQF[i]].nextMatchId = rightSF[nextIdx];
+                matches[rightQF[i]].nextSlot = slot;
+            }
+
+            // Right SF → Final
+            matches[rightSF[0]].nextMatchId = finalId;
+            matches[rightSF[0]].nextSlot = 2;
+        }
+
+        // ===== WINNER LOGIC =====
+        function getWinner(match) {
+            if (match.score1 === null || match.score2 === null) return null;
+            if (match.score1 > match.score2) return match.team1;
+            if (match.score2 > match.score1) return match.team2;
+            return null; // Draw = no winner
+        }
+
+        function advanceWinner(matchId) {
+            const match = matches[matchId];
+            const winner = getWinner(match);
+            if (!winner || match.nextMatchId === null) return;
+
+            const next = matches[match.nextMatchId];
+            if (match.nextSlot === 1) {
+                next.team1 = { ...winner };
+            } else {
+                next.team2 = { ...winner };
+            }
+        }
+
+        function propagateForward(matchId) {
+            const match = matches[matchId];
+            advanceWinner(matchId);
+
+            // If this match's winner was already placed in next match,
+            // we need to re-evaluate the next match too
+            if (match.nextMatchId !== null) {
+                const next = matches[match.nextMatchId];
+                // Clear the next match's result since teams may have changed
+                next.score1 = null;
+                next.score2 = null;
+                advanceWinner(matchId);
+                propagateForward(next.id);
+            }
+        }
+
+        function onScoreChange(matchId) {
+            const match = matches[matchId];
+            const prevWinner = getWinner(match);
+
+            // Re-advance winner
+            if (match.nextMatchId !== null) {
+                const next = matches[match.nextMatchId];
+                // Clear the next match slot and its result
+                if (match.nextSlot === 1) {
+                    next.team1 = null;
+                    next.score1 = null;
+                } else {
+                    next.team2 = null;
+                    next.score2 = null;
+                }
+                advanceWinner(matchId);
+                propagateForward(match.nextMatchId);
+            }
+
+            render();
+        }
+
+        // ===== RENDERING =====
+        function renderTeamRow(team, score, matchId, slot, isWinner, isLoser) {
+            if (!team) {
+                return `<div class="team-row empty">
+                    <span class="team-flag">⚽</span>
+                    <span class="team-name">TBD</span>
+                    <span class="team-score">-</span>
+                </div>`;
+            }
+
+            let classes = 'team-row';
+            if (isWinner) classes += ' winner';
+            if (isLoser) classes += ' loser';
+
+            const scoreDisplay = score !== null ? score : '-';
+
+            return `<div class="${classes}">
+                <span class="team-flag" title="${team.name}">${team.flag}</span>
+                <span class="team-name">${team.code}</span>
+                <span class="team-score" onclick="editScore(${matchId}, ${slot}, this)" data-match="${matchId}" data-slot="${slot}">${scoreDisplay}</span>
+            </div>`;
+        }
+
+        function renderMatch(matchId) {
+            const m = matches[matchId];
+            const winner = getWinner(m);
+
+            const isTeam1Winner = winner && m.team1 && winner.name === m.team1.name;
+            const isTeam2Winner = winner && m.team2 && winner.name === m.team2.name;
+
+            let cls = 'match';
+            if (m.round === 'Final') cls += ' match-final';
+
+            let html = '';
+
+            if (m.round === 'Final') {
+                html += `<div class="match-final-label">🏆 Final</div>`;
+            }
+
+            html += renderTeamRow(m.team1, m.score1, m.id, 1, isTeam1Winner, isTeam2Winner && !isTeam1Winner);
+            html += renderTeamRow(m.team2, m.score2, m.id, 2, isTeam2Winner, isTeam1Winner && !isTeam2Winner);
+
+            return `<div class="match-wrap"><div class="${cls}" data-match="${m.id}">${html}</div></div>`;
+        }
+
+        function renderRound(matchIds, label, side) {
+            const matchHtmls = matchIds.map(id => renderMatch(id)).join('');
+            return `<div class="round round-${side}">
+                <div class="round-label">${label}</div>
+                <div class="match-list">${matchHtmls}</div>
+            </div>`;
+        }
+
+        function render() {
+            const bracket = document.getElementById('bracket');
+
+            // Collect matches by round and side
+            const leftR32 = [], leftR16 = [], leftQF = [], leftSF = [];
+            const rightR32 = [], rightR16 = [], rightQF = [], rightSF = [];
+            let finalMatch = null;
+
+            for (const id in matches) {
+                const m = matches[id];
+                if (m.round === 'R32' && m.side === 'left') leftR32.push(m);
+                if (m.round === 'R16' && m.side === 'left') leftR16.push(m);
+                if (m.round === 'QF' && m.side === 'left') leftQF.push(m);
+                if (m.round === 'SF' && m.side === 'left') leftSF.push(m);
+                if (m.round === 'R32' && m.side === 'right') rightR32.push(m);
+                if (m.round === 'R16' && m.side === 'right') rightR16.push(m);
+                if (m.round === 'QF' && m.side === 'right') rightQF.push(m);
+                if (m.round === 'SF' && m.side === 'right') rightSF.push(m);
+                if (m.round === 'Final') finalMatch = m;
+            }
+
+            // Sort by matchIndex
+            const sortFn = (a, b) => a.matchIndex - b.matchIndex;
+            leftR32.sort(sortFn);
+            leftR16.sort(sortFn);
+            leftQF.sort(sortFn);
+            leftSF.sort(sortFn);
+            rightR32.sort(sortFn);
+            rightR16.sort(sortFn);
+            rightQF.sort(sortFn);
+            rightSF.sort(sortFn);
+
+            const finalId = finalMatch.id;
+            const finalWinner = getWinner(finalMatch);
+
+            let html = '';
+
+            // LEFT SIDE
+            html += renderRound(leftR32.map(m => m.id), 'Round of 32', 'left');
+            html += renderRound(leftR16.map(m => m.id), 'Round of 16', 'left');
+            html += renderRound(leftQF.map(m => m.id), 'Quarter-Finals', 'left');
+            html += renderRound(leftSF.map(m => m.id), 'Semi-Finals', 'left');
+
+            // LEFT CONNECTOR → FINAL
+            html += `<div class="final-connector final-connector-left"></div>`;
+
+            // FINAL + CHAMPION
+            html += `<div class="champion-section">
+                <div class="champion-card">
+                    <div class="champion-trophy">🏆</div>
+                    <div class="champion-label">Champion</div>
+                    <div class="champion-name" title="${finalWinner ? finalWinner.name : ''}">${finalWinner ? finalWinner.flag + ' ' + finalWinner.code : '???'}</div>
+                </div>
+                ${renderMatch(finalId)}
+            </div>`;
+
+            // RIGHT CONNECTOR → FINAL
+            html += `<div class="final-connector final-connector-right"></div>`;
+
+            // RIGHT SIDE
+            html += renderRound(rightSF.map(m => m.id), 'Semi-Finals', 'right');
+            html += renderRound(rightQF.map(m => m.id), 'Quarter-Finals', 'right');
+            html += renderRound(rightR16.map(m => m.id), 'Round of 16', 'right');
+            html += renderRound(rightR32.map(m => m.id), 'Round of 32', 'right');
+
+            bracket.innerHTML = html;
+        }
+
+        // ===== SCORE EDITING =====
+        function editScore(matchId, slot, el) {
+            // Already editing?
+            if (el.querySelector('input')) return;
+
+            const match = matches[matchId];
+            const team = slot === 1 ? match.team1 : match.team2;
+            if (!team) return; // Can't edit TBD
+
+            const currentVal = slot === 1 ? match.score1 : match.score2;
+            const displayVal = currentVal !== null ? currentVal : '';
+
+            el.classList.add('editing');
+            el.innerHTML = `<input type="number" min="0" max="99" value="${displayVal}" />`;
+            const input = el.querySelector('input');
+            input.focus();
+            input.select();
+
+            function commit() {
+                let val = input.value.trim();
+                let numVal = val === '' ? null : parseInt(val, 10);
+                if (numVal !== null && isNaN(numVal)) numVal = null;
+                if (numVal !== null && numVal < 0) numVal = 0;
+
+                if (slot === 1) {
+                    match.score1 = numVal;
+                } else {
+                    match.score2 = numVal;
+                }
+
+                el.classList.remove('editing');
+
+                onScoreChange(matchId);
+            }
+
+            input.addEventListener('blur', commit);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    input.blur();
+                }
+                if (e.key === 'Escape') {
+                    // Cancel
+                    el.classList.remove('editing');
+                    const scoreDisplay = (slot === 1 ? match.score1 : match.score2);
+                    el.textContent = scoreDisplay !== null ? scoreDisplay : '-';
+                }
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    input.blur();
+                    // Move to the other slot
+                    const otherSlot = slot === 1 ? 2 : 1;
+                    const otherTeam = otherSlot === 1 ? match.team1 : match.team2;
+                    if (otherTeam) {
+                        setTimeout(() => {
+                            const otherEl = document.querySelector(`.team-score[data-match="${matchId}"][data-slot="${otherSlot}"]`);
+                            if (otherEl) editScore(matchId, otherSlot, otherEl);
+                        }, 50);
+                    }
+                }
+            });
+        }
+
+        // ===== RESET =====
+        function resetAll() {
+            for (const id in matches) {
+                matches[id].score1 = null;
+                matches[id].score2 = null;
+            }
+            // Re-init to reset team placements
+            initTournament();
+            render();
+        }
+
+        // ===== INIT =====
+        initTournament();
+        render();
+    </script>
+</body>
+</html>
