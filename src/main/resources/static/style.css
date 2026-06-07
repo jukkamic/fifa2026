@@ -452,56 +452,49 @@ body {
     color: var(--text-muted);
 }
 
-.team-score {
-    min-width: 24px;
+/* Knockout bracket score inputs inside match cards */
+.match .score-input {
+    width: 24px;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-height: 32px;
+    text-align: center;
+    background: rgba(10, 14, 26, 0.5);
+    border: none;
+    border-left: 1px solid rgba(42, 58, 92, 0.5);
+    border-radius: 0;
+    color: var(--text-secondary);
     font-size: 13px;
     font-weight: 700;
-    padding: 0 5px;
+    padding: 0 2px;
     cursor: pointer;
     transition: background 0.15s ease;
-    border-left: 1px solid rgba(42, 58, 92, 0.5);
-    color: var(--text-secondary);
-    user-select: none;
-}
-
-.team-score:hover {
-    background: rgba(59, 130, 246, 0.15);
-    color: var(--accent-glow);
-}
-
-.team-score.editing {
-    background: rgba(59, 130, 246, 0.2);
-}
-
-.team-score input {
-    width: 20px;
-    text-align: center;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--accent-glow);
-    font-size: 13px;
-    font-weight: 700;
-    font-family: inherit;
     -moz-appearance: textfield;
 }
 
-.team-score input::-webkit-outer-spin-button,
-.team-score input::-webkit-inner-spin-button {
+.match .score-input::-webkit-outer-spin-button,
+.match .score-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-.team-row.winner .team-score {
+.match .score-input:hover {
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--accent-glow);
+}
+
+.match .score-input:focus {
+    background: rgba(59, 130, 246, 0.2);
+    border-left-color: var(--accent);
+    outline: none;
+}
+
+.team-row.winner .score-input {
     color: var(--win);
 }
 
-.team-row.loser .team-score {
+.team-row.loser .score-input {
     color: var(--text-muted);
+    opacity: 0.5;
 }
 
 /* ===== EMPTY TEAM ===== */

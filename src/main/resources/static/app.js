@@ -31,11 +31,23 @@ async function init() {
 }
 
 // ===== TAB SWITCHING =====
-function showTab(tab) {
+async function showTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     event.target.classList.add('active');
     document.getElementById('tab-' + tab).classList.add('active');
+
+    // When switching to bracket tab: seed if not yet seeded, otherwise reload
+    if (tab === 'bracket') {
+        await loadBracket();
+        // Auto-seed if R32 matches have no teams assigned yet
+        const needsSeeding = bracketData && bracketData.matches.some(
+            m => m.round === 'R32' && m.team1 === null && m.team2 === null
+        );
+        if (needsSeeding) {
+            await seedBracket();
+        }
+    }
 }
 
 // ===== FLAG HELPER =====
@@ -185,15 +197,37 @@ function renderBracket() {
     leftR32.sort(sortFn); leftR16.sort(sortFn); leftQF.sort(sortFn); leftSF.sort(sortFn);
     rightR32.sort(sortFn); rightR16.sort(sortFn); rightQF.sort(sortFn); rightSF.sort(sortFn);
 
+    // Pre-compute tabindex: column-by-column (R32 left→right, R16 left→right, … Final)
+    const tabIndexMap = {};
+    let t = 1;
+    const assignTabIndexes = (matchList) => {
+        for (const m of matchList) {
+            if (m.team1) tabIndexMap[`${m.id}-1`] = t++;
+            if (m.team2) tabIndexMap[`${m.id}-2`] = t++;
+        }
+    };
+    assignTabIndexes(leftR32);
+    assignTabIndexes(rightR32);
+    assignTabIndexes(leftR16);
+    assignTabIndexes(rightR16);
+    assignTabIndexes(leftQF);
+    assignTabIndexes(rightQF);
+    assignTabIndexes(leftSF);
+    assignTabIndexes(rightSF);
+    if (finalMatch) {
+        if (finalMatch.team1) tabIndexMap[`${finalMatch.id}-1`] = t++;
+        if (finalMatch.team2) tabIndexMap[`${finalMatch.id}-2`] = t++;
+    }
+
     const finalWinner = getWinner(finalMatch);
 
     let html = '';
 
     // LEFT SIDE
-    html += renderRound(leftR32, 'Round of 32', 'left');
-    html += renderRound(leftR16, 'Round of 16', 'left');
-    html += renderRound(leftQF, 'Quarter-Finals', 'left');
-    html += renderRound(leftSF, 'Semi-Finals', 'left');
+    html += renderRound(leftR32, 'Round of 32', 'left', tabIndexMap);
+    html += renderRound(leftR16, 'Round of 16', 'left', tabIndexMap);
+    html += renderRound(leftQF, 'Quarter-Finals', 'left', tabIndexMap);
+    html += renderRound(leftSF, 'Semi-Finals', 'left', tabIndexMap);
 
     // LEFT CONNECTOR → FINAL
     html += `<div class="final-connector final-connector-left"></div>`;
@@ -207,17 +241,17 @@ function renderBracket() {
                 ${finalWinner ? flagImgLarge(finalWinner) + ' ' + finalWinner : '???'}
             </div>
         </div>
-        ${renderMatch(finalMatch)}
+        ${renderMatch(finalMatch, tabIndexMap)}
     </div>`;
 
     // RIGHT CONNECTOR → FINAL
     html += `<div class="final-connector final-connector-right"></div>`;
 
     // RIGHT SIDE
-    html += renderRound(rightSF, 'Semi-Finals', 'right');
-    html += renderRound(rightQF, 'Quarter-Finals', 'right');
-    html += renderRound(rightR16, 'Round of 16', 'right');
-    html += renderRound(rightR32, 'Round of 32', 'right');
+    html += renderRound(rightSF, 'Semi-Finals', 'right', tabIndexMap);
+    html += renderRound(rightQF, 'Quarter-Finals', 'right', tabIndexMap);
+    html += renderRound(rightR16, 'Round of 16', 'right', tabIndexMap);
+    html += renderRound(rightR32, 'Round of 32', 'right', tabIndexMap);
 
     bracket.innerHTML = html;
 }
@@ -229,7 +263,7 @@ function getWinner(match) {
     return null;
 }
 
-function renderTeamRow(teamCode, score, matchId, slot, isWinner, isLoser) {
+function renderTeamRow(teamCode, score, matchId, slot, isWinner, isLoser, tabIndexMap) {
     if (!teamCode) {
         return `<div class="team-row empty">
             <span class="team-flag">⚽</span>
@@ -242,17 +276,23 @@ function renderTeamRow(teamCode, score, matchId, slot, isWinner, isLoser) {
     if (isWinner) classes += ' winner';
     if (isLoser) classes += ' loser';
 
-    const scoreDisplay = score !== null && score !== undefined ? score : '-';
+    const scoreVal = score !== null && score !== undefined ? score : '';
+    const tabIdx = tabIndexMap && tabIndexMap[`${matchId}-${slot}`];
+    const tabAttr = tabIdx ? `tabindex="${tabIdx}"` : '';
 
     return `<div class="${classes}">
         <span class="team-flag" title="${TEAMS[teamCode]?.name || teamCode}">${flagImgLarge(teamCode)}</span>
         <span class="team-name">${teamCode}</span>
-        <span class="team-score" onclick="editKnockoutScore(${matchId}, ${slot}, this)"
-              data-match="${matchId}" data-slot="${slot}">${scoreDisplay}</span>
+        <input type="number" class="score-input" min="0" max="99"
+               value="${scoreVal}" placeholder="-"
+               ${tabAttr}
+               onchange="setKnockoutScore(${matchId}, ${slot}, this)"
+               onkeydown="handleKnockoutTab(event, ${matchId}, ${slot})"
+               onfocus="this.select()">
     </div>`;
 }
 
-function renderMatch(match) {
+function renderMatch(match, tabIndexMap) {
     if (!match) return '';
     const winner = getWinner(match);
     const isTeam1Winner = winner && winner === match.team1;
@@ -267,15 +307,15 @@ function renderMatch(match) {
     }
 
     html += renderTeamRow(match.team1, match.score1, match.id, 1,
-        isTeam1Winner, isTeam2Winner && !isTeam1Winner);
+        isTeam1Winner, isTeam2Winner && !isTeam1Winner, tabIndexMap);
     html += renderTeamRow(match.team2, match.score2, match.id, 2,
-        isTeam2Winner, isTeam1Winner && !isTeam2Winner);
+        isTeam2Winner, isTeam1Winner && !isTeam2Winner, tabIndexMap);
 
     return `<div class="match-wrap"><div class="${cls}" data-match="${match.id}">${html}</div></div>`;
 }
 
-function renderRound(matchList, label, side) {
-    const matchHtmls = matchList.map(m => renderMatch(m)).join('');
+function renderRound(matchList, label, side, tabIndexMap) {
+    const matchHtmls = matchList.map(m => renderMatch(m, tabIndexMap)).join('');
     return `<div class="round round-${side}">
         <div class="round-label">${label}</div>
         <div class="match-list">${matchHtmls}</div>
@@ -283,50 +323,63 @@ function renderRound(matchList, label, side) {
 }
 
 // ===== KNOCKOUT SCORE EDITING =====
-function editKnockoutScore(matchId, slot, el) {
-    if (el.querySelector('input')) return;
 
-    const match = bracketData.matches.find(m => m.id === matchId);
-    if (!match) return;
-    const team = slot === 1 ? match.team1 : match.team2;
-    if (!team) return;
+// Get all bracket score inputs sorted by tabindex
+function getBracketInputsInOrder() {
+    const bracketEl = document.getElementById('tab-bracket');
+    return Array.from(bracketEl.querySelectorAll('.score-input[tabindex]'))
+        .filter(el => el.closest('.match'))
+        .sort((a, b) => parseInt(a.getAttribute('tabindex')) - parseInt(b.getAttribute('tabindex')));
+}
 
-    const currentVal = slot === 1 ? match.score1 : match.score2;
-    const displayVal = currentVal !== null && currentVal !== undefined ? currentVal : '';
-
-    el.classList.add('editing');
-    el.innerHTML = `<input type="number" min="0" max="99" value="${displayVal}" />`;
-    const input = el.querySelector('input');
-    input.focus();
-    input.select();
-
-    async function commit() {
-        let val = input.value.trim();
-        let numVal = val === '' ? null : parseInt(val, 10);
-        if (numVal !== null && isNaN(numVal)) numVal = null;
-        if (numVal !== null && numVal < 0) numVal = 0;
-
-        if (numVal !== null) {
-            const s1 = slot === 1 ? numVal : match.score1;
-            const s2 = slot === 2 ? numVal : match.score2;
-            if (s1 !== null && s2 !== null) {
-                await apiPost(`/api/bracket/${matchId}/score`, { score1: s1, score2: s2 });
-                await loadBracket();
-            }
-        }
-
-        el.classList.remove('editing');
+// Focus the bracket input that follows the one with the given tabindex
+function focusNextBracketInput(afterTabindex) {
+    const ordered = getBracketInputsInOrder();
+    const currentIdx = ordered.findIndex(el => parseInt(el.getAttribute('tabindex')) === afterTabindex);
+    if (currentIdx >= 0 && currentIdx + 1 < ordered.length) {
+        ordered[currentIdx + 1].focus();
     }
+}
 
-    input.addEventListener('blur', commit);
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') input.blur();
-        if (e.key === 'Escape') {
-            el.classList.remove('editing');
-            const scoreDisplay = (slot === 1 ? match.score1 : match.score2);
-            el.textContent = scoreDisplay !== null && scoreDisplay !== undefined ? scoreDisplay : '-';
-        }
-    });
+function handleKnockoutTab(e, matchId, slot) {
+    if (e.key !== 'Tab' || e.shiftKey) return;
+
+    const matchEl = e.target.closest('.match');
+    const inputs = matchEl.querySelectorAll('.score-input');
+    const s1 = inputs[0].value !== '' ? parseInt(inputs[0].value) : null;
+    const s2 = inputs[1].value !== '' ? parseInt(inputs[1].value) : null;
+
+    // Only intercept Tab if both scores are filled (would trigger a save)
+    if (s1 === null || s2 === null) return;
+
+    e.preventDefault(); // Prevent browser's default tab - we'll handle it after re-render
+    const currentTabIndex = parseInt(e.target.getAttribute('tabindex'));
+
+    (async () => {
+        await apiPost(`/api/bracket/${matchId}/score`, { score1: s1, score2: s2 });
+        await loadBracket();
+
+        // Focus the next input in tab order after re-render
+        focusNextBracketInput(currentTabIndex);
+    })();
+}
+
+async function setKnockoutScore(matchId, slot, inputEl) {
+    const matchEl = inputEl.closest('.match');
+    if (!matchEl) return;
+    const inputs = matchEl.querySelectorAll('.score-input');
+    const s1 = inputs[0].value !== '' ? parseInt(inputs[0].value) : null;
+    const s2 = inputs[1].value !== '' ? parseInt(inputs[1].value) : null;
+
+    if (s1 === null || s2 === null) return; // Need both scores
+
+    const currentTabIndex = parseInt(inputEl.getAttribute('tabindex'));
+
+    await apiPost(`/api/bracket/${matchId}/score`, { score1: s1, score2: s2 });
+    await loadBracket();
+
+    // Restore focus to the next input after the one that triggered the save
+    focusNextBracketInput(currentTabIndex);
 }
 
 // ===== SEED & RESET =====
