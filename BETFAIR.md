@@ -1,6 +1,6 @@
 # Setting up Betfair API keys
 
-## OpenSSL
+## API configurations
 
 The following instructions are modified for my workspace based on <https://betfair-developer-docs.atlassian.net/wiki/spaces/1smk3cen4v3lu3yomq5qye0ni/pages/2687915/Non-Interactive+bot+login>
 
@@ -35,3 +35,25 @@ openssl x509 -req -days 365 -in client-2048.csr -signkey client-2048.key -out cl
 ```
 
 Upload the .crt file to your Betfair account dashboard at <https://myaccount.betfair.com/accountdetails/mysecurity?showAPI=1>
+
+### Betfair API key
+
+Open the Demo Tool: Go to the Betfair Accounts API Demo Tool (developer.betfair.com/exchange-api/accounts-api-demo/).
+
+Log In: Open a second tab in that same browser and log into your standard Betfair account.
+
+Sync the Token: Go back to the Demo Tool tab and refresh the page. This automatically grabs your active login session and fills in the Session Token box.
+
+Fetch the Keys: In the top left "Operations" menu, click on getDeveloperAppKeys. (If you accidentally deleted them in the past, you can click createDeveloperAppKeys instead).
+
+Execute: Scroll down and click the Execute button at the bottom of the tool.
+
+Your keys will pop up on the right side of the screen! You will likely see two: a "Delayed" key and a "Live" key. For your development and testing with Cline, use the Delayed App Key, as the Live one requires an activation fee and manual approval.
+
+Grab that string, drop it into your .env file for BETFAIR_API_KEY, and let's see if that test finally turns green!
+
+## Testing
+
+```pwsh
+.\gradlew.bat test --tests "dev.scaffoldkit.fifa.betfair.BetfairConnectionTest"
+```
