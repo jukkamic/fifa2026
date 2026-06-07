@@ -5,6 +5,13 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+
+### SSL Credentials
+ssl/
+
+### Private keys
+.env
+
 ### STS ###
 .apt_generated
 .classpath
