@@ -2,6 +2,7 @@ package dev.scaffoldkit.fifa.web;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,16 +14,19 @@ import org.springframework.security.web.SecurityFilterChain;
  * <p>
  * Every request to {@code /api/**} must carry a valid Cloudflare Access JWT.
  * The JWT is validated against Cloudflare's public JWK set, then converted to
- * a {@link dev.scaffoldkit.fifa.model UserProfile}-backed principal via
+ * a {@link dev.scaffoldkit.fifa.model.UserProfile}-backed principal via
  * {@link UserProfileJwtAuthenticationConverter}.
+ * <p>
+ * Active only when the {@code prod} Spring profile is set.
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+@Profile("prod")
+public class ProdSecurityConfig {
 
     private final UserProfileJwtAuthenticationConverter converter;
 
-    public SecurityConfig(UserProfileJwtAuthenticationConverter converter) {
+    public ProdSecurityConfig(UserProfileJwtAuthenticationConverter converter) {
         this.converter = converter;
     }
 
