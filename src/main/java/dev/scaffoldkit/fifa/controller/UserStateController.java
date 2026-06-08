@@ -1,5 +1,8 @@
 package dev.scaffoldkit.fifa.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.scaffoldkit.fifa.model.UserProfile;
 import dev.scaffoldkit.fifa.repository.UserProfileRepository;
 import dev.scaffoldkit.fifa.web.UserContext;
@@ -21,20 +24,29 @@ import java.time.Instant;
 public class UserStateController {
 
     private final UserProfileRepository userProfileRepository;
+    private final ObjectMapper objectMapper;
 
-    public UserStateController(UserProfileRepository userProfileRepository) {
+    public UserStateController(UserProfileRepository userProfileRepository,
+                               ObjectMapper objectMapper) {
         this.userProfileRepository = userProfileRepository;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping("/state")
-    public ResponseEntity<String> getState() {
+    public ResponseEntity<String> getState() throws Exception {
         UserProfile profile = UserContext.get();
-        String json = (profile != null && profile.getPredictionsJson() != null)
+        String email = (profile != null) ? profile.getEmail() : "";
+        String stateJson = (profile != null && profile.getPredictionsJson() != null)
                 ? profile.getPredictionsJson()
                 : "{}";
+
+        ObjectNode wrapper = objectMapper.createObjectNode();
+        wrapper.put("email", email);
+        wrapper.set("state", objectMapper.readTree(stateJson));
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(json);
+                .body(objectMapper.writeValueAsString(wrapper));
     }
 
     @PostMapping("/state")

@@ -48,8 +48,14 @@ function collectCurrentState() {
 
 // The actual network request to save the blob
 const persistStateToBackend = async () => {
+    const saveStatusEl = document.getElementById('save-status');
     try {
         const currentState = collectCurrentState();
+
+        if (saveStatusEl) {
+            saveStatusEl.textContent = 'Saving...';
+            saveStatusEl.className = 'save-status saving';
+        }
 
         const response = await fetch('/api/user/state', {
             method: 'POST',
@@ -63,8 +69,21 @@ const persistStateToBackend = async () => {
         
         console.log('Tournament state auto-saved successfully.');
 
+        if (saveStatusEl) {
+            saveStatusEl.textContent = 'Saved ✓';
+            saveStatusEl.className = 'save-status saved';
+            setTimeout(() => {
+                saveStatusEl.textContent = '';
+                saveStatusEl.className = 'save-status';
+            }, 2500);
+        }
+
     } catch (error) {
         console.error('Failed to auto-save state:', error);
+        if (saveStatusEl) {
+            saveStatusEl.textContent = '';
+            saveStatusEl.className = 'save-status';
+        }
     }
 };
 
@@ -107,7 +126,15 @@ async function restoreSavedState() {
         const response = await fetch('/api/user/state');
         if (!response.ok) return;
 
-        const savedState = await response.json();
+        const wrapper = await response.json();
+
+        // Display user email from the wrapper
+        if (wrapper.email) {
+            const emailEl = document.getElementById('user-email');
+            if (emailEl) emailEl.textContent = wrapper.email;
+        }
+
+        const savedState = wrapper.state;
         if (!savedState || !(savedState.groups || savedState.bracket)) return;
 
         const hasGroups = savedState.groups && Object.keys(savedState.groups).length > 0;

@@ -66,6 +66,39 @@ body {
     flex-wrap: wrap;
 }
 
+.header-status {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+}
+
+.user-email {
+    color: var(--text-muted);
+}
+
+.user-email::before {
+    content: '👤 ';
+}
+
+.save-status {
+    color: var(--text-muted);
+    font-size: 11px;
+    transition: color 0.2s ease;
+    min-width: 70px;
+    text-align: center;
+}
+
+.save-status.saving {
+    color: var(--accent-glow);
+}
+
+.save-status.saved {
+    color: var(--win);
+}
+
 /* ===== BUTTONS ===== */
 .btn {
     display: inline-block;
