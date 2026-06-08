@@ -3,6 +3,74 @@ let TEAMS = {};
 let GROUPS = {};
 let bracketData = null;
 
+// Utility: Delays function execution until X ms of inactivity
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Collect all current scores from the DOM into a single state object
+function collectCurrentState() {
+    const groupScores = {};
+    document.querySelectorAll('.group-match-row').forEach(row => {
+        const inputs = row.querySelectorAll('.score-input');
+        const onchangeAttr = inputs[0].getAttribute('onchange') || '';
+        const match = onchangeAttr.match(/setGroupScore\('([^']+)'/);
+        if (match) {
+            groupScores[match[1]] = {
+                score1: inputs[0].value !== '' ? parseInt(inputs[0].value) : null,
+                score2: inputs[1].value !== '' ? parseInt(inputs[1].value) : null
+            };
+        }
+    });
+
+    const bracketScores = {};
+    document.querySelectorAll('#bracket .match').forEach(matchEl => {
+        const matchId = matchEl.getAttribute('data-match');
+        const inputs = matchEl.querySelectorAll('.score-input');
+        if (inputs.length === 2) {
+            bracketScores[matchId] = {
+                score1: inputs[0].value !== '' ? parseInt(inputs[0].value) : null,
+                score2: inputs[1].value !== '' ? parseInt(inputs[1].value) : null
+            };
+        }
+    });
+
+    return { groups: groupScores, bracket: bracketScores };
+}
+
+// The actual network request to save the blob
+const persistStateToBackend = async () => {
+    try {
+        const currentState = collectCurrentState();
+
+        const response = await fetch('/api/user/state', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(currentState)
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        console.log('Tournament state auto-saved successfully.');
+
+    } catch (error) {
+        console.error('Failed to auto-save state:', error);
+    }
+};
+
+// Wrap it in a 500ms debounce
+const debouncedSave = debounce(persistStateToBackend, 500);
+
 // ===== API HELPERS =====
 async function apiGet(url) {
     const res = await fetch(url);
@@ -28,6 +96,65 @@ async function init() {
     GROUPS = groupsData.groups;
     await loadGroupStage();
     await loadBracket();
+
+    // Restore saved user state (needed after server restart)
+    await restoreSavedState();
+}
+
+// ===== STATE RESTORATION =====
+async function restoreSavedState() {
+    try {
+        const response = await fetch('/api/user/state');
+        if (!response.ok) return;
+
+        const savedState = await response.json();
+        if (!savedState || !(savedState.groups || savedState.bracket)) return;
+
+        const hasGroups = savedState.groups && Object.keys(savedState.groups).length > 0;
+        const hasBracket = savedState.bracket && Object.keys(savedState.bracket).length > 0;
+
+        if (!hasGroups && !hasBracket) return;
+
+        // Check if backend is in a fresh state (no scores at all)
+        const matchesData = await apiGet('/api/group-matches');
+        const needsRestore = !matchesData.matches.some(m => m.score1 !== null || m.score2 !== null);
+
+        if (!needsRestore) {
+            console.log('Backend state intact, skipping restore.');
+            return;
+        }
+
+        console.log('Backend state empty, restoring from saved state...');
+
+        // 1. Restore group scores first (bracket seeding depends on group results)
+        if (hasGroups) {
+            for (const [matchId, scores] of Object.entries(savedState.groups)) {
+                if (scores.score1 !== null && scores.score2 !== null) {
+                    await apiPost(`/api/groups/${matchId}/score`, scores);
+                }
+            }
+        }
+        await loadGroupStage();
+
+        // 2. Seed and restore bracket scores
+        if (hasBracket) {
+            await apiPost('/api/bracket/seed');
+
+            // Sort by matchId numeric to replay in round order (R32 → R16 → QF → SF → Final)
+            const bracketEntries = Object.entries(savedState.bracket)
+                .filter(([_, scores]) => scores.score1 !== null && scores.score2 !== null)
+                .sort(([a], [b]) => parseInt(a) - parseInt(b));
+
+            for (const [matchId, scores] of bracketEntries) {
+                await apiPost(`/api/bracket/${matchId}/score`, scores);
+            }
+            await loadBracket();
+        }
+
+        console.log('Saved state restored successfully.');
+    } catch (error) {
+        console.error('Failed to restore saved state:', error);
+    }
 }
 
 // ===== TAB SWITCHING =====
@@ -155,6 +282,7 @@ async function setGroupScore(matchId, slot, value) {
 
     await apiPost(`/api/groups/${matchId}/score`, { score1: s1, score2: s2 });
     await loadGroupStage();
+    debouncedSave();
 
     // Restore focus to the next input after the one that triggered the save
     const nextInput = document.querySelector('.score-input[tabindex="' + (currentTabIndex + 1) + '"]');
@@ -358,6 +486,7 @@ function handleKnockoutTab(e, matchId, slot) {
     (async () => {
         await apiPost(`/api/bracket/${matchId}/score`, { score1: s1, score2: s2 });
         await loadBracket();
+        debouncedSave();
 
         // Focus the next input in tab order after re-render
         focusNextBracketInput(currentTabIndex);
@@ -377,6 +506,7 @@ async function setKnockoutScore(matchId, slot, inputEl) {
 
     await apiPost(`/api/bracket/${matchId}/score`, { score1: s1, score2: s2 });
     await loadBracket();
+    debouncedSave();
 
     // Restore focus to the next input after the one that triggered the save
     focusNextBracketInput(currentTabIndex);
@@ -423,4 +553,12 @@ async function simulateBetfairGroups() {
 }
 
 // ===== STARTUP =====
+
+// Event delegation: trigger auto-save on any score input change
+document.addEventListener('input', (event) => {
+    if (event.target.classList.contains('score-input')) {
+        debouncedSave();
+    }
+});
+
 init();
