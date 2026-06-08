@@ -21,6 +21,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation("org.bouncycastle:bcpkix-jdk18on:1.80")
 	implementation("me.paulschwarz:spring-dotenv:4.0.0")
 	runtimeOnly("com.h2database:h2")

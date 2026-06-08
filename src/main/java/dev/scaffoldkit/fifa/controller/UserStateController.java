@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.scaffoldkit.fifa.model.UserProfile;
 import dev.scaffoldkit.fifa.repository.UserProfileRepository;
-import dev.scaffoldkit.fifa.web.UserContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -33,10 +33,9 @@ public class UserStateController {
     }
 
     @GetMapping("/state")
-    public ResponseEntity<String> getState() throws Exception {
-        UserProfile profile = UserContext.get();
-        String email = (profile != null) ? profile.getEmail() : "";
-        String stateJson = (profile != null && profile.getPredictionsJson() != null)
+    public ResponseEntity<String> getState(@AuthenticationPrincipal UserProfile profile) throws Exception {
+        String email = profile.getEmail();
+        String stateJson = (profile.getPredictionsJson() != null)
                 ? profile.getPredictionsJson()
                 : "{}";
 
@@ -50,11 +49,8 @@ public class UserStateController {
     }
 
     @PostMapping("/state")
-    public ResponseEntity<Void> saveState(@RequestBody String rawJson) {
-        UserProfile profile = UserContext.get();
-        if (profile == null) {
-            return ResponseEntity.status(401).build();
-        }
+    public ResponseEntity<Void> saveState(@RequestBody String rawJson,
+                                          @AuthenticationPrincipal UserProfile profile) {
         profile.setPredictionsJson(rawJson);
         profile.setUpdatedAt(Instant.now());
         userProfileRepository.save(profile);
