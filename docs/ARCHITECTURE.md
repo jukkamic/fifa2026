@@ -25,6 +25,8 @@ The frontend is a single-page vanilla HTML/JS/CSS app served from `src/main/reso
 | Runtime | Java 21 |
 | Framework | Spring Boot 3.4.1 |
 | Build | Gradle (Kotlin DSL) |
+| Database | H2 (file-based, persisted to `./data/fifa.*`) |
+| ORM | Spring Data JPA / Hibernate |
 | SSL/TLS | Bouncy Castle (`bcpkix-jdk18on:1.80`) for PEM key parsing |
 | Env Config | `spring-dotenv:4.0.0` — loads `.env` into Spring environment |
 | Frontend | Vanilla HTML + CSS + JavaScript (no framework) |
@@ -49,11 +51,17 @@ src/main/java/dev/scaffoldkit/fifa/
 │   ├── Team.java                        # Immutable team value object (code, name, group, flag)
 │   ├── GroupMatch.java                  # Group-stage match with mutable scores
 │   ├── GroupStanding.java               # Tracks W/D/L, GF/GA, GD, points; implements Comparable
-│   └── KnockoutMatch.java               # Knockout match with next-match wiring
-└── service/
-    ├── GroupStageService.java           # 12 groups × 4 teams, standings, advancement
-    ├── BracketService.java              # 32-team knockout bracket (left/right halves)
-    └── ThirdPlaceMatrixService.java     # FIFA Annex C 3rd-place assignment algorithm
+│   ├── KnockoutMatch.java               # Knockout match with next-match wiring
+│   └── UserProfile.java                # JPA entity: user predictions persisted to H2
+├── repository/
+│   └── UserProfileRepository.java       # Spring Data JPA repository for UserProfile
+├── service/
+│   ├── GroupStageService.java           # 12 groups × 4 teams, standings, advancement
+│   ├── BracketService.java              # 32-team knockout bracket (left/right halves)
+│   └── ThirdPlaceMatrixService.java     # FIFA Annex C 3rd-place assignment algorithm
+└── web/
+    ├── UserContext.java                 # ThreadLocal holder for current request's UserProfile
+    └── LocalhostUserFilter.java         # Simulates logged-in user on localhost (hardcoded email)
 
 src/main/resources/
 ├── application.properties               # Spring config (env var references)
@@ -141,6 +149,7 @@ RIGHT:
 | `GroupMatch` | Group-stage match: id, group, team1/team2, score1/score2 | Scores are mutable |
 | `GroupStanding` | Tracks played, won, drawn, lost, GF, GA, GD, points | Mutable; implements `Comparable` for ranking |
 | `KnockoutMatch` | Knockout match: id, round, side, matchIndex, team1/team2, scores, nextMatchId, nextSlot | Mutable; winner propagates to next match |
+| `UserProfile` | JPA entity: id, email, predictionsJson, updatedAt — persisted to H2 | Mutable; managed by Spring Data JPA |
 
 ---
 
@@ -164,15 +173,78 @@ All endpoints are under `/api`. The controller is `TournamentController`.
 
 ---
 
-## 6. Betfair Exchange Integration
+## 6. User Profiles & Persistence
 
 ### 6.1 Overview
+
+The `model/`, `repository/`, and `web/` packages work together to provide user-specific prediction storage via a **file-based H2 database** with **Spring Data JPA**. Each user's tournament predictions are stored as a JSON string in the `user_profiles` table.
+
+### 6.2 Database — H2 (File-Based)
+
+| Aspect | Detail |
+|--------|--------|
+| Database | H2 embedded, persisted to `./data/fifa.*` files |
+| DDL mode | `spring.jpa.hibernate.ddl-auto=update` (auto-creates/updates tables) |
+| Connection | `jdbc:h2:file:./data/fifa`, username `sa`, no password |
+| Console | H2 web console enabled at `http://localhost:8080/h2-console` |
+| Dialect | `org.hibernate.dialect.H2Dialect` |
+
+### 6.3 JPA Entity — `UserProfile`
+
+| Field | Type | Column | Constraints |
+|-------|------|--------|-------------|
+| `id` | `Long` | `id` | `@Id`, `@GeneratedValue(IDENTITY)` |
+| `email` | `String` | `email` | `NOT NULL`, `UNIQUE` |
+| `predictionsJson` | `String` | `predictions_json` | `@Lob`, `CLOB` |
+| `updatedAt` | `Instant` | `updated_at` | — |
+
+### 6.4 Repository — `UserProfileRepository`
+
+A standard Spring Data `JpaRepository<UserProfile, Long>` with one derived query:
+
+| Method | Returns | Purpose |
+|--------|---------|---------|
+| `findByEmail(String email)` | `Optional<UserProfile>` | Look up a user by email address |
+
+All standard `JpaRepository` methods (`save`, `findById`, `findAll`, `delete`, etc.) are inherited.
+
+### 6.5 Simulated Authentication — `LocalhostUserFilter`
+
+**Purpose:** A `OncePerRequestFilter` (`@Component`, `@Order(Ordered.HIGHEST_PRECEDENCE)`) that simulates an authenticated user during local development.
+
+**Flow per request:**
+```
+Incoming HTTP request
+        │
+        ▼
+LocalhostUserFilter.doFilterInternal()
+        │
+        ├── Lookup UserProfile by hardcoded email "testuser@example.com"
+        │     └── If not found → create with blank predictions ("{}") and save
+        │
+        ├── Place UserProfile into UserContext (ThreadLocal)
+        │
+        ├── filterChain.doFilter()  ← rest of the request proceeds
+        │
+        └── finally: UserContext.clear()  ← ThreadLocal cleanup
+```
+
+**Class: `UserContext`**
+A simple `ThreadLocal<UserProfile>` holder with static `set()`, `get()`, and `clear()` methods. Any controller or service can call `UserContext.get()` to access the current request's user.
+
+> **Note:** This is a development-only authentication mechanism. For production, replace `LocalhostUserFilter` with a real auth filter (e.g., Spring Security with OAuth2 or JWT).
+
+---
+
+## 7. Betfair Exchange Integration
+
+### 7.1 Overview
 
 The `betfair` package integrates with the **Betfair Exchange API** to fetch live betting odds for soccer matches. This is intended to overlay real market prices onto the tournament predictor, helping users compare their speculative paths against what the betting market thinks.
 
 The integration uses **mutual TLS (mTLS) certificate-based authentication** (Betfair's non-interactive login flow), which requires a client certificate and private key stored in the `ssl/` directory.
 
-### 6.2 Authentication Flow
+### 7.2 Authentication Flow
 
 ```
 ┌─────────────────┐    POST (mTLS)     ┌──────────────────────────────────────┐
@@ -197,7 +269,7 @@ The integration uses **mutual TLS (mTLS) certificate-based authentication** (Bet
 - Returns the `sessionToken` string on success, `null` on failure
 - Parses JSON response: checks `loginStatus == "SUCCESS"`, extracts `sessionToken`
 
-### 6.3 Market Data API
+### 7.3 Market Data API
 
 **Class: `BetfairMarketClient`** (package-private `@Component`)
 
@@ -228,7 +300,7 @@ Communicates with the **Betfair Exchange Betting REST API** at:
 - `Content-Type: application/json`
 - `Accept: application/json`
 
-### 6.4 Orchestration — `BetfairIntegrationService`
+### 7.4 Orchestration — `BetfairIntegrationService`
 
 **Purpose:** Top-level `@Service` that orchestrates the full Betfair pipeline. The only public class in the `betfair` package.
 
@@ -246,7 +318,7 @@ If authentication fails, the app continues without live odds (graceful degradati
 - `fetchMarketBook(marketIds)` → `String` (raw JSON) — gets odds for specific markets
 - `getSessionToken()` → `String` — returns cached token
 
-### 6.5 SSL Configuration — `BetfairSslConfig`
+### 7.5 SSL Configuration — `BetfairSslConfig`
 
 **Purpose:** Creates two `RestTemplate` beans configured with mutual TLS, using the Betfair client certificate and private key.
 
@@ -269,7 +341,7 @@ If authentication fails, the app continues without live odds (graceful degradati
 | `betfairAuthRestTemplate` | SSO certlogin endpoint | 10s connect, 15s read |
 | `betfairApiRestTemplate` | Exchange betting API | 10s connect, 30s read |
 
-### 6.6 Configuration — `BetfairProperties`
+### 7.6 Configuration — `BetfairProperties`
 
 A `@ConfigurationProperties(prefix = "betfair")` record with validated fields:
 
@@ -282,7 +354,7 @@ A `@ConfigurationProperties(prefix = "betfair")` record with validated fields:
 
 ---
 
-## 7. Frontend
+## 8. Frontend
 
 A vanilla HTML/JS/CSS single-page application with no framework dependencies.
 
@@ -302,16 +374,29 @@ A vanilla HTML/JS/CSS single-page application with no framework dependencies.
 
 ---
 
-## 8. Configuration & Environment
+## 9. Configuration & Environment
 
 ### `application.properties`
 ```properties
 spring.application.name=fifa
+
+# H2 Database (file-based persistence)
+spring.datasource.url=jdbc:h2:file:./data/fifa
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=update
+spring.h2.console.enabled=true
+
+# Betfair Integration
 betfair.api-key=${BETFAIR_API_KEY}
 betfair.username=${BETFAIR_USERNAME}
 betfair.password=${BETFAIR_PASSWORD}
 betfair.cert-path=${BETFAIR_CERT_PATH}
-logging.level.dev.scaffoldkit.fifa.betfair=DEBUG
+
+# Logging
+logging.level.dev.scaffoldkit.fifa.betfair=INFO
 ```
 
 ### `.env` file (loaded by `spring-dotenv`)
@@ -332,7 +417,7 @@ An `openssl.cnf` template is provided in the `ssl/` directory.
 
 ---
 
-## 9. Data Flow — End to End
+## 10. Data Flow — End to End
 
 ```
 User sets group score in browser
@@ -377,7 +462,7 @@ BracketService.setKnockoutScore()
 
 ---
 
-## 10. Betfair Integration — Data Flow
+## 11. Betfair Integration — Data Flow
 
 ```
 Application Startup
@@ -411,16 +496,20 @@ If any step fails → app continues without live odds (logged as warning)
 
 ---
 
-## 11. Key Design Decisions
+## 12. Key Design Decisions
 
 1. **Betfair integration is isolated** — The entire `betfair` package runs independently from the tournament engine. If Betfair credentials are missing or the API is unreachable, the tournament predictor works fully without it.
 
 2. **Package-private encapsulation** — All Betfair classes except `BetfairIntegrationService` are package-private, keeping the integration's internals hidden from the rest of the application.
 
-3. **In-memory state** — All tournament data (groups, matches, scores, bracket) lives in memory. There is no database. Resetting the server resets all data. This is intentional for a speculative tool.
+3. **Hybrid state model** — Tournament data (groups, matches, scores, bracket) lives in memory for fast interactive use. User-specific data (predictions) is persisted to an H2 file-based database so it survives server restarts. The tournament engine remains intentionally stateless and resettable.
 
 4. **Bracket wiring** — Each `KnockoutMatch` knows its `nextMatchId` and `nextSlot` (1 or 2), forming a linked tree. When a score is set, the winner automatically propagates forward. Changing a score clears the entire downstream chain.
 
 5. **Third-place matrix algorithm** — Uses a rotation-based derangement to assign 3rd-place teams to group winners, guaranteeing no group winner faces its own group's 3rd-place team. Falls back to a greedy assignment if no rotation works (unlikely with 8 positions).
 
 6. **Vanilla frontend** — No React/Vue/Angular. The frontend is simple enough that a framework would add complexity without benefit. All state is server-side; the frontend is a thin rendering layer over the REST API.
+
+7. **Simulated authentication for development** — `LocalhostUserFilter` uses a hardcoded email (`testuser@example.com`) to simulate a logged-in user on localhost. This avoids the complexity of setting up real authentication during development. The `UserContext` ThreadLocal pattern keeps the current user accessible anywhere in the request chain without passing objects through method signatures. For production, this filter should be replaced with a real auth mechanism (e.g., Spring Security with OAuth2 or JWT).
+
+8. **H2 file-based persistence** — H2 was chosen as an embedded database that requires no external server. The file-based mode (`jdbc:h2:file:./data/fifa`) ensures data survives restarts while keeping the development experience simple — just run the app and the database is ready. The H2 web console (`/h2-console`) provides a convenient way to inspect data during development.
