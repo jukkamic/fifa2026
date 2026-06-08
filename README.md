@@ -2,6 +2,17 @@
 
 See BETFAIR.md
 
+
+## Railway.app
+
+Run these commands one at a time and save the output by pasting from clipboard to
+BETFAIR_CERT_B64 and BETFAIR_KEY_B64
+
+```bash
+ base64 -w 0 client-2048.crt | clip
+ base64 -w 0 client-2048.key | clip
+```
+
 ## Dumping Betfair Team Names
 
 Betfair uses its own spelling and formatting for country names (e.g. `Austria (W)`, `Germany (W)`). Since these can change or differ from what we expect, there's a built-in tool to fetch the raw team names straight from Betfair and save them to a file.
