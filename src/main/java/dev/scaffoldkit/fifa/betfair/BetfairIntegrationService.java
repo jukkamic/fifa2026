@@ -176,7 +176,7 @@ public class BetfairIntegrationService {
         ensureAuthenticated();
         return marketClient.listMarketBook(sessionToken, marketIds);
     }
-,
+
     /**
      * Returns the current cached session token (may be {@code null} if not
      * yet authenticated).

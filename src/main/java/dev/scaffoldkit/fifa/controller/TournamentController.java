@@ -229,7 +229,7 @@ public class TournamentController {
 
     // ── Snapshot Odds ────────────────────────────────────────────────────
 
-    @PostMapping("/admin/snapshot-odds")
+    @GetMapping("/admin/snapshot-odds")
     @Profile("!prod")
     public ResponseEntity<Map<String, Object>> snapshotOdds() {
         betfairService.snapshotOddsLocally();
