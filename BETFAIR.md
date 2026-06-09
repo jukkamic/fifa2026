@@ -52,6 +52,23 @@ Your keys will pop up on the right side of the screen! You will likely see two: 
 
 Grab that string, drop it into your .env file for BETFAIR_API_KEY, and let's see if that test finally turns green!
 
+## Production Fallback
+
+Betfair occasionally blocks IP addresses from specific server hosting providers (like Hetzner, AWS, etc.). To ensure the application still functions without throwing errors or dropping back to purely random odds, a fallback mechanism is included.
+
+### Taking a Snapshot
+
+While running the application locally (or from an unblocked IP), you can capture the latest live odds and commit them to the repository.
+
+Send a POST request to:
+`http://localhost:8080/api/admin/snapshot-odds`
+
+This will fetch the live World Cup match odds from Betfair and update the `src/main/resources/fallback-odds.json` file in your source code. You can then commit this file to Git.
+
+### How it Works
+
+When the application runs in production, if it fails to connect to Betfair or receives a `BETTING_RESTRICTED_LOCATION` error, it will automatically fall back to using the data saved in `fallback-odds.json` to simulate the group stage matches.
+
 ## Testing
 
 ```pwsh

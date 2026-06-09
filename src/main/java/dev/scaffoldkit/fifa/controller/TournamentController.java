@@ -7,6 +7,7 @@ import dev.scaffoldkit.fifa.model.KnockoutMatch;
 import dev.scaffoldkit.fifa.model.Team;
 import dev.scaffoldkit.fifa.service.BracketService;
 import dev.scaffoldkit.fifa.service.GroupStageService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -223,6 +224,18 @@ public class TournamentController {
             }
         }
 
+        return ResponseEntity.ok(result);
+    }
+
+    // ── Snapshot Odds ────────────────────────────────────────────────────
+
+    @PostMapping("/admin/snapshot-odds")
+    @Profile("!prod")
+    public ResponseEntity<Map<String, Object>> snapshotOdds() {
+        betfairService.snapshotOddsLocally();
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("success", true);
+        result.put("message", "Odds snapshot created");
         return ResponseEntity.ok(result);
     }
 
