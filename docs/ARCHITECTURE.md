@@ -63,10 +63,12 @@ src/main/java/dev/scaffoldkit/fifa/
 ├── repository/
 │   └── UserProfileRepository.java       # Spring Data JPA repository for UserProfile
 ├── service/
+│   ├── AppEventService.java             # In-memory event log for UI notifications (INFO/WARNING/ERROR)
 │   ├── GroupStageService.java           # 12 groups × 4 teams, standings, advancement
 │   ├── BracketService.java              # 32-team knockout bracket (left/right halves)
 │   └── ThirdPlaceMatrixService.java     # FIFA Annex C 3rd-place assignment algorithm
 └── web/
+    ├── GlobalExceptionHandler.java      # @RestControllerAdvice: catches exceptions → UI notifications
     ├── LocalSecurityConfig.java         # Dev security: permits all, mock @AuthenticationPrincipal
     ├── ProdSecurityConfig.java          # Prod security: Cloudflare Zero Trust JWT validation
     └── UserProfileJwtAuthenticationConverter.java  # JWT → UserProfile principal converter
@@ -191,6 +193,7 @@ All endpoints are under `/api`. The controllers are `TournamentController` and `
 | `POST` | `/api/reset` | Reset all group scores and bracket |
 | `GET` | `/api/admin/snapshot-odds` | Snapshot Betfair odds to `fallback-odds.json` (non-prod only) |
 | `POST` | `/api/betfair/simulate-groups` | Simulate all group matches using Betfair odds (live or fallback) |
+| `GET` | `/api/events` | Returns recent app events (errors, warnings, info) for UI notifications |
 
 ### 5.2 User State Endpoints (`UserStateController`)
 
@@ -519,18 +522,83 @@ A `@ConfigurationProperties(prefix = "betfair")` record with validated fields:
 
 ---
 
-## 8. Frontend
+## 8. Error Notification System
+
+### 8.1 Overview
+
+The application provides a user-friendly notification system that surfaces backend errors, warnings, and informational messages in the UI. This ensures users are aware of issues (e.g., Betfair connection failures, persistence errors) without seeing technical stack traces.
+
+### 8.2 Backend — `AppEventService`
+
+A singleton `@Service` that maintains an in-memory list of recent events (capped at 20). Events are emitted by backend services and the global exception handler.
+
+**Event types:** `INFO`, `WARNING`, `ERROR`
+
+**Key methods:**
+- `emitInfo(category, message)` — informational (blue) notification
+- `emitWarning(category, message)` — warning (amber) notification
+- `emitError(category, message)` — error (red) notification
+- `getEvents()` — returns all stored events (oldest first)
+
+**Categories:** `Betfair`, `System`, or any custom label.
+
+**Betfair fallback handling:** When Betfair API is unreachable and the system falls back to saved odds, it emits an `INFO` event (not an error), since this is expected behavior in production. Only genuine failures (e.g., fallback file also missing) are emitted as errors.
+
+### 8.3 Backend — `GlobalExceptionHandler`
+
+A `@RestControllerAdvice` that catches unhandled exceptions from REST controllers:
+- `Exception` → logs full stack trace, records `ERROR` event, returns HTTP 500 with short message
+- `IllegalArgumentException` → logs warning, records `WARNING` event, returns HTTP 400 with short message
+
+Messages are truncated to 150 characters with no stack traces in responses.
+
+### 8.4 Frontend — Notification Toasts
+
+The frontend polls `GET /api/events` every 10 seconds, compares timestamps to find new events, and displays them as animated toast notifications in the top-right corner.
+
+**Notification styling:**
+- **Info** (blue border): `ℹ️` icon, informational messages like Betfair fallback usage
+- **Warning** (amber border): `⚠️` icon, degraded functionality
+- **Error** (red border): `❌` icon, failures requiring attention
+
+**Behavior:**
+- Auto-dismiss after 8 seconds
+- Manual dismiss via × button
+- Max 5 visible at once (oldest dismissed first)
+- Slide-in animation from the right
+- First poll is silent (baseline), subsequent polls show only new events
+
+### 8.5 REST Endpoint
+
+`GET /api/events` returns:
+```json
+{
+  "events": [
+    {
+      "timestamp": "2026-06-11T03:43:47.123456789Z",
+      "type": "INFO",
+      "category": "Betfair",
+      "message": "Using saved odds snapshot (live Betfair data unavailable)."
+    }
+  ]
+}
+```
+
+---
+
+## 9. Frontend
 
 A vanilla HTML/JS/CSS single-page application with no framework dependencies.
 
 **Structure (`index.html`):**
 - Header with "Seed Bracket from Groups", "Reset All", and "🎲 Simulate Group Stage via Betfair Odds" buttons
 - User email display and auto-save status indicator
+- Notification container (fixed, top-right) for error/warning/info toasts
 - Tab bar switching between **Group Stage** and **Knockout Bracket** views
 - Group Stage view: grid of 12 group cards, each showing standings table and 6 editable match score inputs
 - Knockout Bracket view: horizontally-scrollable bracket visualization
 
-**`app.js` (~590 lines):**
+**`app.js`:**
 - Loads team data from `/api/teams` and `/api/groups` on startup
 - Renders group cards with inline score editors (number inputs)
 - On score change → `POST /api/groups/{matchId}/score` → refreshes standings
@@ -540,10 +608,11 @@ A vanilla HTML/JS/CSS single-page application with no framework dependencies.
 - Knockout score changes → `POST /api/bracket/{matchId}/score`
 - Champion displayed when the Final has a result
 - Betfair simulation → `POST /api/betfair/simulate-groups` with UI feedback
+- **Notification polling:** Every 10s, fetches `GET /api/events` and displays new events as toast notifications
 
 ---
 
-## 9. Configuration & Environment
+## 10. Configuration & Environment
 
 ### `application.properties`
 ```properties
@@ -597,7 +666,7 @@ See `BETFAIR.md` for full setup instructions.
 
 ---
 
-## 10. Data Flow — End to End
+## 11. Data Flow — End to End
 
 ```
 User sets group score in browser
@@ -662,7 +731,7 @@ TournamentController applies all scores via GroupStageService
 
 ---
 
-## 11. Betfair Integration — Data Flow
+## 12. Betfair Integration — Data Flow
 
 ```
 Application Startup
@@ -696,7 +765,7 @@ If any step fails → app continues without live odds (logged as warning)
 
 ---
 
-## 12. Betfair Fallback — Data Flow
+## 13. Betfair Fallback — Data Flow
 
 ```
 POST /api/betfair/simulate-groups (or snapshot-odds)
@@ -735,7 +804,7 @@ BetfairIntegrationService
 
 ---
 
-## 13. Deployment — Docker & Railway
+## 14. Deployment — Docker & Railway
 
 ### Dockerfile (Multi-Stage Build)
 
@@ -763,7 +832,7 @@ echo "$BETFAIR_KEY_B64" | base64 -d > /app/ssl/client-2048.key
 
 ---
 
-## 14. Key Design Decisions
+## 15. Key Design Decisions
 
 1. **Betfair integration is isolated** — The entire `betfair` package runs independently from the tournament engine. If Betfair credentials are missing or the API is unreachable, the tournament predictor works fully without it.
 
@@ -787,7 +856,7 @@ echo "$BETFAIR_KEY_B64" | base64 -d > /app/ssl/client-2048.key
 
 ---
 
-## 15. Known Implementation Notes
+## 16. Known Implementation Notes
 
 > **These are observations about the current codebase, documented as-is. No changes have been made.**
 

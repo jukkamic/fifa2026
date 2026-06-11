@@ -2,6 +2,7 @@
 let TEAMS = {};
 let GROUPS = {};
 let bracketData = null;
+let lastSeenEventTimestamp = null; // track which events we've already shown
 
 // Utility: Delays function execution until X ms of inactivity
 function debounce(func, wait) {
@@ -579,6 +580,97 @@ async function simulateBetfairGroups() {
     }, 3000);
 }
 
+// ===== NOTIFICATIONS =====
+
+const NOTIFICATION_ICONS = {
+    INFO: 'ℹ️',
+    WARNING: '⚠️',
+    ERROR: '❌'
+};
+
+const NOTIFICATION_AUTO_DISMISS_MS = 8000;
+const NOTIFICATION_MAX_VISIBLE = 5;
+
+/**
+ * Shows a notification toast in the top-right corner.
+ * @param {string} type - INFO, WARNING, or ERROR
+ * @param {string} category - e.g. "Betfair", "System"
+ * @param {string} message - user-friendly message
+ */
+function showNotification(type, category, message) {
+    const container = document.getElementById('notifications-container');
+    if (!container) return;
+
+    // Limit visible notifications
+    const existing = container.querySelectorAll('.notification:not(.hiding)');
+    if (existing.length >= NOTIFICATION_MAX_VISIBLE) {
+        dismissNotification(existing[0]);
+    }
+
+    const icon = NOTIFICATION_ICONS[type] || 'ℹ️';
+    const typeLower = type.toLowerCase();
+
+    const el = document.createElement('div');
+    el.className = `notification notification-${typeLower}`;
+    el.innerHTML = `
+        <span class="notification-icon">${icon}</span>
+        <div class="notification-body">
+            <div class="notification-category">${category}</div>
+            <div class="notification-message">${message}</div>
+        </div>
+        <button class="notification-close" onclick="dismissNotification(this.parentElement)" title="Dismiss">&times;</button>
+    `;
+
+    container.appendChild(el);
+
+    // Auto-dismiss after timeout
+    el._autoDismissTimer = setTimeout(() => dismissNotification(el), NOTIFICATION_AUTO_DISMISS_MS);
+}
+
+function dismissNotification(el) {
+    if (!el || el.classList.contains('hiding')) return;
+    clearTimeout(el._autoDismissTimer);
+    el.classList.add('hiding');
+    setTimeout(() => el.remove(), 300);
+}
+
+/**
+ * Fetches new events from the backend and displays them as notifications.
+ * Keeps track of the last-seen timestamp to avoid showing duplicates.
+ */
+async function pollAppEvents() {
+    try {
+        const data = await apiGet('/api/events');
+        if (!data || !data.events) return;
+
+        const events = data.events;
+        if (events.length === 0) return;
+
+        const lastTimestamp = events[events.length - 1].timestamp;
+
+        // First load: just set the marker, don't show old events
+        if (lastSeenEventTimestamp === null) {
+            lastSeenEventTimestamp = lastTimestamp;
+            return;
+        }
+
+        // Filter to only new events
+        const newEvents = events.filter(e => e.timestamp > lastSeenEventTimestamp);
+
+        if (newEvents.length > 0) {
+            lastSeenEventTimestamp = lastTimestamp;
+            // Show new events (stagger slightly so they don't all appear at once)
+            newEvents.forEach((event, i) => {
+                setTimeout(() => {
+                    showNotification(event.type, event.category, event.message);
+                }, i * 200);
+            });
+        }
+    } catch (err) {
+        console.error('Failed to poll app events:', err);
+    }
+}
+
 // ===== STARTUP =====
 
 // Event delegation: trigger auto-save on any score input change
@@ -589,3 +681,6 @@ document.addEventListener('input', (event) => {
 });
 
 init();
+
+// Poll for app events every 10 seconds
+setInterval(pollAppEvents, 10000);

@@ -5,6 +5,7 @@ import dev.scaffoldkit.fifa.model.GroupMatch;
 import dev.scaffoldkit.fifa.model.GroupStanding;
 import dev.scaffoldkit.fifa.model.KnockoutMatch;
 import dev.scaffoldkit.fifa.model.Team;
+import dev.scaffoldkit.fifa.service.AppEventService;
 import dev.scaffoldkit.fifa.service.BracketService;
 import dev.scaffoldkit.fifa.service.GroupStageService;
 import org.springframework.context.annotation.Profile;
@@ -36,13 +37,16 @@ public class TournamentController {
     private final GroupStageService groupStageService;
     private final BracketService bracketService;
     private final BetfairIntegrationService betfairService;
+    private final AppEventService appEvents;
 
     public TournamentController(GroupStageService groupStageService,
                                 BracketService bracketService,
-                                BetfairIntegrationService betfairService) {
+                                BetfairIntegrationService betfairService,
+                                AppEventService appEvents) {
         this.groupStageService = groupStageService;
         this.bracketService = bracketService;
         this.betfairService = betfairService;
+        this.appEvents = appEvents;
     }
 
     // ── Teams ────────────────────────────────────────────────────────────
@@ -237,6 +241,24 @@ public class TournamentController {
         result.put("success", true);
         result.put("message", "Odds snapshot created");
         return ResponseEntity.ok(result);
+    }
+
+    // ── App Events ───────────────────────────────────────────────────────
+
+    @GetMapping("/events")
+    public Map<String, Object> getEvents() {
+        List<Map<String, Object>> eventList = new ArrayList<>();
+        for (var event : appEvents.getEvents()) {
+            Map<String, Object> e = new LinkedHashMap<>();
+            e.put("timestamp", event.timestamp().toString());
+            e.put("type", event.type());
+            e.put("category", event.category());
+            e.put("message", event.message());
+            eventList.add(e);
+        }
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("events", eventList);
+        return result;
     }
 
     // ── Reset ────────────────────────────────────────────────────────────

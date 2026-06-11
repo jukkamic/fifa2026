@@ -632,6 +632,141 @@ body {
     }
 }
 
+/* ===== NOTIFICATIONS ===== */
+.notifications-container {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 420px;
+    width: calc(100% - 24px);
+    pointer-events: none;
+}
+
+.notification {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    pointer-events: auto;
+    animation: notif-slide-in 0.3s ease-out;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.notification.hiding {
+    opacity: 0;
+    transform: translateX(40px);
+}
+
+.notification-info {
+    border-left: 4px solid var(--accent);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), var(--bg-card));
+}
+
+.notification-warning {
+    border-left: 4px solid var(--draw);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), var(--bg-card));
+}
+
+.notification-error {
+    border-left: 4px solid var(--lose);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), var(--bg-card));
+}
+
+.notification-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.notification-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-category {
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 3px;
+}
+
+.notification-info .notification-category { color: var(--accent-glow); }
+.notification-warning .notification-category { color: var(--gold-glow); }
+.notification-error .notification-category { color: var(--lose); }
+
+.notification-message {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+}
+
+.notification-close:hover {
+    opacity: 1;
+    color: var(--text-primary);
+}
+
+.notification-badge {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9998;
+    background: var(--lose);
+    color: white;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    transition: transform 0.15s;
+}
+
+.notification-badge:hover {
+    transform: scale(1.15);
+}
+
+.notification-badge.visible {
+    display: flex;
+}
+
+@keyframes notif-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 /* ===== LOADING ===== */
 .loading {
     text-align: center;

@@ -3,6 +3,7 @@ package dev.scaffoldkit.fifa.betfair;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.scaffoldkit.fifa.model.GroupMatch;
+import dev.scaffoldkit.fifa.service.AppEventService;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,15 +45,18 @@ public class BetfairIntegrationService {
 
     private final BetfairAuthClient authClient;
     private final BetfairMarketClient marketClient;
+    private final AppEventService appEvents;
     private final ObjectMapper objectMapper;
 
     /** Currently active session token (cached after login). */
     private volatile String sessionToken;
 
     public BetfairIntegrationService(BetfairAuthClient authClient,
-                                     BetfairMarketClient marketClient) {
+                                     BetfairMarketClient marketClient,
+                                     AppEventService appEvents) {
         this.authClient = authClient;
         this.marketClient = marketClient;
+        this.appEvents = appEvents;
         this.objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
@@ -71,10 +75,15 @@ public class BetfairIntegrationService {
             authenticate();
             if (sessionToken != null) {
                 fetchAndLogMarketCatalogue();
+                appEvents.emitInfo("Betfair",
+                        "Successfully connected to Betfair Exchange API.");
             }
         } catch (Exception e) {
             log.warn("Betfair integration did not initialise – the app will continue " +
                     "without live odds. Reason: {}", e.getMessage());
+            appEvents.emitInfo("Betfair",
+                    "Betfair API is not available. Odds features will use saved data. " +
+                    "This is normal in production environments.");
         }
     }
 
@@ -90,6 +99,8 @@ public class BetfairIntegrationService {
         }
         if (sessionToken == null) {
             log.error("Failed to authenticate for snapshot.");
+            appEvents.emitWarning("Betfair",
+                    "Cannot create odds snapshot: Betfair authentication failed.");
             return;
         }
 
@@ -153,6 +164,8 @@ public class BetfairIntegrationService {
         }
 
         log.error("✗ Authentication failed – check credentials and certificates");
+        appEvents.emitWarning("Betfair",
+                "Authentication with Betfair API failed. Check credentials and certificates.");
         return false;
     }
 
@@ -406,6 +419,9 @@ public class BetfairIntegrationService {
         if (sessionToken == null) {
             log.warn("Cannot authenticate with Betfair – using fallback for all {} matches",
                     groupMatches.size());
+            appEvents.emitInfo("Betfair",
+                    "Using equal-probability simulation for all matches " +
+                    "(Betfair authentication unavailable).");
             groupMatches.forEach((id, m) -> results.put(id, simulateWithFallback(random)));
             return results;
         }
@@ -440,8 +456,13 @@ public class BetfairIntegrationService {
                     }
                     rootNode = (com.fasterxml.jackson.databind.node.ObjectNode) objectMapper.readTree(fallbackJson);
                     usingFallback = true;
+                    appEvents.emitInfo("Betfair",
+                            "Using saved odds snapshot (live Betfair data unavailable). " +
+                            "Simulation results are based on previously captured data.");
                 } catch (Exception e) {
                     log.error("Failed to read fallback-odds.json", e);
+                    appEvents.emitError("Betfair",
+                            "Failed to load odds data. Using equal-probability simulation.");
                     groupMatches.forEach((id, m) -> results.put(id, simulateWithFallback(random)));
                     return results;
                 }
@@ -541,6 +562,9 @@ public class BetfairIntegrationService {
 
         } catch (Exception e) {
             log.error("Error during Betfair group stage simulation – filling gaps with fallback", e);
+            appEvents.emitError("Betfair",
+                    "Error during odds simulation: " + shortenMessage(e.getMessage()) +
+                    ". Unresolved matches use equal probability.");
             for (var entry : groupMatches.entrySet()) {
                 if (!results.containsKey(entry.getKey())) {
                     results.put(entry.getKey(), simulateWithFallback(random));
@@ -638,5 +662,18 @@ public class BetfairIntegrationService {
         return code1.compareTo(code2) < 0
                 ? code1 + "_" + code2
                 : code2 + "_" + code1;
+    }
+
+    /** Truncates a message to a user-friendly length (no stack traces). */
+    private static String shortenMessage(String msg) {
+        if (msg == null) return "Unknown error";
+        // Take only the first line if multi-line
+        int newline = msg.indexOf('\n');
+        String firstLine = newline > 0 ? msg.substring(0, newline).trim() : msg;
+        // Cap at 150 characters
+        if (firstLine.length() > 150) {
+            return firstLine.substring(0, 147) + "...";
+        }
+        return firstLine;
     }
 }
