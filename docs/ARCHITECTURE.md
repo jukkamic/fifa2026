@@ -15,6 +15,7 @@ A **Spring Boot 3.4 web application** that serves as an interactive **FIFA 2026 
 - **View live Betfair odds** — An integration with the Betfair Exchange API fetches real-world betting market data for tournament matches.
 - **Simulate group results from odds** — Uses Betfair odds (live or fallback) to probabilistically generate match scores.
 - **Persist per-user predictions** — Each user's tournament state is saved to an H2 database and restored on page load.
+- **Lock actual results** — An admin user can lock in real-world match results, preventing them from being overwritten by Betfair simulation.
 
 The frontend is a single-page vanilla HTML/JS/CSS app served from `src/main/resources/static/`.
 
@@ -63,6 +64,7 @@ src/main/java/dev/scaffoldkit/fifa/
 ├── repository/
 │   └── UserProfileRepository.java       # Spring Data JPA repository for UserProfile
 ├── service/
+│   ├── ActualResultsService.java        # Locked actual match results (persisted to JSON file)
 │   ├── AppEventService.java             # In-memory event log for UI notifications (INFO/WARNING/ERROR)
 │   ├── GroupStageService.java           # 12 groups × 4 teams, standings, advancement
 │   ├── BracketService.java              # 32-team knockout bracket (left/right halves)
@@ -192,8 +194,10 @@ All endpoints are under `/api`. The controllers are `TournamentController` and `
 | `POST` | `/api/bracket/{matchId}/score` | Set knockout score. Body: `{"score1": int, "score2": int}` |
 | `POST` | `/api/reset` | Reset all group scores and bracket |
 | `GET` | `/api/admin/snapshot-odds` | Snapshot Betfair odds to `fallback-odds.json` (non-prod only) |
-| `POST` | `/api/betfair/simulate-groups` | Simulate all group matches using Betfair odds (live or fallback) |
+| `POST` | `/api/betfair/simulate-groups` | Simulate all group matches using Betfair odds (live or fallback). Respects locked actual results. |
 | `GET` | `/api/events` | Returns recent app events (errors, warnings, info) for UI notifications |
+| `POST` | `/api/admin/lock-score/{matchId}` | **Admin only.** Lock a group match result. Body: `{"score1": int, "score2": int}` |
+| `DELETE` | `/api/admin/lock-score/{matchId}` | **Admin only.** Unlock a group match result |
 
 ### 5.2 User State Endpoints (`UserStateController`)
 
@@ -203,6 +207,19 @@ All endpoints are under `/api`. The controllers are `TournamentController` and `
 | `POST` | `/api/user/state` | Saves the request body as the current user's tournament state |
 
 Both endpoints use `@AuthenticationPrincipal UserProfile` to identify the user.
+
+**`GET /api/user/state` response format:**
+```json
+{
+  "email": "user@example.com",
+  "isAdmin": false,
+  "state": { "groups": {...}, "bracket": {...} },
+  "lockedMatches": { "A1": [2, 1], "B3": [0, 0] }
+}
+```
+
+- `isAdmin` — `true` if the user's email matches the hardcoded admin (`jukkamic@gmail.com`)
+- `lockedMatches` — Map of matchId → [score1, score2] for all admin-locked actual results
 
 ---
 
@@ -609,6 +626,7 @@ A vanilla HTML/JS/CSS single-page application with no framework dependencies.
 - Champion displayed when the Final has a result
 - Betfair simulation → `POST /api/betfair/simulate-groups` with UI feedback
 - **Notification polling:** Every 10s, fetches `GET /api/events` and displays new events as toast notifications
+- **Admin lock/unlock:** On startup, stores `isAdmin` and `lockedMatches` from `/api/user/state`. Admin users see 🔒/🔓 buttons per match to lock/unlock actual results. Locked matches show disabled inputs with green border styling.
 
 ---
 
@@ -635,6 +653,9 @@ betfair.cert-path=${BETFAIR_CERT_PATH}
 
 # Cloudflare Zero Trust (JWT validation)
 spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://scaffoldkit.cloudflareaccess.com/cdn-cgi/access/certs
+
+# Application Data Directory (for actual-results.json)
+app.data.dir=./data
 
 # Logging
 logging.level.dev.scaffoldkit.fifa.betfair=INFO

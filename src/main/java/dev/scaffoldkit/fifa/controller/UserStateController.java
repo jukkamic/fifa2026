@@ -2,6 +2,7 @@ package dev.scaffoldkit.fifa.controller;
 
 import java.time.Instant;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.scaffoldkit.fifa.model.UserProfile;
 import dev.scaffoldkit.fifa.repository.UserProfileRepository;
+import dev.scaffoldkit.fifa.service.ActualResultsService;
 
 /**
  * REST API for persisting per-user tournament state.
@@ -28,13 +31,23 @@ import dev.scaffoldkit.fifa.repository.UserProfileRepository;
 @RequestMapping("/api/user")
 public class UserStateController {
 
+    private final String adminEmail;
+    private final String devAdminEmail;
     private final UserProfileRepository userProfileRepository;
     private final ObjectMapper objectMapper;
+    private final ActualResultsService actualResultsService;
 
-    public UserStateController(UserProfileRepository userProfileRepository,
-                               ObjectMapper objectMapper) {
+    public UserStateController(
+            @Value("${app.admin.email:jukkamic@gmail.com}") String adminEmail,
+            @Value("${app.admin.dev-email:testuser@example.com}") String devAdminEmail,
+            UserProfileRepository userProfileRepository,
+            ObjectMapper objectMapper,
+            ActualResultsService actualResultsService) {
+        this.adminEmail = adminEmail;
+        this.devAdminEmail = devAdminEmail;
         this.userProfileRepository = userProfileRepository;
         this.objectMapper = objectMapper;
+        this.actualResultsService = actualResultsService;
     }
 
     @GetMapping("/state")
@@ -46,7 +59,18 @@ public class UserStateController {
 
         ObjectNode wrapper = objectMapper.createObjectNode();
         wrapper.put("email", email);
+        wrapper.put("isAdmin", adminEmail.equals(email) || devAdminEmail.equals(email));
         wrapper.set("state", objectMapper.readTree(stateJson));
+
+        // Include locked matches
+        ObjectNode lockedNode = objectMapper.createObjectNode();
+        for (var entry : actualResultsService.getLockedScores().entrySet()) {
+            ArrayNode scores = objectMapper.createArrayNode();
+            scores.add(entry.getValue()[0]);
+            scores.add(entry.getValue()[1]);
+            lockedNode.set(entry.getKey(), scores);
+        }
+        wrapper.set("lockedMatches", lockedNode);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)

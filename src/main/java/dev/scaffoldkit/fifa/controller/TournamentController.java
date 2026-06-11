@@ -5,11 +5,16 @@ import dev.scaffoldkit.fifa.model.GroupMatch;
 import dev.scaffoldkit.fifa.model.GroupStanding;
 import dev.scaffoldkit.fifa.model.KnockoutMatch;
 import dev.scaffoldkit.fifa.model.Team;
+import dev.scaffoldkit.fifa.model.UserProfile;
+import dev.scaffoldkit.fifa.service.ActualResultsService;
 import dev.scaffoldkit.fifa.service.AppEventService;
 import dev.scaffoldkit.fifa.service.BracketService;
 import dev.scaffoldkit.fifa.service.GroupStageService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -34,19 +39,29 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class TournamentController {
 
+    private final String adminEmail;
+    private final String devAdminEmail;
     private final GroupStageService groupStageService;
     private final BracketService bracketService;
     private final BetfairIntegrationService betfairService;
     private final AppEventService appEvents;
+    private final ActualResultsService actualResultsService;
 
-    public TournamentController(GroupStageService groupStageService,
+    public TournamentController(
+            @Value("${app.admin.email:jukkamic@gmail.com}") String adminEmail,
+            @Value("${app.admin.dev-email:testuser@example.com}") String devAdminEmail,
+            GroupStageService groupStageService,
                                 BracketService bracketService,
                                 BetfairIntegrationService betfairService,
-                                AppEventService appEvents) {
+                                AppEventService appEvents,
+                                ActualResultsService actualResultsService) {
+        this.adminEmail = adminEmail;
+        this.devAdminEmail = devAdminEmail;
         this.groupStageService = groupStageService;
         this.bracketService = bracketService;
         this.betfairService = betfairService;
         this.appEvents = appEvents;
+        this.actualResultsService = actualResultsService;
     }
 
     // ── Teams ────────────────────────────────────────────────────────────
@@ -286,6 +301,44 @@ public class TournamentController {
         return result;
     }
 
+    // ── Admin: Lock/Unlock Actual Results ────────────────────────────────
+
+    @PostMapping("/admin/lock-score/{matchId}")
+    public ResponseEntity<Map<String, Object>> lockScore(
+            @PathVariable String matchId,
+            @RequestBody Map<String, Integer> body,
+            @AuthenticationPrincipal UserProfile profile) {
+        if (!isAdmin(profile.getEmail())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Integer score1 = body.get("score1");
+        Integer score2 = body.get("score2");
+        if (score1 == null || score2 == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        actualResultsService.lockScore(matchId, score1, score2);
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("success", true);
+        result.put("message", "Match %s locked with score %d-%d".formatted(matchId, score1, score2));
+        return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/admin/lock-score/{matchId}")
+    public ResponseEntity<Map<String, Object>> unlockScore(
+            @PathVariable String matchId,
+            @AuthenticationPrincipal UserProfile profile) {
+        if (!isAdmin(profile.getEmail())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        actualResultsService.unlockScore(matchId);
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("success", true);
+        result.put("message", "Match %s unlocked".formatted(matchId));
+        return ResponseEntity.ok(result);
+    }
+
     // ── Betfair Simulation ───────────────────────────────────────────────
 
     @PostMapping("/betfair/simulate-groups")
@@ -293,6 +346,7 @@ public class TournamentController {
         Map<String, GroupMatch> groupMatches = groupStageService.getGroupMatches();
         Map<String, int[]> simulated = betfairService.simulateGroupStageOdds(groupMatches);
 
+        // Apply all simulated scores
         int updated = 0;
         for (var entry : simulated.entrySet()) {
             groupStageService.setGroupMatchScore(
@@ -300,14 +354,28 @@ public class TournamentController {
             updated++;
         }
 
+        // Overwrite with locked actual results
+        Map<String, int[]> locked = actualResultsService.getLockedScores();
+        int overwritten = 0;
+        for (var entry : locked.entrySet()) {
+            groupStageService.setGroupMatchScore(
+                    entry.getKey(), entry.getValue()[0], entry.getValue()[1]);
+            overwritten++;
+        }
+
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("success", true);
         result.put("matchesSimulated", updated);
-        result.put("message", "Group stage simulated from Betfair odds (%d matches)".formatted(updated));
+        result.put("lockedOverwritten", overwritten);
+        result.put("message", "Group stage simulated from Betfair odds (%d matches, %d locked results applied)".formatted(updated, overwritten));
         return ResponseEntity.ok(result);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────
+
+    private boolean isAdmin(String email) {
+        return adminEmail.equals(email) || devAdminEmail.equals(email);
+    }
 
     private Map<String, Object> formatGroupMatch(GroupMatch gm) {
         Map<String, Object> m = new LinkedHashMap<>();

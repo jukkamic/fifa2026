@@ -3,6 +3,8 @@ let TEAMS = {};
 let GROUPS = {};
 let bracketData = null;
 let lastSeenEventTimestamp = null; // track which events we've already shown
+let isAdmin = false;
+let lockedMatches = {}; // matchId → [score1, score2]
 
 // Utility: Delays function execution until X ms of inactivity
 function debounce(func, wait) {
@@ -135,6 +137,10 @@ async function restoreSavedState() {
             if (emailEl) emailEl.textContent = wrapper.email;
         }
 
+        // Store admin status and locked matches
+        isAdmin = wrapper.isAdmin === true;
+        lockedMatches = wrapper.lockedMatches || {};
+
         const savedState = wrapper.state;
         if (!savedState || !(savedState.groups || savedState.bracket)) return;
 
@@ -265,7 +271,17 @@ async function loadGroupStage() {
         // Matches
         html += `<div class="group-matches">`;
         for (const m of groupMatches) {
-            html += `<div class="group-match-row">
+            const isLocked = lockedMatches.hasOwnProperty(m.id);
+            const disabledAttr = isLocked ? ' disabled' : '';
+            const lockedClass = isLocked ? ' match-locked' : '';
+            const lockBtn = isAdmin
+                ? `<button class="lock-btn ${isLocked ? 'locked' : 'unlocked'}"
+                       onclick="toggleLock('${m.id}', this)"
+                       title="${isLocked ? 'Unlock match result' : 'Lock match result'}">
+                       ${isLocked ? '🔒' : '🔓'}
+                   </button>`
+                : '';
+            html += `<div class="group-match-row${lockedClass}">
                 <div class="group-match-teams">
                     ${flagImg(m.team1)}
                     <span class="team-code">${m.team1}</span>
@@ -276,19 +292,20 @@ async function loadGroupStage() {
                            placeholder="-"
                            tabindex="${tabIndex++}"
                            onchange="setGroupScore('${m.id}', 1, this.value)"
-                           onfocus="this.select()">
+                           onfocus="this.select()"${disabledAttr}>
                     <span class="match-separator">-</span>
                     <input type="number" class="score-input" min="0" max="99"
                            value="${m.score2 !== null ? m.score2 : ''}"
                            placeholder="-"
                            tabindex="${tabIndex++}"
                            onchange="setGroupScore('${m.id}', 2, this.value)"
-                           onfocus="this.select()">
+                           onfocus="this.select()"${disabledAttr}>
                 </div>
                 <div class="group-match-teams" style="justify-content:flex-end;">
                     <span class="team-code">${m.team2}</span>
                     ${flagImg(m.team2)}
                 </div>
+                ${lockBtn}
             </div>`;
         }
         html += `</div></div>`;
@@ -668,6 +685,52 @@ async function pollAppEvents() {
         }
     } catch (err) {
         console.error('Failed to poll app events:', err);
+    }
+}
+
+// ===== ADMIN LOCK/UNLOCK =====
+
+async function toggleLock(matchId, btnEl) {
+    const row = btnEl.closest('.group-match-row');
+    const inputs = row.querySelectorAll('.score-input');
+    const isCurrentlyLocked = lockedMatches.hasOwnProperty(matchId);
+
+    if (isCurrentlyLocked) {
+        // Unlock: call DELETE endpoint
+        const res = await fetch(`/api/admin/lock-score/${matchId}`, { method: 'DELETE' });
+        if (res.ok) {
+            delete lockedMatches[matchId];
+            // Re-enable inputs
+            inputs.forEach(inp => inp.disabled = false);
+            // Update button
+            btnEl.className = 'lock-btn unlocked';
+            btnEl.innerHTML = '🔓';
+            btnEl.title = 'Lock match result';
+            row.classList.remove('match-locked');
+        }
+    } else {
+        // Lock: need both scores filled
+        const s1 = inputs[0].value !== '' ? parseInt(inputs[0].value) : null;
+        const s2 = inputs[1].value !== '' ? parseInt(inputs[1].value) : null;
+        if (s1 === null || s2 === null) {
+            showNotification('WARNING', 'Admin', 'Both scores must be filled before locking.');
+            return;
+        }
+        const res = await fetch(`/api/admin/lock-score/${matchId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ score1: s1, score2: s2 })
+        });
+        if (res.ok) {
+            lockedMatches[matchId] = [s1, s2];
+            // Disable inputs
+            inputs.forEach(inp => inp.disabled = true);
+            // Update button
+            btnEl.className = 'lock-btn locked';
+            btnEl.innerHTML = '🔒';
+            btnEl.title = 'Unlock match result';
+            row.classList.add('match-locked');
+        }
     }
 }
 
