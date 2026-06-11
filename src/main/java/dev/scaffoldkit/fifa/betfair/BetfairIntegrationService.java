@@ -434,7 +434,10 @@ public class BetfairIntegrationService {
                 log.warn("Failed to fetch live market catalogue. Falling back to local snapshot...");
                 try {
                     ClassPathResource resource = new ClassPathResource("fallback-odds.json");
-                    String fallbackJson = Files.readString(resource.getFile().toPath());
+                    String fallbackJson;
+                    try (var is = resource.getInputStream()) {
+                        fallbackJson = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                    }
                     rootNode = (com.fasterxml.jackson.databind.node.ObjectNode) objectMapper.readTree(fallbackJson);
                     usingFallback = true;
                 } catch (Exception e) {

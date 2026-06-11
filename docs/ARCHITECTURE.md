@@ -12,7 +12,9 @@ A **Spring Boot 3.4 web application** that serves as an interactive **FIFA 2026 
 - **Predict advancement** — Automatically computes which 24 teams advance (12 group winners + 12 runners-up + 8 best third-place teams) using FIFA's official tie-breaking rules and the **Annex C third-place matrix**.
 - **Play through the knockout bracket** — A 32-team single-elimination bracket (R32 → R16 → QF → SF → Final), seeded from group results, with automatic winner propagation.
 - **Speculate on paths to the final** — Users set hypothetical scores and watch how the bracket reshapes, exploring different tournament scenarios.
-- *(In progress)* **View live Betfair odds** — An integration with the Betfair Exchange API fetches real-world betting market data for tournament matches.
+- **View live Betfair odds** — An integration with the Betfair Exchange API fetches real-world betting market data for tournament matches.
+- **Simulate group results from odds** — Uses Betfair odds (live or fallback) to probabilistically generate match scores.
+- **Persist per-user predictions** — Each user's tournament state is saved to an H2 database and restored on page load.
 
 The frontend is a single-page vanilla HTML/JS/CSS app served from `src/main/resources/static/`.
 
@@ -27,10 +29,12 @@ The frontend is a single-page vanilla HTML/JS/CSS app served from `src/main/reso
 | Build | Gradle (Kotlin DSL) |
 | Database | H2 (file-based, persisted to `./data/fifa.*`) |
 | ORM | Spring Data JPA / Hibernate |
+| Security | Spring Security + OAuth2 Resource Server (Cloudflare Zero Trust JWT in prod; mock user in dev) |
 | SSL/TLS | Bouncy Castle (`bcpkix-jdk18on:1.80`) for PEM key parsing |
 | Env Config | `spring-dotenv:4.0.0` — loads `.env` into Spring environment |
 | Frontend | Vanilla HTML + CSS + JavaScript (no framework) |
 | Testing | JUnit 5 + Spring Boot Test |
+| Deployment | Docker multi-stage build, Railway.app with persistent volume |
 
 ---
 
@@ -44,9 +48,12 @@ src/main/java/dev/scaffoldkit/fifa/
 │   ├── BetfairMarketClient.java         # Exchange Betting API (catalogue + odds)
 │   ├── BetfairIntegrationService.java   # Top-level orchestrator (runs on startup)
 │   ├── BetfairProperties.java           # @ConfigurationProperties (apiKey, user, pass, certPath)
-│   └── BetfairSslConfig.java            # Builds mTLS RestTemplate beans from PEM files
+│   ├── BetfairNamesToCodes.java         # Betfair runner name → FIFA team code mapping
+│   ├── BetfairSslConfig.java            # Builds mTLS RestTemplate beans from PEM files
+│   └── DumpRunnerNamesRunner.java       # CLI diagnostic: dumps Betfair team names to file
 ├── controller/
-│   └── TournamentController.java        # REST API (/api/*)
+│   ├── TournamentController.java        # REST API (/api/*) — tournament + Betfair endpoints
+│   └── UserStateController.java         # REST API (/api/user/*) — per-user state persistence
 ├── model/
 │   ├── Team.java                        # Immutable team value object (code, name, group, flag)
 │   ├── GroupMatch.java                  # Group-stage match with mutable scores
@@ -60,15 +67,17 @@ src/main/java/dev/scaffoldkit/fifa/
 │   ├── BracketService.java              # 32-team knockout bracket (left/right halves)
 │   └── ThirdPlaceMatrixService.java     # FIFA Annex C 3rd-place assignment algorithm
 └── web/
-    ├── UserContext.java                 # ThreadLocal holder for current request's UserProfile
-    └── LocalhostUserFilter.java         # Simulates logged-in user on localhost (hardcoded email)
+    ├── LocalSecurityConfig.java         # Dev security: permits all, mock @AuthenticationPrincipal
+    ├── ProdSecurityConfig.java          # Prod security: Cloudflare Zero Trust JWT validation
+    └── UserProfileJwtAuthenticationConverter.java  # JWT → UserProfile principal converter
 
 src/main/resources/
-├── application.properties               # Spring config (env var references)
+├── application.properties               # Spring config (env var references, Cloudflare JWT)
+├── fallback-odds.json                   # Pre-saved Betfair odds snapshot for production fallback
 └── static/
     ├── index.html                       # Single-page app shell
-    ├── app.js                           # Vanilla JS frontend logic
-    └── style.css                        # Styling
+    ├── app.js                           # Vanilla JS frontend logic (~590 lines)
+    └── style.css                        # Dark-themed styling
 
 ssl/
 ├── openssl.cnf                          # OpenSSL config for generating Betfair client certs
@@ -77,6 +86,13 @@ ssl/
 
 docs/
 └── ARCHITECTURE.md                      # ← This file
+
+Root-level files:
+├── BETFAIR.md                           # Betfair API setup instructions
+├── README.md                            # Setup + Railway.app deployment guide
+├── Dockerfile                           # Multi-stage Docker build
+├── .env.example                         # Template for environment variables
+├── betfair-runner-names.txt             # Dump of Betfair team names (diagnostic output)
 ```
 
 ---
@@ -100,6 +116,7 @@ docs/
 - `getSortedStandings(group)` — returns standings ranked best-first
 - `getAllGroupWinners()` / `getAllRunnersUp()` / `getAllThirdPlaces()` — maps of group → team code
 - `getBestThirdPlaceGroups()` — the 8 groups whose 3rd-place teams advance
+- `getBestThirdPlaceTeamCodes()` — the actual team codes (not group letters)
 - `resetAll()` — clears all scores
 
 ### 4.2 `BracketService`
@@ -155,7 +172,9 @@ RIGHT:
 
 ## 5. REST API Endpoints
 
-All endpoints are under `/api`. The controller is `TournamentController`.
+All endpoints are under `/api`. The controllers are `TournamentController` and `UserStateController`.
+
+### 5.1 Tournament Endpoints (`TournamentController`)
 
 | Method | Endpoint | Purpose |
 |--------|----------|---------|
@@ -170,16 +189,83 @@ All endpoints are under `/api`. The controller is `TournamentController`.
 | `POST` | `/api/bracket/seed` | Seed bracket from current group results |
 | `POST` | `/api/bracket/{matchId}/score` | Set knockout score. Body: `{"score1": int, "score2": int}` |
 | `POST` | `/api/reset` | Reset all group scores and bracket |
+| `GET` | `/api/admin/snapshot-odds` | Snapshot Betfair odds to `fallback-odds.json` (non-prod only) |
+| `POST` | `/api/betfair/simulate-groups` | Simulate all group matches using Betfair odds (live or fallback) |
+
+### 5.2 User State Endpoints (`UserStateController`)
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| `GET` | `/api/user/state` | Returns the current user's saved tournament state as JSON |
+| `POST` | `/api/user/state` | Saves the request body as the current user's tournament state |
+
+Both endpoints use `@AuthenticationPrincipal UserProfile` to identify the user.
 
 ---
 
-## 6. User Profiles & Persistence
+## 6. Authentication & Security
 
 ### 6.1 Overview
 
-The `model/`, `repository/`, and `web/` packages work together to provide user-specific prediction storage via a **file-based H2 database** with **Spring Data JPA**. Each user's tournament predictions are stored as a JSON string in the `user_profiles` table.
+The application uses **Spring Security** with a **profile-based** approach: a production profile validates Cloudflare Zero Trust JWTs, while local development uses a mock authentication filter. Both approaches set up a `UserProfile` as the Spring Security principal, so controllers can use `@AuthenticationPrincipal UserProfile` uniformly.
 
-### 6.2 Database — H2 (File-Based)
+> **Note:** The previous architecture used `LocalhostUserFilter` (a `OncePerRequestFilter`) + `UserContext` (a `ThreadLocal` holder). These have been removed and replaced by proper Spring Security integration.
+
+### 6.2 Production Security — `ProdSecurityConfig`
+
+**Profile:** `prod`
+
+**Purpose:** Validates every `/api/**` request using **Cloudflare Zero Trust** JWT tokens.
+
+| Aspect | Detail |
+|--------|--------|
+| Security | `@EnableWebSecurity`, CSRF disabled, stateless sessions |
+| Auth requirement | `/api/**` requires authentication; everything else is permitted |
+| JWT source | `Cf-Access-Jwt-Assertion` header (via custom `BearerTokenResolver`) |
+| JWK set | `https://scaffoldkit.cloudflareaccess.com/cdn-cgi/access/certs` |
+| Principal | JWT's `email` claim → `UserProfile` (looked up or auto-created in H2) |
+
+**Flow per request:**
+```
+Incoming HTTP request with Cf-Access-Jwt-Assertion header
+        │
+        ▼
+Spring Security OAuth2 Resource Server
+        │
+        ├── Validate JWT against Cloudflare's JWK set
+        │
+        ├── UserProfileJwtAuthenticationConverter.convert(jwt)
+        │     ├── Extract email from JWT claim
+        │     ├── Lookup UserProfile by email (or create + save)
+        │     └── Return UserProfileAuthenticationToken(profile, tokenValue)
+        │
+        └── Controller receives @AuthenticationPrincipal UserProfile
+```
+
+### 6.3 Development Security — `LocalSecurityConfig`
+
+**Profile:** `!prod` (default)
+
+**Purpose:** Allows all requests without JWT validation and injects a mock `UserProfile` for `testuser@example.com`.
+
+| Aspect | Detail |
+|--------|--------|
+| Security | `@EnableWebSecurity`, CSRF disabled, all requests permitted |
+| Auth mechanism | `MockAuthenticationFilter` (inner `OncePerRequestFilter`) |
+| Mock user | `testuser@example.com` with `ROLE_USER` authority |
+| Principal | Creates a transient `UserProfile` (not persisted) per request |
+
+> **Note:** The mock `UserProfile` is created with `new UserProfile(MOCK_EMAIL, "{}")` but is **not** persisted to the database. This means the mock user's state will not survive a server restart unless explicitly saved through a different mechanism.
+
+### 6.4 `UserProfileJwtAuthenticationConverter`
+
+A Spring `Converter<Jwt, AbstractAuthenticationToken>` that:
+1. Extracts the `email` claim from the validated JWT
+2. Looks up the `UserProfile` by email via `UserProfileRepository`
+3. If not found, auto-creates and saves a new `UserProfile` with blank predictions
+4. Returns a `UserProfileAuthenticationToken` (inner class carrying the profile + token)
+
+### 6.5 Database — H2 (File-Based)
 
 | Aspect | Detail |
 |--------|--------|
@@ -189,7 +275,9 @@ The `model/`, `repository/`, and `web/` packages work together to provide user-s
 | Console | H2 web console enabled at `http://localhost:8080/h2-console` |
 | Dialect | `org.hibernate.dialect.H2Dialect` |
 
-### 6.3 JPA Entity — `UserProfile`
+> **Production note:** On Railway.app, the datasource URL is overridden to `jdbc:h2:file:/app/data/predictions` with a persistent volume mounted at `/app/data`.
+
+### 6.6 JPA Entity — `UserProfile`
 
 | Field | Type | Column | Constraints |
 |-------|------|--------|-------------|
@@ -198,7 +286,7 @@ The `model/`, `repository/`, and `web/` packages work together to provide user-s
 | `predictionsJson` | `String` | `predictions_json` | `@Lob`, `CLOB` |
 | `updatedAt` | `Instant` | `updated_at` | — |
 
-### 6.4 Repository — `UserProfileRepository`
+### 6.7 Repository — `UserProfileRepository`
 
 A standard Spring Data `JpaRepository<UserProfile, Long>` with one derived query:
 
@@ -208,41 +296,20 @@ A standard Spring Data `JpaRepository<UserProfile, Long>` with one derived query
 
 All standard `JpaRepository` methods (`save`, `findById`, `findAll`, `delete`, etc.) are inherited.
 
-### 6.5 Simulated Authentication — `LocalhostUserFilter`
-
-**Purpose:** A `OncePerRequestFilter` (`@Component`, `@Order(Ordered.HIGHEST_PRECEDENCE)`) that simulates an authenticated user during local development.
-
-**Flow per request:**
-```
-Incoming HTTP request
-        │
-        ▼
-LocalhostUserFilter.doFilterInternal()
-        │
-        ├── Lookup UserProfile by hardcoded email "testuser@example.com"
-        │     └── If not found → create with blank predictions ("{}") and save
-        │
-        ├── Place UserProfile into UserContext (ThreadLocal)
-        │
-        ├── filterChain.doFilter()  ← rest of the request proceeds
-        │
-        └── finally: UserContext.clear()  ← ThreadLocal cleanup
-```
-
-**Class: `UserContext`**
-A simple `ThreadLocal<UserProfile>` holder with static `set()`, `get()`, and `clear()` methods. Any controller or service can call `UserContext.get()` to access the current request's user.
-
-> **Note:** This is a development-only authentication mechanism. For production, replace `LocalhostUserFilter` with a real auth filter (e.g., Spring Security with OAuth2 or JWT).
-
 ---
 
 ## 7. Betfair Exchange Integration
 
 ### 7.1 Overview
 
-The `betfair` package integrates with the **Betfair Exchange API** to fetch live betting odds for soccer matches. This is intended to overlay real market prices onto the tournament predictor, helping users compare their speculative paths against what the betting market thinks.
+The `betfair` package integrates with the **Betfair Exchange API** to fetch live betting odds for soccer matches. This serves two purposes:
+
+1. **Display live odds** alongside the tournament predictor for comparison.
+2. **Simulate group stage results** using real market probabilities.
 
 The integration uses **mutual TLS (mTLS) certificate-based authentication** (Betfair's non-interactive login flow), which requires a client certificate and private key stored in the `ssl/` directory.
+
+**Fallback mechanism:** When Betfair is unreachable (e.g., from cloud servers due to IP restrictions), the system falls back to a pre-saved odds snapshot (`fallback-odds.json`). See §7.8 for details.
 
 ### 7.2 Authentication Flow
 
@@ -281,11 +348,14 @@ Communicates with the **Betfair Exchange Betting REST API** at:
 | Method | API Endpoint | Purpose |
 |--------|-------------|---------|
 | `listMarketCatalogue(sessionToken)` | `/listMarketCatalogue/` | Discovers soccer match-odds markets |
+| `listMarketCatalogue(sessionToken, textQuery)` | `/listMarketCatalogue/` | Same, but with a text filter |
 | `listMarketBook(sessionToken, marketIds)` | `/listMarketBook/` | Fetches current best back/lay prices |
 
 **`listMarketCatalogue` details:**
 - Filters by Soccer Event Type ID `1`
 - Only `MATCH_ODDS` market type
+- **Hardcoded FIFA World Cup competition ID** `12469077`
+- Optional `textQuery` parameter for name-based filtering
 - Returns up to 100 markets
 - Projections: `COMPETITION`, `EVENT`, `EVENT_TYPE`, `MARKET_START_TIME`, `RUNNER_DESCRIPTION`
 
@@ -300,7 +370,15 @@ Communicates with the **Betfair Exchange Betting REST API** at:
 - `Content-Type: application/json`
 - `Accept: application/json`
 
-### 7.4 Orchestration — `BetfairIntegrationService`
+### 7.4 Betfair Name Mapping — `BetfairNamesToCodes`
+
+**Purpose:** Maps Betfair's display names (e.g., `"Ivory Coast"`, `"Türkiye"`, `"Cape Verde"`) to the application's internal 3-letter FIFA codes (e.g., `CIV`, `TUR`, `CPV`).
+
+- Static `Map<String, String>` with ~47 entries
+- Used by `BetfairIntegrationService.simulateGroupStageOdds()` to match Betfair runners to group matches
+- Hand-curated; can be refreshed via `DumpRunnerNamesRunner`
+
+### 7.5 Orchestration — `BetfairIntegrationService`
 
 **Purpose:** Top-level `@Service` that orchestrates the full Betfair pipeline. The only public class in the `betfair` package.
 
@@ -317,8 +395,22 @@ If authentication fails, the app continues without live odds (graceful degradati
 - `fetchMarketCatalogue()` → `String` (raw JSON) — discovers markets
 - `fetchMarketBook(marketIds)` → `String` (raw JSON) — gets odds for specific markets
 - `getSessionToken()` → `String` — returns cached token
+- `snapshotOddsLocally()` → `void` — fetches live odds and writes to `fallback-odds.json`
+- `simulateGroupStageOdds(groupMatches)` → `Map<String, int[]>` — simulates all 72 group matches using odds
+- `collectWorldCupRunnerNames()` → `Set<String>` — diagnostic: collects all team names from Betfair
 
-### 7.5 SSL Configuration — `BetfairSslConfig`
+### 7.6 Diagnostic Tool — `DumpRunnerNamesRunner`
+
+**Purpose:** A `CommandLineRunner` that collects all Betfair runner (team) names from World Cup MATCH_ODDS markets and writes them to `betfair-runner-names.txt`.
+
+**Activation:**
+```
+.\gradlew.bat bootRun --args="--betfair.dump-runner-names=true"
+```
+
+The app starts, writes the file, prints results, and exits. Used to refresh `BetfairNamesToCodes` when Betfair changes team name spellings. Marked as temporary in source comments.
+
+### 7.7 SSL Configuration — `BetfairSslConfig`
 
 **Purpose:** Creates two `RestTemplate` beans configured with mutual TLS, using the Betfair client certificate and private key.
 
@@ -341,7 +433,80 @@ If authentication fails, the app continues without live odds (graceful degradati
 | `betfairAuthRestTemplate` | SSO certlogin endpoint | 10s connect, 15s read |
 | `betfairApiRestTemplate` | Exchange betting API | 10s connect, 30s read |
 
-### 7.6 Configuration — `BetfairProperties`
+### 7.8 Fallback Odds — File-Based Betfair Data
+
+#### Problem
+
+Betfair restricts API access from certain IP addresses, including common cloud hosting providers (Hetzner, AWS, etc.). When the application runs on a cloud server, Betfair API calls may fail with connection errors or `BETTING_RESTRICTED_LOCATION`. The application needs to handle this gracefully.
+
+#### Solution: `fallback-odds.json`
+
+A pre-saved snapshot of Betfair market data, stored as a classpath resource at `src/main/resources/fallback-odds.json` (~10,000 lines, ~72 markets). Contains both the market catalogue and market book data in a single JSON object:
+
+```json
+{
+  "catalogue": [ { "marketId": "...", "runners": [...], "event": {...}, ... } ],
+  "books": [ { "marketId": "...", "runners": [ { "ex": { "availableToBack": [...], "availableToLay": [...] } } ] } ]
+}
+```
+
+#### Creating the Snapshot
+
+When running locally (localhost, where Betfair works), an admin can capture fresh odds:
+
+**Endpoint:** `GET /api/admin/snapshot-odds` (only available when `prod` profile is NOT active)
+
+**What `snapshotOddsLocally()` does:**
+1. Authenticates with Betfair (or uses cached session)
+2. Fetches the full market catalogue
+3. Fetches market books in batches of 40 (Betfair limit)
+4. Combines catalogue + books into a single JSON object
+5. Writes pretty-printed JSON to `src/main/resources/fallback-odds.json`
+
+The file is then committed to Git and deployed with the application.
+
+#### Using the Fallback
+
+When `simulateGroupStageOdds()` is called:
+
+```
+Attempt live Betfair API call
+        │
+        ├── Success → use live data
+        │
+        └── Failure (network error, BETTING_RESTRICTED_LOCATION, etc.)
+                │
+                ▼
+        Load fallback-odds.json from classpath
+                │
+                ├── Success → use fallback data (flagged as non-live)
+                │
+                └── Failure → use equal 33.3% probability for all matches
+```
+
+The fallback path reads `fallback-odds.json` via `ClassPathResource.getInputStream()` (not `getFile()`, which would fail inside a packaged JAR), parses the `catalogue` and `books` arrays, and processes them identically to live data. The simulation method logs whether it's using live or fallback data.
+
+### 7.9 Group Stage Simulation via Odds
+
+The `simulateGroupStageOdds()` method uses Betfair odds (live or fallback) to probabilistically generate scores for all 72 group matches.
+
+**Algorithm per match:**
+
+1. **Match Betfair markets to group matches** — Uses `BetfairNamesToCodes` to map Betfair runner names to FIFA team codes, then matches to internal group matches via a sorted team-pair key.
+2. **Extract best back prices** — For each runner (team1, team2, draw), takes the best available back price.
+3. **Convert to probabilities** — Decimal odds → implied probability (`1/odds`), then normalise so all three sum to 1.0.
+4. **Roll a random outcome** — Random double determines Team A win / Draw / Team B win.
+5. **Pick a realistic scoreline** — Selected from weighted arrays of common football scores:
+   - Team A wins: `{1,0}`, `{2,0}`, `{2,1}`, `{3,0}`, `{3,1}`, etc.
+   - Draws: `{0,0}`, `{1,1}`, `{2,2}`
+   - Team B wins: `{0,1}`, `{0,2}`, `{1,2}`, `{0,3}`, `{1,3}`, etc.
+6. **Fallback for unmatched matches** — If no odds available, uses equal 33.3% probability per outcome.
+
+**Batching:** Market books are fetched in batches of 40 (Betfair API limit per call).
+
+**REST endpoint:** `POST /api/betfair/simulate-groups`
+
+### 7.10 Configuration — `BetfairProperties`
 
 A `@ConfigurationProperties(prefix = "betfair")` record with validated fields:
 
@@ -359,18 +524,22 @@ A `@ConfigurationProperties(prefix = "betfair")` record with validated fields:
 A vanilla HTML/JS/CSS single-page application with no framework dependencies.
 
 **Structure (`index.html`):**
-- Header with "Seed Bracket from Groups" and "Reset All" buttons
+- Header with "Seed Bracket from Groups", "Reset All", and "🎲 Simulate Group Stage via Betfair Odds" buttons
+- User email display and auto-save status indicator
 - Tab bar switching between **Group Stage** and **Knockout Bracket** views
 - Group Stage view: grid of 12 group cards, each showing standings table and 6 editable match score inputs
 - Knockout Bracket view: horizontally-scrollable bracket visualization
 
-**`app.js` (345 lines):**
+**`app.js` (~590 lines):**
 - Loads team data from `/api/teams` and `/api/groups` on startup
 - Renders group cards with inline score editors (number inputs)
 - On score change → `POST /api/groups/{matchId}/score` → refreshes standings
+- **Auto-save:** Collects all scores from the DOM, POSTs to `/api/user/state` via a 500ms debounced function
+- **State restoration:** On startup, loads saved state from `GET /api/user/state`, checks if backend is fresh, and replays scores if needed
 - Bracket tab calls `POST /api/bracket/seed` then `GET /api/bracket`
 - Knockout score changes → `POST /api/bracket/{matchId}/score`
 - Champion displayed when the Final has a result
+- Betfair simulation → `POST /api/betfair/simulate-groups` with UI feedback
 
 ---
 
@@ -395,6 +564,9 @@ betfair.username=${BETFAIR_USERNAME}
 betfair.password=${BETFAIR_PASSWORD}
 betfair.cert-path=${BETFAIR_CERT_PATH}
 
+# Cloudflare Zero Trust (JWT validation)
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://scaffoldkit.cloudflareaccess.com/cdn-cgi/access/certs
+
 # Logging
 logging.level.dev.scaffoldkit.fifa.betfair=INFO
 ```
@@ -407,13 +579,21 @@ BETFAIR_PASSWORD=your-password
 BETFAIR_CERT_PATH=/path/to/project/root
 ```
 
+### `.env.example`
+```
+BETFAIR_CERT_PATH=
+BETFAIR_API_KEY=
+BETFAIR_USERNAME=
+BETFAIR_PASSWORD=
+```
+
 ### SSL Certificates
 Generate Betfair client certificates and place them in `ssl/`:
 ```
 ssl/client-2048.crt   # Client certificate
 ssl/client-2048.key   # Private key (PKCS#1 or PKCS#8)
 ```
-An `openssl.cnf` template is provided in the `ssl/` directory.
+See `BETFAIR.md` for full setup instructions.
 
 ---
 
@@ -435,6 +615,9 @@ GroupStageService.setGroupMatchScore()
         │
         ▼
 Returns advancement info (winners, runners-up, best 3rd)
+        │
+        ▼
+Frontend calls debounced auto-save → POST /api/user/state
 
 User clicks "Seed Bracket"
         │
@@ -445,7 +628,7 @@ POST /api/bracket/seed
 BracketService.seedBracket()
   ├── Gets group winners, runners-up, best 3rd-place groups
   ├── ThirdPlaceMatrixService.lookup(eliminatedGroups)
-  │     └── Dertermines which 3rd-place teams face which group winners
+  │     └── Determines which 3rd-place teams face which group winners
   └── Populates all 16 R32 matches
 
 User sets knockout score
@@ -458,6 +641,23 @@ BracketService.setKnockoutScore()
   ├── Clears forward chain (removes old winner from subsequent matches)
   ├── Sets new score
   └── Propagates winner to next match slot
+
+User clicks "Simulate via Betfair Odds"
+        │
+        ▼
+POST /api/betfair/simulate-groups
+        │
+        ▼
+BetfairIntegrationService.simulateGroupStageOdds()
+  ├── Authenticates (or uses cached session)
+  ├── Fetches market catalogue (live or fallback-odds.json)
+  ├── Matches markets to group matches via BetfairNamesToCodes
+  ├── Fetches market books (batched)
+  ├── For each match: decimal odds → probability → roll → scoreline
+  └── Returns map of matchId → [score1, score2]
+        │
+        ▼
+TournamentController applies all scores via GroupStageService
 ```
 
 ---
@@ -480,7 +680,7 @@ BetfairIntegrationService.@PostConstruct init()
         ├── Step 2: BetfairMarketClient.listMarketCatalogue(sessionToken)
         │     │
         │     │  POST → api.betfair.com/.../listMarketCatalogue/
-        │     │  Filter: Soccer (eventType 1), MATCH_ODDS
+        │     │  Filter: Soccer (eventType 1), MATCH_ODDS, Competition 12469077
         │     │
         │     └── Returns JSON array of markets (up to 100)
         │
@@ -496,7 +696,74 @@ If any step fails → app continues without live odds (logged as warning)
 
 ---
 
-## 12. Key Design Decisions
+## 12. Betfair Fallback — Data Flow
+
+```
+POST /api/betfair/simulate-groups (or snapshot-odds)
+        │
+        ▼
+BetfairIntegrationService
+        │
+        ├── Attempt live Betfair API call
+        │     │
+        │     ├── Success → Use live market data
+        │     │
+        │     └── Failure (network error, IP blocked, etc.)
+        │           │
+        │           ▼
+        │           Load classpath resource: fallback-odds.json
+        │           │
+        │           ├── Success → Parse catalogue + books, use as data source
+        │           │
+        │           └── Failure → Equal 33.3% probability for all matches
+        │
+        ▼
+  For each matched market:
+        │
+        ├── Map runner names → FIFA codes (BetfairNamesToCodes)
+        │
+        ├── Extract best back prices (team1, draw, team2)
+        │
+        ├── Convert: decimal odds → implied probability → normalise
+        │
+        ├── Random roll → pick outcome (T1 win / Draw / T2 win)
+        │
+        └── Pick realistic scoreline from weighted array
+
+  Unmatched matches → equal 33.3% fallback
+```
+
+---
+
+## 13. Deployment — Docker & Railway
+
+### Dockerfile (Multi-Stage Build)
+
+| Stage | Base Image | Purpose |
+|-------|-----------|---------|
+| Builder | `eclipse-temurin:21-jdk` | Compiles the Spring Boot JAR via Gradle |
+| Runner | `eclipse-temurin:21-jre` | Runs the compiled JAR |
+
+**Certificate handling:** SSL certificates are stored as base64-encoded environment variables (`BETFAIR_CERT_B64`, `BETFAIR_KEY_B64`) and decoded to files at container startup:
+```
+echo "$BETFAIR_CERT_B64" | base64 -d > /app/ssl/client-2048.crt
+echo "$BETFAIR_KEY_B64" | base64 -d > /app/ssl/client-2048.key
+```
+
+### Railway.app Configuration
+
+| Setting | Value |
+|---------|-------|
+| Persistent volume | Mounted at `/app/data` |
+| Datasource URL override | `jdbc:h2:file:/app/data/predictions` |
+| Spring profile | `prod` (activates Cloudflare JWT validation) |
+| Domain | Auto-generated via Railway (e.g., `fifa-production.up.railway.app`) |
+
+**Environment variables:** `BETFAIR_API_KEY`, `BETFAIR_USERNAME`, `BETFAIR_PASSWORD`, `BETFAIR_CERT_B64`, `BETFAIR_KEY_B64`, `SPRING_DATASOURCE_URL`, `SPRING_PROFILES_ACTIVE`
+
+---
+
+## 14. Key Design Decisions
 
 1. **Betfair integration is isolated** — The entire `betfair` package runs independently from the tournament engine. If Betfair credentials are missing or the API is unreachable, the tournament predictor works fully without it.
 
@@ -510,6 +777,28 @@ If any step fails → app continues without live odds (logged as warning)
 
 6. **Vanilla frontend** — No React/Vue/Angular. The frontend is simple enough that a framework would add complexity without benefit. All state is server-side; the frontend is a thin rendering layer over the REST API.
 
-7. **Simulated authentication for development** — `LocalhostUserFilter` uses a hardcoded email (`testuser@example.com`) to simulate a logged-in user on localhost. This avoids the complexity of setting up real authentication during development. The `UserContext` ThreadLocal pattern keeps the current user accessible anywhere in the request chain without passing objects through method signatures. For production, this filter should be replaced with a real auth mechanism (e.g., Spring Security with OAuth2 or JWT).
+7. **Profile-based security** — Spring Security with two configurations: `prod` profile validates Cloudflare Zero Trust JWTs, while the default profile injects a mock user. Both set `UserProfile` as the `@AuthenticationPrincipal`, keeping controller code uniform. The `UserProfileJwtAuthenticationConverter` auto-creates users on first JWT login.
 
-8. **H2 file-based persistence** — H2 was chosen as an embedded database that requires no external server. The file-based mode (`jdbc:h2:file:./data/fifa`) ensures data survives restarts while keeping the development experience simple — just run the app and the database is ready. The H2 web console (`/h2-console`) provides a convenient way to inspect data during development.
+8. **H2 file-based persistence** — H2 was chosen as an embedded database that requires no external server. The file-based mode (`jdbc:h2:file:./data/fifa`) ensures data survives restarts while keeping the development experience simple. The H2 web console (`/h2-console`) provides a convenient way to inspect data during development.
+
+9. **Betfair fallback via file** — A snapshot mechanism allows odds to be captured on localhost (where Betfair works) and committed to the codebase. In production (where Betfair may be IP-blocked), the system seamlessly falls back to the snapshot. This avoids the need for a proxy or VPN on the production server.
+
+10. **Auto-save with debouncing** — The frontend auto-saves the full tournament state after every score change (debounced by 500ms), so users don't lose work. On page load, the saved state is compared to the backend state and replayed if the backend is fresh (e.g., after a server restart).
+
+---
+
+## 15. Known Implementation Notes
+
+> **These are observations about the current codebase, documented as-is. No changes have been made.**
+
+1. **`@Profile` on controller method** — `TournamentController.snapshotOdds()` uses `@Profile("!prod")` on an individual handler method. In Spring, `@Profile` is a component-level annotation and typically does not work on individual `@GetMapping` methods. This means the `/api/admin/snapshot-odds` endpoint may be accessible in all profiles, including production.
+
+2. **`BETFAIR.md` says POST but code uses GET** — The documentation file `BETFAIR.md` instructs users to send a `POST` request to `/api/admin/snapshot-odds`, but the actual controller method is annotated with `@GetMapping`. The endpoint currently only responds to GET requests.
+
+3. **Mock user not persisted** — `LocalSecurityConfig.MockAuthenticationFilter` creates a transient `UserProfile` (`new UserProfile(...)`) that is not saved to the database. The mock user's predictions can still be saved via `UserStateController.saveState()` (which calls `userProfileRepository.save()`), but the entity has no `id` until that first save.
+
+4. **Hardcoded competition ID** — `BetfairMarketClient` hardcodes the FIFA World Cup competition ID (`12469077`) in the market catalogue filter. If Betfair changes this ID between tournaments, the filter would need to be updated in source code.
+
+5. **`BetfairNamesToCodes` name discrepancy** — The mapping uses `"Cape Verde"` (Betfair's spelling) while `GroupStageService` uses `"Cabo Verde"` (FIFA's official spelling). Both map to the same FIFA code `CPV`, so the integration works correctly, but the internal display name differs from the Betfair name.
+
+6. **`DumpRunnerNamesRunner` marked temporary** — Source comments indicate this `CommandLineRunner` should be removed once the name mapping is stable. It remains in the codebase as a diagnostic tool.
