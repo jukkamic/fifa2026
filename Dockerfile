@@ -26,5 +26,9 @@ COPY --from=builder /workspace/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
+# Activate the prod Spring profile by default (Cloudflare Zero Trust JWT validation).
+# Can be overridden at runtime via SPRING_PROFILES_ACTIVE environment variable.
+ENV SPRING_PROFILES_ACTIVE=prod
+
 # Decode the certificates from environment variables into files, then start the JVM
 ENTRYPOINT ["/bin/sh", "-c", "echo \"$BETFAIR_CERT_B64\" | base64 -d > /app/ssl/client-2048.crt && echo \"$BETFAIR_KEY_B64\" | base64 -d > /app/ssl/client-2048.key && java -jar app.jar"]

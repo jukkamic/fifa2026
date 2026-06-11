@@ -825,10 +825,12 @@ echo "$BETFAIR_KEY_B64" | base64 -d > /app/ssl/client-2048.key
 |---------|-------|
 | Persistent volume | Mounted at `/app/data` |
 | Datasource URL override | `jdbc:h2:file:/app/data/predictions` |
-| Spring profile | `prod` (activates Cloudflare JWT validation) |
+| Spring profile | `prod` (set via `ENV SPRING_PROFILES_ACTIVE=prod` in Dockerfile; activates Cloudflare JWT validation) |
 | Domain | Auto-generated via Railway (e.g., `fifa-production.up.railway.app`) |
 
-**Environment variables:** `BETFAIR_API_KEY`, `BETFAIR_USERNAME`, `BETFAIR_PASSWORD`, `BETFAIR_CERT_B64`, `BETFAIR_KEY_B64`, `SPRING_DATASOURCE_URL`, `SPRING_PROFILES_ACTIVE`
+**Environment variables:** `BETFAIR_API_KEY`, `BETFAIR_USERNAME`, `BETFAIR_PASSWORD`, `BETFAIR_CERT_B64`, `BETFAIR_KEY_B64`, `SPRING_DATASOURCE_URL`
+
+> **Note:** The `prod` Spring profile is set by default in the Dockerfile via `ENV SPRING_PROFILES_ACTIVE=prod`. This ensures the Cloudflare Zero Trust JWT validation (`ProdSecurityConfig`) is always active in the Docker container. It can still be overridden at runtime by setting the `SPRING_PROFILES_ACTIVE` environment variable on the hosting platform.
 
 ---
 
