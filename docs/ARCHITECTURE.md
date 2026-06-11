@@ -111,7 +111,7 @@ Root-level files:
 |--------|--------|
 | Teams | 48 teams hardcoded (FIFA codes like `BRA`, `ENG`, `MEX`) |
 | Groups | `A`–`L`, each with exactly 4 teams |
-| Matches | 6 per group, IDs like `A1`, `A2`, … `L6` |
+| Matches | 6 per group, IDs like `A1`, `A2`, … `L6`. Home/Away follows the official FIFA 2026 fixture schedule (reflected in Betfair's `sortPriority` field). |
 | Standings sorting | Points desc → Goal Difference desc → Goals For desc |
 | Advancement | Top 2 per group (24 teams) + 8 best 3rd-place teams = 32 |
 
@@ -512,15 +512,19 @@ The `simulateGroupStageOdds()` method uses Betfair odds (live or fallback) to pr
 
 **Algorithm per match:**
 
-1. **Match Betfair markets to group matches** — Uses `BetfairNamesToCodes` to map Betfair runner names to FIFA team codes, then matches to internal group matches via a sorted team-pair key.
-2. **Extract best back prices** — For each runner (team1, team2, draw), takes the best available back price.
-3. **Convert to probabilities** — Decimal odds → implied probability (`1/odds`), then normalise so all three sum to 1.0.
-4. **Roll a random outcome** — Random double determines Team A win / Draw / Team B win.
-5. **Pick a realistic scoreline** — Selected from weighted arrays of common football scores:
+1. **Match Betfair markets to group matches** — Uses `BetfairNamesToCodes` to map Betfair runner names to FIFA team codes, then matches to internal group matches via a sorted team-pair key. **Home/Away is determined by the Betfair `sortPriority` field** (not array index or name splitting):
+   - `sortPriority: 1` → Home team
+   - `sortPriority: 2` → Away team
+   - `sortPriority: 3` → Draw
+2. **Extract best back prices** — For each runner (Home, Away, Draw), takes the best available back price using the `sortPriority` field from the market catalogue (mapped to book runners via `selectionId`).
+3. **Align odds to GroupMatch order** — Since market-to-match matching uses a sorted team-pair (order-independent), the system checks whether Betfair's Home (`sortPriority 1`) corresponds to the `GroupMatch`'s `team1` or `team2`, and swaps odds if necessary to ensure correct alignment.
+4. **Convert to probabilities** — Decimal odds → implied probability (`1/odds`), then normalise so all three sum to 1.0.
+5. **Roll a random outcome** — Random double determines Team A win / Draw / Team B win.
+6. **Pick a realistic scoreline** — Selected from weighted arrays of common football scores:
    - Team A wins: `{1,0}`, `{2,0}`, `{2,1}`, `{3,0}`, `{3,1}`, etc.
    - Draws: `{0,0}`, `{1,1}`, `{2,2}`
    - Team B wins: `{0,1}`, `{0,2}`, `{1,2}`, `{0,3}`, `{1,3}`, etc.
-6. **Fallback for unmatched matches** — If no odds available, uses equal 33.3% probability per outcome.
+7. **Fallback for unmatched matches** — If no odds available, uses equal 33.3% probability per outcome.
 
 **Batching:** Market books are fetched in batches of 40 (Betfair API limit per call).
 
@@ -812,7 +816,13 @@ BetfairIntegrationService
         │
         ├── Map runner names → FIFA codes (BetfairNamesToCodes)
         │
-        ├── Extract best back prices (team1, draw, team2)
+        ├── Determine Home/Away via sortPriority field:
+        │     sortPriority 1 → Home, sortPriority 2 → Away, sortPriority 3 → Draw
+        │
+        ├── Extract best back prices mapped by selectionId to sortPriority
+        │
+        ├── Align odds to GroupMatch team1/team2 order
+        │     (swap Home/Away odds if Betfair Home ≠ GroupMatch team1)
         │
         ├── Convert: decimal odds → implied probability → normalise
         │

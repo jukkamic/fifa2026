@@ -372,6 +372,16 @@ public class BetfairIntegrationService {
 
     // ── Group Stage Simulation via Betfair Odds ──────────────────────────
 
+    /**
+     * Holds per-runner metadata extracted from the market catalogue.
+     * Used to map book runners (identified only by selectionId) back to
+     * their sortPriority and FIFA team code.
+     *
+     * @param fifaCode      the 3-letter FIFA team code, or "DRAW" for sortPriority 3
+     * @param sortPriority  Betfair sortPriority: 1 = Home, 2 = Away, 3 = Draw
+     */
+    private record RunnerMeta(String fifaCode, int sortPriority) {}
+
     /** Realistic score-lines for a Team A (home) win. */
     private static final int[][] TEAM_A_WIN_SCORES = {
             {1, 0}, {2, 0}, {2, 1}, {3, 0}, {3, 1}, {1, 0}, {2, 1}, {1, 0}
@@ -470,8 +480,9 @@ public class BetfairIntegrationService {
             }
             log.info(" simulateGroupStageOdds: received {} market(s) from Betfair (fallback={})", markets.size(), usingFallback);
 
-            // selectionId → "DRAW" or FIFA code, per market
-            Map<String, Map<Long, String>> marketSelections = new LinkedHashMap<>();
+            // selectionId → RunnerMeta (FIFA code + sortPriority), per market
+            // sortPriority 1 = Home, 2 = Away, 3 = Draw — per Betfair API spec
+            Map<String, Map<Long, RunnerMeta>> marketSelections = new LinkedHashMap<>();
             Map<String, String> marketToMatchId = new LinkedHashMap<>();
             Map<String, GroupMatch> marketToMatch = new LinkedHashMap<>();
             List<String> matchedMarketIds = new ArrayList<>();
@@ -480,34 +491,46 @@ public class BetfairIntegrationService {
                 String marketId = market.path("marketId").asText();
                 var runners = market.path("runners");
 
-                Map<Long, String> selMap = new LinkedHashMap<>();
-                Set<String> teamCodes = new LinkedHashSet<>();
+                Map<Long, RunnerMeta> selMap = new LinkedHashMap<>();
+                String homeCode = null;
+                String awayCode = null;
 
                 for (var runner : runners) {
                     String runnerName = runner.path("runnerName").asText("").trim();
                     long selectionId = runner.path("selectionId").asLong();
+                    int sortPriority = runner.path("sortPriority").asInt(0);
 
                     if (runnerName.equalsIgnoreCase("Draw")
                             || runnerName.equalsIgnoreCase("The Draw")) {
-                        selMap.put(selectionId, "DRAW");
+                        selMap.put(selectionId, new RunnerMeta("DRAW", sortPriority));
                         continue;
                     }
                     String fifaCode = BetfairNamesToCodes.BETFAIR_TO_FIFA.get(runnerName);
                     if (fifaCode != null) {
-                        selMap.put(selectionId, fifaCode);
-                        teamCodes.add(fifaCode);
+                        selMap.put(selectionId, new RunnerMeta(fifaCode, sortPriority));
+                        // Explicitly assign Home/Away based on sortPriority, not array order
+                        if (sortPriority == 1) {
+                            homeCode = fifaCode;
+                        } else if (sortPriority == 2) {
+                            awayCode = fifaCode;
+                        }
                     }
                 }
 
-                if (teamCodes.size() == 2) {
-                    List<String> codes = new ArrayList<>(teamCodes);
-                    String pairKey = sortedPair(codes.get(0), codes.get(1));
+                if (homeCode != null && awayCode != null) {
+                    String pairKey = sortedPair(homeCode, awayCode);
                     String matchId = pairToMatchId.get(pairKey);
                     if (matchId != null) {
+                        GroupMatch groupMatch = groupMatches.get(matchId);
                         marketSelections.put(marketId, selMap);
                         marketToMatchId.put(marketId, matchId);
-                        marketToMatch.put(marketId, groupMatches.get(matchId));
+                        marketToMatch.put(marketId, groupMatch);
                         matchedMarketIds.add(marketId);
+
+                        log.debug("  Market {} → match {} | Betfair Home={} Away={} | " +
+                                "GroupMatch team1={} team2={}",
+                                marketId, matchId, homeCode, awayCode,
+                                groupMatch.getTeam1Code(), groupMatch.getTeam2Code());
                     }
                 }
             }
@@ -572,35 +595,68 @@ public class BetfairIntegrationService {
     private void processBookNode(com.fasterxml.jackson.databind.JsonNode book,
                                  Map<String, String> marketToMatchId,
                                  Map<String, GroupMatch> marketToMatch,
-                                 Map<String, Map<Long, String>> marketSelections,
+                                 Map<String, Map<Long, RunnerMeta>> marketSelections,
                                  Random random, Map<String, int[]> results) {
         String marketId = book.path("marketId").asText();
         String matchId = marketToMatchId.get(marketId);
         if (matchId == null) return;
 
         GroupMatch match = marketToMatch.get(marketId);
-        Map<Long, String> selMap = marketSelections.get(marketId);
+        Map<Long, RunnerMeta> selMap = marketSelections.get(marketId);
 
-        Double team1Odds = null;
+        // Extract odds using sortPriority: 1=Home, 2=Away, 3=Draw
+        Double homeOdds = null;
         Double drawOdds = null;
-        Double team2Odds = null;
+        Double awayOdds = null;
 
         for (var runner : book.path("runners")) {
             long selId = runner.path("selectionId").asLong();
-            String codeOrDraw = selMap.get(selId);
-            if (codeOrDraw == null) continue;
+            RunnerMeta meta = selMap.get(selId);
+            if (meta == null) continue;
 
             var backPrices = runner.path("ex").path("availableToBack");
             if (backPrices.size() == 0) continue;
             double bestBack = backPrices.get(0).path("price").asDouble();
             if (bestBack <= 1.0) continue; // invalid / no-market
 
-            if ("DRAW".equals(codeOrDraw)) {
-                drawOdds = bestBack;
-            } else if (codeOrDraw.equals(match.getTeam1Code())) {
-                team1Odds = bestBack;
-            } else if (codeOrDraw.equals(match.getTeam2Code())) {
-                team2Odds = bestBack;
+            switch (meta.sortPriority()) {
+                case 1 -> homeOdds = bestBack;   // sortPriority 1 = Home
+                case 2 -> awayOdds = bestBack;   // sortPriority 2 = Away
+                case 3 -> drawOdds = bestBack;   // sortPriority 3 = Draw
+            }
+        }
+
+        // Map Betfair Home/Away to the GroupMatch's team1/team2 order.
+        // Betfair's sortPriority 1 (Home) corresponds to the first team listed
+        // in the event name (e.g. "Mexico v South Africa" → Mexico is Home).
+        // We match markets to group matches by sorted team-pair (order-independent),
+        // so we must now align odds with the group match's team1/team2 slots.
+        Double team1Odds;
+        Double team2Odds;
+
+        if (homeOdds != null && match.getTeam1Code().equals(match.getTeam2Code())) {
+            // Edge case: same team (shouldn't happen) — treat homeOdds as team1
+            team1Odds = homeOdds;
+            team2Odds = awayOdds;
+        } else {
+            // Check if Betfair Home (sortPriority 1) is team1 or team2 in our GroupMatch
+            // We need to look up which FIFA code the sortPriority-1 runner maps to
+            String homeCode = null;
+            for (var entry : selMap.entrySet()) {
+                if (entry.getValue().sortPriority() == 1 && !"DRAW".equals(entry.getValue().fifaCode())) {
+                    homeCode = entry.getValue().fifaCode();
+                    break;
+                }
+            }
+
+            if (homeCode != null && homeCode.equals(match.getTeam1Code())) {
+                // Betfair Home aligns with our team1 — no swap needed
+                team1Odds = homeOdds;
+                team2Odds = awayOdds;
+            } else {
+                // Betfair Home maps to our team2 — swap so odds align correctly
+                team1Odds = awayOdds;
+                team2Odds = homeOdds;
             }
         }
 

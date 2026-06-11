@@ -112,17 +112,114 @@ public class GroupStageService {
 
     // ── Group Match Initialization (round-robin) ────────────────────────
 
+    /**
+     * Creates the 6 round-robin group matches per FIFA 2026 World Cup schedule.
+     *
+     * <p>Home/Away assignment follows the actual FIFA fixture order (reflected
+     * in Betfair's {@code sortPriority} field).  The old generic
+     * {@code 0v1, 0v2, 0v3, 1v2, 1v3, 2v3} pattern was incorrect because it
+     * always made the first-listed team the home side in matches 1-3, which
+     * does not match the real schedule.
+     *
+     * <p>Each group's teams are indexed [0, 1, 2, 3] in the order they are
+     * registered in {@link #initTeams()}.
+     */
     private void initGroupMatches() {
-        for (String group : GROUP_NAMES) {
-            List<String> t = groups.get(group);
-            // 6 matches per group: 0v1, 0v2, 0v3, 1v2, 1v3, 2v3
-            createGroupMatch(group, 1, t.get(0), t.get(1));
-            createGroupMatch(group, 2, t.get(0), t.get(2));
-            createGroupMatch(group, 3, t.get(0), t.get(3));
-            createGroupMatch(group, 4, t.get(1), t.get(2));
-            createGroupMatch(group, 5, t.get(1), t.get(3));
-            createGroupMatch(group, 6, t.get(2), t.get(3));
-        }
+        // Group A – MEX(0) RSA(1) KOR(2) CZE(3)
+        createGroupMatch("A", 1, "MEX", "RSA");   // 0v1
+        createGroupMatch("A", 2, "KOR", "CZE");   // 2v3
+        createGroupMatch("A", 3, "CZE", "RSA");   // 3v1
+        createGroupMatch("A", 4, "MEX", "KOR");   // 0v2
+        createGroupMatch("A", 5, "CZE", "MEX");   // 3v0
+        createGroupMatch("A", 6, "RSA", "KOR");   // 1v2
+
+        // Group B – CAN(0) BIH(1) QAT(2) SUI(3)
+        createGroupMatch("B", 1, "CAN", "BIH");   // 0v1
+        createGroupMatch("B", 2, "QAT", "SUI");   // 2v3
+        createGroupMatch("B", 3, "CAN", "QAT");   // 0v2
+        createGroupMatch("B", 4, "SUI", "BIH");   // 3v1
+        createGroupMatch("B", 5, "SUI", "CAN");   // 3v0
+        createGroupMatch("B", 6, "BIH", "QAT");   // 1v2
+
+        // Group C – BRA(0) MAR(1) HAI(2) SCO(3)
+        createGroupMatch("C", 1, "BRA", "MAR");   // 0v1
+        createGroupMatch("C", 2, "HAI", "SCO");   // 2v3
+        createGroupMatch("C", 3, "SCO", "MAR");   // 3v1
+        createGroupMatch("C", 4, "BRA", "HAI");   // 0v2
+        createGroupMatch("C", 5, "SCO", "BRA");   // 3v0
+        createGroupMatch("C", 6, "MAR", "HAI");   // 1v2
+
+        // Group D – USA(0) PAR(1) AUS(2) TUR(3)
+        createGroupMatch("D", 1, "USA", "PAR");   // 0v1
+        createGroupMatch("D", 2, "AUS", "TUR");   // 2v3
+        createGroupMatch("D", 3, "USA", "AUS");   // 0v2
+        createGroupMatch("D", 4, "TUR", "PAR");   // 3v1
+        createGroupMatch("D", 5, "TUR", "USA");   // 3v0
+        createGroupMatch("D", 6, "PAR", "AUS");   // 1v2
+
+        // Group E – GER(0) CUW(1) CIV(2) ECU(3)
+        createGroupMatch("E", 1, "GER", "CUW");   // 0v1
+        createGroupMatch("E", 2, "CIV", "ECU");   // 2v3
+        createGroupMatch("E", 3, "GER", "CIV");   // 0v2
+        createGroupMatch("E", 4, "ECU", "CUW");   // 3v1
+        createGroupMatch("E", 5, "CUW", "CIV");   // 1v2
+        createGroupMatch("E", 6, "ECU", "GER");   // 3v0
+
+        // Group F – NED(0) JPN(1) SWE(2) TUN(3)
+        createGroupMatch("F", 1, "NED", "JPN");   // 0v1
+        createGroupMatch("F", 2, "SWE", "TUN");   // 2v3
+        createGroupMatch("F", 3, "NED", "SWE");   // 0v2
+        createGroupMatch("F", 4, "TUN", "JPN");   // 3v1
+        createGroupMatch("F", 5, "TUN", "NED");   // 3v0
+        createGroupMatch("F", 6, "JPN", "SWE");   // 1v2
+
+        // Group G – BEL(0) EGY(1) IRN(2) NZL(3)
+        createGroupMatch("G", 1, "BEL", "EGY");   // 0v1
+        createGroupMatch("G", 2, "IRN", "NZL");   // 2v3
+        createGroupMatch("G", 3, "BEL", "IRN");   // 0v2
+        createGroupMatch("G", 4, "NZL", "EGY");   // 3v1
+        createGroupMatch("G", 5, "NZL", "BEL");   // 3v0
+        createGroupMatch("G", 6, "EGY", "IRN");   // 1v2
+
+        // Group H – ESP(0) CPV(1) KSA(2) URU(3)
+        createGroupMatch("H", 1, "ESP", "CPV");   // 0v1
+        createGroupMatch("H", 2, "KSA", "URU");   // 2v3
+        createGroupMatch("H", 3, "ESP", "KSA");   // 0v2
+        createGroupMatch("H", 4, "URU", "CPV");   // 3v1
+        createGroupMatch("H", 5, "CPV", "KSA");   // 1v2
+        createGroupMatch("H", 6, "URU", "ESP");   // 3v0
+
+        // Group I – FRA(0) SEN(1) IRQ(2) NOR(3)
+        createGroupMatch("I", 1, "FRA", "SEN");   // 0v1
+        createGroupMatch("I", 2, "IRQ", "NOR");   // 2v3
+        createGroupMatch("I", 3, "FRA", "IRQ");   // 0v2
+        createGroupMatch("I", 4, "NOR", "SEN");   // 3v1
+        createGroupMatch("I", 5, "SEN", "IRQ");   // 1v2
+        createGroupMatch("I", 6, "NOR", "FRA");   // 3v0
+
+        // Group J – ARG(0) ALG(1) AUT(2) JOR(3)
+        createGroupMatch("J", 1, "ARG", "ALG");   // 0v1
+        createGroupMatch("J", 2, "AUT", "JOR");   // 2v3
+        createGroupMatch("J", 3, "ARG", "AUT");   // 0v2
+        createGroupMatch("J", 4, "JOR", "ALG");   // 3v1
+        createGroupMatch("J", 5, "JOR", "ARG");   // 3v0
+        createGroupMatch("J", 6, "ALG", "AUT");   // 1v2
+
+        // Group K – POR(0) COD(1) UZB(2) COL(3)
+        createGroupMatch("K", 1, "POR", "COD");   // 0v1
+        createGroupMatch("K", 2, "UZB", "COL");   // 2v3
+        createGroupMatch("K", 3, "POR", "UZB");   // 0v2
+        createGroupMatch("K", 4, "COL", "COD");   // 3v1
+        createGroupMatch("K", 5, "COL", "POR");   // 3v0
+        createGroupMatch("K", 6, "COD", "UZB");   // 1v2
+
+        // Group L – ENG(0) CRO(1) GHA(2) PAN(3)
+        createGroupMatch("L", 1, "ENG", "CRO");   // 0v1
+        createGroupMatch("L", 2, "GHA", "PAN");   // 2v3
+        createGroupMatch("L", 3, "ENG", "GHA");   // 0v2
+        createGroupMatch("L", 4, "PAN", "CRO");   // 3v1
+        createGroupMatch("L", 5, "PAN", "ENG");   // 3v0
+        createGroupMatch("L", 6, "CRO", "GHA");   // 1v2
     }
 
     private void createGroupMatch(String group, int num, String team1, String team2) {
