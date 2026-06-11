@@ -416,15 +416,6 @@ public class BetfairIntegrationService {
         if (sessionToken == null) {
             authenticate();
         }
-        if (sessionToken == null) {
-            log.warn("Cannot authenticate with Betfair – using fallback for all {} matches",
-                    groupMatches.size());
-            appEvents.emitInfo("Betfair",
-                    "Using equal-probability simulation for all matches " +
-                    "(Betfair authentication unavailable).");
-            groupMatches.forEach((id, m) -> results.put(id, simulateWithFallback(random)));
-            return results;
-        }
 
         try {
             // ── Build reverse lookup: sorted team-pair → match-id ─────────
@@ -435,19 +426,22 @@ public class BetfairIntegrationService {
                 pairToMatchId.put(key, entry.getKey());
             }
 
-            // ── Fetch market catalogue ────────────────────────────────────
+            // ── Fetch market catalogue (live if authenticated, else fallback) ─
             String catalogueJson = null;
-            try {
-                catalogueJson = marketClient.listMarketCatalogue(sessionToken);
-            } catch (Exception e) {
-                log.warn("Exception fetching market catalogue: {}", e.getMessage());
+            if (sessionToken != null) {
+                try {
+                    catalogueJson = marketClient.listMarketCatalogue(sessionToken);
+                } catch (Exception e) {
+                    log.warn("Exception fetching market catalogue: {}", e.getMessage());
+                }
             }
 
             var rootNode = objectMapper.createObjectNode();
             boolean usingFallback = false;
 
             if (catalogueJson == null) {
-                log.warn("Failed to fetch live market catalogue. Falling back to local snapshot...");
+                log.warn("No live market catalogue available (sessionToken={}, Betfair API unreachable). " +
+                        "Falling back to local snapshot...", sessionToken != null ? "present" : "null");
                 try {
                     ClassPathResource resource = new ClassPathResource("fallback-odds.json");
                     String fallbackJson;
