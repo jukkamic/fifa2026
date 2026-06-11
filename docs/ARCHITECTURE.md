@@ -209,6 +209,7 @@ All endpoints are under `/api`. The controllers are `TournamentController` and `
 | `POST` | `/api/bracket/{matchId}/score` | Set knockout score. Body: `{"score1": int, "score2": int}` |
 | `POST` | `/api/reset` | Reset all group scores and bracket |
 | `GET` | `/api/admin/snapshot-odds` | Snapshot Betfair odds to `fallback-odds.json` (non-prod only) |
+| `GET` | `/api/fallback-odds-timestamp` | Returns the last-modified timestamp of `fallback-odds.json` formatted in Finnish 24h time (e.g. `"19.6. 13:23:50"`) |
 | `POST` | `/api/betfair/simulate-groups` | Simulate all group matches using Betfair odds (live or fallback). Respects locked actual results. |
 | `GET` | `/api/events` | Returns recent app events (errors, warnings, info) for UI notifications |
 | `POST` | `/api/admin/lock-score/{matchId}` | **Admin only.** Lock a group match result. Body: `{"score1": int, "score2": int}` |
@@ -628,7 +629,7 @@ The frontend polls `GET /api/events` every 10 seconds, compares timestamps to fi
 A vanilla HTML/JS/CSS single-page application with no framework dependencies.
 
 **Structure (`index.html`):**
-- Header with "Seed Bracket from Groups", "Reset All", and "🎲 Simulate Group Stage via Betfair Odds" buttons
+- Header with "Seed Bracket from Groups", "Reset All", and "🎲 Simulate Group Stage via Betfair Odds" buttons (the latter showing the fallback-odds snapshot timestamp inside the button)
 - User email display and auto-save status indicator
 - Notification container (fixed, top-right) for error/warning/info toasts
 - Tab bar switching between **Group Stage** and **Knockout Bracket** views

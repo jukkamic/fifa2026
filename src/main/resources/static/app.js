@@ -121,6 +121,25 @@ async function init() {
 
     // Restore saved user state (needed after server restart)
     await restoreSavedState();
+
+    // Load fallback odds snapshot timestamp for the simulate button
+    loadOddsSnapshotTimestamp();
+}
+
+/**
+ * Fetches the fallback-odds.json last-modified timestamp from the backend
+ * and displays it inside the simulate button (e.g. "Odds snapshot: 19.6. 13:23:50").
+ */
+async function loadOddsSnapshotTimestamp() {
+    try {
+        const data = await apiGet('/api/fallback-odds-timestamp');
+        if (data.timestamp) {
+            const el = document.getElementById('odds-snapshot-time');
+            if (el) el.textContent = ' (Odds snapshot: ' + data.timestamp + ')';
+        }
+    } catch (err) {
+        // Non-critical — just skip showing the timestamp
+    }
 }
 
 // ===== STATE RESTORATION =====
@@ -604,7 +623,8 @@ async function resetAll() {
 // ===== BETFAIR SIMULATION =====
 async function simulateBetfairGroups() {
     const btn = document.getElementById('btn-simulate-betfair');
-    const originalText = btn.innerHTML;
+    const snapshotSpan = document.getElementById('odds-snapshot-time');
+    const snapshotText = snapshotSpan ? snapshotSpan.textContent : '';
     btn.disabled = true;
     btn.innerHTML = '⏳ Simulating via Betfair Odds...';
 
@@ -623,9 +643,10 @@ async function simulateBetfairGroups() {
     }
 
     setTimeout(() => {
-        btn.innerHTML = originalText;
         btn.disabled = false;
         btn.classList.remove('btn-success');
+        // Restore button text with the snapshot timestamp preserved
+        btn.innerHTML = '🎲 Simulate Group Stage via Betfair Odds\n<span id="odds-snapshot-time" class="odds-snapshot-time">' + snapshotText + '</span>';
     }, 3000);
 }
 

@@ -3,7 +3,7 @@
     "marketId" : "1.251397078",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-11T19:00:00.000Z",
-    "totalMatched" : 1348810.7540880002,
+    "totalMatched" : 1371827.7334469997,
     "runners" : [ {
       "selectionId" : 37944,
       "runnerName" : "Mexico",
@@ -38,7 +38,7 @@
     "marketId" : "1.256139003",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-12T02:00:00.000Z",
-    "totalMatched" : 382504.611281,
+    "totalMatched" : 385460.56787499995,
     "runners" : [ {
       "selectionId" : 47965,
       "runnerName" : "South Korea",
@@ -73,7 +73,7 @@
     "marketId" : "1.256139291",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-12T19:00:00.000Z",
-    "totalMatched" : 195761.77613800002,
+    "totalMatched" : 200789.771624,
     "runners" : [ {
       "selectionId" : 39112,
       "runnerName" : "Canada",
@@ -108,7 +108,7 @@
     "marketId" : "1.251397219",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-13T01:00:00.000Z",
-    "totalMatched" : 187325.44410699996,
+    "totalMatched" : 196708.13938699997,
     "runners" : [ {
       "selectionId" : 352,
       "runnerName" : "USA",
@@ -143,7 +143,7 @@
     "marketId" : "1.251400637",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-13T19:00:00.000Z",
-    "totalMatched" : 77277.03020499999,
+    "totalMatched" : 77492.584869,
     "runners" : [ {
       "selectionId" : 53447,
       "runnerName" : "Qatar",
@@ -178,7 +178,7 @@
     "marketId" : "1.251400780",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-13T22:00:00.000Z",
-    "totalMatched" : 101346.23960999999,
+    "totalMatched" : 102940.65633099999,
     "runners" : [ {
       "selectionId" : 1408,
       "runnerName" : "Brazil",
@@ -213,7 +213,7 @@
     "marketId" : "1.251400493",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-14T01:00:00.000Z",
-    "totalMatched" : 114123.38821399999,
+    "totalMatched" : 114241.88769999999,
     "runners" : [ {
       "selectionId" : 834087,
       "runnerName" : "Haiti",
@@ -248,7 +248,7 @@
     "marketId" : "1.256139201",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-14T04:00:00.000Z",
-    "totalMatched" : 62103.457023999996,
+    "totalMatched" : 62147.364592,
     "runners" : [ {
       "selectionId" : 15296,
       "runnerName" : "Australia",
@@ -318,7 +318,7 @@
     "marketId" : "1.251400102",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-14T20:00:00.000Z",
-    "totalMatched" : 91147.792201,
+    "totalMatched" : 92009.79085599999,
     "runners" : [ {
       "selectionId" : 231787,
       "runnerName" : "Netherlands",
@@ -353,7 +353,7 @@
     "marketId" : "1.251384169",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-14T23:00:00.000Z",
-    "totalMatched" : 85283.23712299998,
+    "totalMatched" : 85293.26453700001,
     "runners" : [ {
       "selectionId" : 75104,
       "runnerName" : "Ivory Coast",
@@ -388,7 +388,7 @@
     "marketId" : "1.256139684",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-15T02:00:00.000Z",
-    "totalMatched" : 44612.39330899999,
+    "totalMatched" : 44643.170291,
     "runners" : [ {
       "selectionId" : 25912,
       "runnerName" : "Sweden",
@@ -423,7 +423,7 @@
     "marketId" : "1.251399106",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-15T16:00:00.000Z",
-    "totalMatched" : 130311.91864,
+    "totalMatched" : 130323.01132199999,
     "runners" : [ {
       "selectionId" : 22,
       "runnerName" : "Spain",
@@ -458,7 +458,7 @@
     "marketId" : "1.251398966",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-15T19:00:00.000Z",
-    "totalMatched" : 15517.481059999998,
+    "totalMatched" : 15527.716895999996,
     "runners" : [ {
       "selectionId" : 29578,
       "runnerName" : "Belgium",
@@ -528,7 +528,7 @@
     "marketId" : "1.251426852",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-16T01:00:00.000Z",
-    "totalMatched" : 39960.98164,
+    "totalMatched" : 40042.150429999994,
     "runners" : [ {
       "selectionId" : 47966,
       "runnerName" : "Iran",
@@ -563,7 +563,7 @@
     "marketId" : "1.251397403",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-16T19:00:00.000Z",
-    "totalMatched" : 25487.532693999998,
+    "totalMatched" : 25497.07379,
     "runners" : [ {
       "selectionId" : 24,
       "runnerName" : "France",
@@ -598,7 +598,7 @@
     "marketId" : "1.256162419",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-16T22:00:00.000Z",
-    "totalMatched" : 19587.84693,
+    "totalMatched" : 19611.3523,
     "runners" : [ {
       "selectionId" : 53446,
       "runnerName" : "Iraq",
@@ -948,7 +948,7 @@
     "marketId" : "1.257503897",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-19T01:00:00.000Z",
-    "totalMatched" : 1941.6361939999997,
+    "totalMatched" : 1996.532233,
     "runners" : [ {
       "selectionId" : 37944,
       "runnerName" : "Mexico",
@@ -1053,7 +1053,7 @@
     "marketId" : "1.258055706",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-20T00:30:00.000Z",
-    "totalMatched" : 13384.119783999999,
+    "totalMatched" : 13399.693539,
     "runners" : [ {
       "selectionId" : 1408,
       "runnerName" : "Brazil",
@@ -1088,7 +1088,7 @@
     "marketId" : "1.258055656",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-20T03:00:00.000Z",
-    "totalMatched" : 487.082214,
+    "totalMatched" : 492.42013299999996,
     "runners" : [ {
       "selectionId" : 84448959,
       "runnerName" : "Türkiye",
@@ -1123,7 +1123,7 @@
     "marketId" : "1.257505065",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-20T17:00:00.000Z",
-    "totalMatched" : 1148.0810079999999,
+    "totalMatched" : 1167.8926769999998,
     "runners" : [ {
       "selectionId" : 231787,
       "runnerName" : "Netherlands",
@@ -1193,7 +1193,7 @@
     "marketId" : "1.257505345",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-21T00:00:00.000Z",
-    "totalMatched" : 5066.449345,
+    "totalMatched" : 5076.800971,
     "runners" : [ {
       "selectionId" : 15303,
       "runnerName" : "Ecuador",
@@ -1298,7 +1298,7 @@
     "marketId" : "1.258433364",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-21T19:00:00.000Z",
-    "totalMatched" : 1279.687922,
+    "totalMatched" : 1319.5659979999996,
     "runners" : [ {
       "selectionId" : 29578,
       "runnerName" : "Belgium",
@@ -1578,7 +1578,7 @@
     "marketId" : "1.257506605",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-23T20:00:00.000Z",
-    "totalMatched" : 3480.4737149999996,
+    "totalMatched" : 3482.7895149999995,
     "runners" : [ {
       "selectionId" : 27,
       "runnerName" : "England",
@@ -1648,7 +1648,7 @@
     "marketId" : "1.256996345",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-24T02:00:00.000Z",
-    "totalMatched" : 1047.980553,
+    "totalMatched" : 1096.5776159999998,
     "runners" : [ {
       "selectionId" : 15299,
       "runnerName" : "Colombia",
@@ -1893,7 +1893,7 @@
     "marketId" : "1.258422945",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-25T20:00:00.000Z",
-    "totalMatched" : 1607.6283599999997,
+    "totalMatched" : 1612.005222,
     "runners" : [ {
       "selectionId" : 5774593,
       "runnerName" : "Curacao",
@@ -2173,7 +2173,7 @@
     "marketId" : "1.258424121",
     "marketName" : "Match Odds",
     "marketStartTime" : "2026-06-27T00:00:00.000Z",
-    "totalMatched" : 4453.873929,
+    "totalMatched" : 4917.033929,
     "runners" : [ {
       "selectionId" : 262717,
       "runnerName" : "Cape Verde",
@@ -2534,7 +2534,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:05:36.329Z",
     "totalMatched" : 85318.45,
-    "totalAvailable" : 406619.27,
+    "totalAvailable" : 408815.6,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446722263,
@@ -2550,10 +2550,10 @@
           "size" : 733.68
         }, {
           "price" : 3.7,
-          "size" : 2759.51
+          "size" : 3280.6
         }, {
           "price" : 3.65,
-          "size" : 5060.55
+          "size" : 4509.65
         } ],
         "availableToLay" : [ {
           "price" : 3.8,
@@ -2563,7 +2563,7 @@
           "size" : 2401.35
         }, {
           "price" : 3.9,
-          "size" : 4401.81
+          "size" : 4966.07
         } ],
         "tradedVolume" : [ ]
       }
@@ -2579,10 +2579,10 @@
           "size" : 5670.24
         }, {
           "price" : 2.52,
-          "size" : 7823.93
+          "size" : 7827.2
         }, {
           "price" : 2.5,
-          "size" : 2282.71
+          "size" : 2254.11
         } ],
         "availableToLay" : [ {
           "price" : 2.56,
@@ -2608,17 +2608,17 @@
           "size" : 502.23
         }, {
           "price" : 2.88,
-          "size" : 2358.72
+          "size" : 2677.14
         }, {
           "price" : 2.86,
-          "size" : 5894.75
+          "size" : 6205.86
         } ],
         "availableToLay" : [ {
           "price" : 2.92,
           "size" : 260.49
         }, {
           "price" : 2.94,
-          "size" : 1796.59
+          "size" : 1669.22
         }, {
           "price" : 2.96,
           "size" : 2653.34
@@ -2640,7 +2640,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:04:26.095Z",
     "totalMatched" : 6553.75,
-    "totalAvailable" : 341450.24,
+    "totalAvailable" : 339434.14,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446427944,
@@ -2656,20 +2656,20 @@
           "size" : 167.05
         }, {
           "price" : 10.0,
-          "size" : 967.3
+          "size" : 635.7
         }, {
           "price" : 9.8,
-          "size" : 167.3
+          "size" : 657.53
         } ],
         "availableToLay" : [ {
           "price" : 11.0,
-          "size" : 221.65
+          "size" : 576.91
         }, {
           "price" : 11.5,
-          "size" : 500.41
+          "size" : 132.93
         }, {
           "price" : 12.0,
-          "size" : 942.1
+          "size" : 1036.07
         } ],
         "tradedVolume" : [ ]
       }
@@ -2685,20 +2685,20 @@
           "size" : 959.05
         }, {
           "price" : 1.4,
-          "size" : 7117.72
+          "size" : 7055.89
         }, {
           "price" : 1.39,
-          "size" : 3238.65
+          "size" : 3442.35
         } ],
         "availableToLay" : [ {
           "price" : 1.42,
           "size" : 1203.07
         }, {
           "price" : 1.43,
-          "size" : 5322.59
+          "size" : 5322.6
         }, {
           "price" : 1.44,
-          "size" : 1990.93
+          "size" : 3436.28
         } ],
         "tradedVolume" : [ ]
       }
@@ -2717,17 +2717,17 @@
           "size" : 306.8
         }, {
           "price" : 4.8,
-          "size" : 1774.48
+          "size" : 1774.49
         } ],
         "availableToLay" : [ {
           "price" : 5.1,
           "size" : 625.59
         }, {
           "price" : 5.2,
-          "size" : 1649.37
+          "size" : 1664.09
         }, {
           "price" : 5.3,
-          "size" : 432.44
+          "size" : 432.43
         } ],
         "tradedVolume" : [ ]
       }
@@ -2744,38 +2744,38 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:09:46.692Z",
-    "totalMatched" : 1359367.16,
-    "totalAvailable" : 1789812.86,
+    "lastMatchTime" : "2026-06-11T13:32:31.889Z",
+    "totalMatched" : 1380683.6,
+    "totalAvailable" : 1857733.63,
     "crossMatching" : true,
     "runnersVoidable" : false,
-    "version" : 7447021805,
+    "version" : 7447045604,
     "runners" : [ {
       "selectionId" : 37944,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 1.45,
+      "lastPriceTraded" : 1.44,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.44,
-          "size" : 1354.35
+          "size" : 51282.0
         }, {
           "price" : 1.43,
-          "size" : 82279.64
+          "size" : 113300.31
         }, {
           "price" : 1.42,
-          "size" : 109474.4
+          "size" : 130052.75
         } ],
         "availableToLay" : [ {
           "price" : 1.45,
-          "size" : 67351.06
+          "size" : 44814.24
         }, {
           "price" : 1.46,
-          "size" : 61554.65
+          "size" : 73883.36
         }, {
           "price" : 1.47,
-          "size" : 37790.57
+          "size" : 28787.12
         } ],
         "tradedVolume" : [ ]
       }
@@ -2783,28 +2783,28 @@
       "selectionId" : 33291,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 9.8,
+      "lastPriceTraded" : 9.4,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 9.6,
-          "size" : 2398.41
-        }, {
           "price" : 9.4,
-          "size" : 1704.85
+          "size" : 2542.94
         }, {
           "price" : 9.2,
-          "size" : 1789.94
+          "size" : 1692.84
+        }, {
+          "price" : 9.0,
+          "size" : 7437.51
         } ],
         "availableToLay" : [ {
+          "price" : 9.6,
+          "size" : 987.27
+        }, {
           "price" : 9.8,
-          "size" : 667.42
+          "size" : 3137.59
         }, {
           "price" : 10.0,
-          "size" : 4919.53
-        }, {
-          "price" : 10.5,
-          "size" : 20880.95
+          "size" : 9606.58
         } ],
         "tradedVolume" : [ ]
       }
@@ -2812,28 +2812,28 @@
       "selectionId" : 58805,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 4.9,
+      "lastPriceTraded" : 5.0,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.9,
-          "size" : 6675.1
+          "size" : 7670.01
         }, {
           "price" : 4.8,
-          "size" : 18104.11
+          "size" : 25708.14
         }, {
           "price" : 4.7,
-          "size" : 26282.69
+          "size" : 19480.82
         } ],
         "availableToLay" : [ {
           "price" : 5.0,
-          "size" : 10897.78
+          "size" : 8966.66
         }, {
           "price" : 5.1,
-          "size" : 21537.4
+          "size" : 26796.48
         }, {
           "price" : 5.2,
-          "size" : 8753.8
+          "size" : 10627.57
         } ],
         "tradedVolume" : [ ]
       }
@@ -2850,9 +2850,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:09:04.734Z",
-    "totalMatched" : 187679.62,
-    "totalAvailable" : 485522.42,
+    "lastMatchTime" : "2026-06-11T13:33:24.012Z",
+    "totalMatched" : 197147.17,
+    "totalAvailable" : 517912.38,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446483595,
@@ -2860,28 +2860,28 @@
       "selectionId" : 352,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 2.02,
+      "lastPriceTraded" : 2.04,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 2.02,
+          "size" : 9385.85
+        }, {
           "price" : 2.0,
-          "size" : 6184.27
+          "size" : 11872.17
         }, {
           "price" : 1.99,
-          "size" : 3150.27
-        }, {
-          "price" : 1.98,
-          "size" : 5208.32
+          "size" : 2442.53
         } ],
         "availableToLay" : [ {
-          "price" : 2.02,
-          "size" : 42.4
-        }, {
           "price" : 2.04,
-          "size" : 8065.32
+          "size" : 492.97
         }, {
           "price" : 2.06,
-          "size" : 10984.49
+          "size" : 9685.4
+        }, {
+          "price" : 2.08,
+          "size" : 7727.1
         } ],
         "tradedVolume" : [ ]
       }
@@ -2893,24 +2893,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 4.4,
-          "size" : 899.98
-        }, {
           "price" : 4.3,
-          "size" : 3232.67
+          "size" : 1564.47
         }, {
           "price" : 4.2,
-          "size" : 6731.02
+          "size" : 8804.35
+        }, {
+          "price" : 4.1,
+          "size" : 5202.08
         } ],
         "availableToLay" : [ {
+          "price" : 4.4,
+          "size" : 1895.39
+        }, {
           "price" : 4.5,
-          "size" : 1316.48
+          "size" : 4701.95
         }, {
           "price" : 4.6,
-          "size" : 6670.18
-        }, {
-          "price" : 4.7,
-          "size" : 3486.86
+          "size" : 4153.84
         } ],
         "tradedVolume" : [ ]
       }
@@ -2923,23 +2923,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.55,
-          "size" : 3675.28
+          "size" : 2272.22
         }, {
           "price" : 3.5,
-          "size" : 7536.72
+          "size" : 7972.83
         }, {
           "price" : 3.45,
-          "size" : 6550.19
+          "size" : 6758.25
         } ],
         "availableToLay" : [ {
           "price" : 3.6,
-          "size" : 541.33
+          "size" : 3326.62
         }, {
           "price" : 3.65,
-          "size" : 5053.51
+          "size" : 5737.81
         }, {
           "price" : 3.7,
-          "size" : 5662.19
+          "size" : 7949.7
         } ],
         "tradedVolume" : [ ]
       }
@@ -2956,9 +2956,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:00:04.699Z",
-    "totalMatched" : 25439.63,
-    "totalAvailable" : 364039.61,
+    "lastMatchTime" : "2026-06-11T13:19:50.399Z",
+    "totalMatched" : 25449.16,
+    "totalAvailable" : 366959.47,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446724213,
@@ -2971,23 +2971,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.49,
-          "size" : 5135.17
+          "size" : 5178.06
         }, {
           "price" : 1.48,
-          "size" : 12192.0
+          "size" : 13115.98
         }, {
           "price" : 1.47,
-          "size" : 5403.82
+          "size" : 6500.36
         } ],
         "availableToLay" : [ {
           "price" : 1.51,
           "size" : 1331.69
         }, {
           "price" : 1.52,
-          "size" : 1446.13
+          "size" : 1446.14
         }, {
           "price" : 1.53,
-          "size" : 5395.19
+          "size" : 5395.23
         } ],
         "tradedVolume" : [ ]
       }
@@ -3000,23 +3000,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 8.0,
-          "size" : 444.12
+          "size" : 463.96
         }, {
           "price" : 7.8,
-          "size" : 366.06
+          "size" : 432.06
         }, {
           "price" : 7.6,
           "size" : 1092.17
         } ],
         "availableToLay" : [ {
           "price" : 8.4,
-          "size" : 325.5
+          "size" : 428.77
         }, {
           "price" : 8.6,
-          "size" : 1043.17
+          "size" : 1047.0
         }, {
           "price" : 8.8,
-          "size" : 1038.26
+          "size" : 1063.97
         } ],
         "tradedVolume" : [ ]
       }
@@ -3032,20 +3032,20 @@
           "size" : 350.07
         }, {
           "price" : 4.5,
-          "size" : 1828.47
+          "size" : 1868.16
         }, {
           "price" : 4.4,
-          "size" : 1198.22
+          "size" : 1197.08
         } ],
         "availableToLay" : [ {
           "price" : 4.7,
           "size" : 543.17
         }, {
           "price" : 4.8,
-          "size" : 1416.98
+          "size" : 1409.17
         }, {
           "price" : 4.9,
-          "size" : 2684.81
+          "size" : 2901.54
         } ],
         "tradedVolume" : [ ]
       }
@@ -3062,9 +3062,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:01:31.684Z",
-    "totalMatched" : 19410.0,
-    "totalAvailable" : 341887.59,
+    "lastMatchTime" : "2026-06-11T13:31:37.011Z",
+    "totalMatched" : 19458.75,
+    "totalAvailable" : 342090.21,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446724883,
@@ -3083,17 +3083,17 @@
           "size" : 1343.92
         }, {
           "price" : 1.42,
-          "size" : 6663.66
+          "size" : 6467.1
         } ],
         "availableToLay" : [ {
           "price" : 1.45,
-          "size" : 3191.78
+          "size" : 3245.54
         }, {
           "price" : 1.46,
-          "size" : 3582.54
+          "size" : 3695.54
         }, {
           "price" : 1.47,
-          "size" : 2469.65
+          "size" : 2126.14
         } ],
         "tradedVolume" : [ ]
       }
@@ -3106,23 +3106,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 9.6,
-          "size" : 93.03
+          "size" : 26.0
         }, {
           "price" : 9.4,
-          "size" : 76.16
+          "size" : 144.84
         }, {
           "price" : 9.2,
           "size" : 613.25
         } ],
         "availableToLay" : [ {
           "price" : 10.0,
-          "size" : 149.76
+          "size" : 125.38
         }, {
           "price" : 10.5,
-          "size" : 498.27
+          "size" : 953.05
         }, {
           "price" : 11.0,
-          "size" : 1365.05
+          "size" : 1042.92
         } ],
         "tradedVolume" : [ ]
       }
@@ -3138,20 +3138,20 @@
           "size" : 56.91
         }, {
           "price" : 4.8,
-          "size" : 219.16
+          "size" : 295.08
         }, {
           "price" : 4.7,
-          "size" : 1951.24
+          "size" : 1875.07
         } ],
         "availableToLay" : [ {
           "price" : 5.0,
           "size" : 913.62
         }, {
           "price" : 5.1,
-          "size" : 1858.94
+          "size" : 966.52
         }, {
           "price" : 5.2,
-          "size" : 1740.21
+          "size" : 2615.47
         } ],
         "tradedVolume" : [ ]
       }
@@ -3170,7 +3170,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:01:01.158Z",
     "totalMatched" : 16423.02,
-    "totalAvailable" : 348119.69,
+    "totalAvailable" : 347327.66,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446725205,
@@ -3186,20 +3186,20 @@
           "size" : 852.51
         }, {
           "price" : 1.34,
-          "size" : 6061.06
+          "size" : 6131.98
         }, {
           "price" : 1.33,
-          "size" : 10163.64
+          "size" : 10192.75
         } ],
         "availableToLay" : [ {
           "price" : 1.36,
           "size" : 45.63
         }, {
           "price" : 1.37,
-          "size" : 6938.94
+          "size" : 6938.59
         }, {
           "price" : 1.38,
-          "size" : 8464.79
+          "size" : 8245.36
         } ],
         "tradedVolume" : [ ]
       }
@@ -3215,20 +3215,20 @@
           "size" : 168.59
         }, {
           "price" : 9.8,
-          "size" : 551.51
+          "size" : 551.47
         }, {
           "price" : 9.6,
-          "size" : 209.77
+          "size" : 128.43
         } ],
         "availableToLay" : [ {
           "price" : 10.5,
           "size" : 117.3
         }, {
           "price" : 11.0,
-          "size" : 560.11
+          "size" : 556.48
         }, {
           "price" : 11.5,
-          "size" : 377.46
+          "size" : 405.8
         } ],
         "tradedVolume" : [ ]
       }
@@ -3244,20 +3244,20 @@
           "size" : 44.6
         }, {
           "price" : 5.9,
-          "size" : 275.89
+          "size" : 304.23
         }, {
           "price" : 5.8,
-          "size" : 949.77
+          "size" : 883.68
         } ],
         "availableToLay" : [ {
           "price" : 6.2,
           "size" : 763.19
         }, {
           "price" : 6.4,
-          "size" : 2244.07
+          "size" : 2239.3
         }, {
           "price" : 6.6,
-          "size" : 1171.74
+          "size" : 1171.67
         } ],
         "tradedVolume" : [ ]
       }
@@ -3276,7 +3276,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:07:54.162Z",
     "totalMatched" : 20482.76,
-    "totalAvailable" : 356081.57,
+    "totalAvailable" : 354891.98,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446723571,
@@ -3289,13 +3289,13 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 8.6,
-          "size" : 52.1
+          "size" : 70.38
         }, {
           "price" : 8.4,
-          "size" : 100.08
+          "size" : 555.96
         }, {
           "price" : 8.2,
-          "size" : 1105.3
+          "size" : 1092.82
         } ],
         "availableToLay" : [ {
           "price" : 8.8,
@@ -3305,7 +3305,7 @@
           "size" : 107.03
         }, {
           "price" : 9.2,
-          "size" : 672.17
+          "size" : 100.62
         } ],
         "tradedVolume" : [ ]
       }
@@ -3321,20 +3321,20 @@
           "size" : 1534.17
         }, {
           "price" : 1.46,
-          "size" : 14573.95
+          "size" : 11996.72
         }, {
           "price" : 1.45,
-          "size" : 3895.73
+          "size" : 4638.96
         } ],
         "availableToLay" : [ {
           "price" : 1.49,
-          "size" : 1410.91
+          "size" : 3906.3
         }, {
           "price" : 1.5,
-          "size" : 4067.08
+          "size" : 4165.69
         }, {
           "price" : 1.51,
-          "size" : 6004.32
+          "size" : 6358.22
         } ],
         "tradedVolume" : [ ]
       }
@@ -3350,20 +3350,20 @@
           "size" : 146.55
         }, {
           "price" : 4.6,
-          "size" : 1595.77
+          "size" : 1586.58
         }, {
           "price" : 4.5,
-          "size" : 974.88
+          "size" : 1202.84
         } ],
         "availableToLay" : [ {
           "price" : 4.8,
-          "size" : 1398.01
+          "size" : 1356.65
         }, {
           "price" : 4.9,
-          "size" : 2341.67
+          "size" : 1416.77
         }, {
           "price" : 5.0,
-          "size" : 796.23
+          "size" : 1633.11
         } ],
         "tradedVolume" : [ ]
       }
@@ -3380,9 +3380,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:08:52.425Z",
-    "totalMatched" : 15531.02,
-    "totalAvailable" : 334982.03,
+    "lastMatchTime" : "2026-06-11T13:28:20.713Z",
+    "totalMatched" : 15629.14,
+    "totalAvailable" : 350900.02,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446723249,
@@ -3395,23 +3395,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.68,
-          "size" : 1430.01
+          "size" : 1408.98
         }, {
           "price" : 1.67,
-          "size" : 111.08
+          "size" : 2629.46
         }, {
           "price" : 1.66,
-          "size" : 761.6
+          "size" : 2721.58
         } ],
         "availableToLay" : [ {
           "price" : 1.7,
-          "size" : 197.36
+          "size" : 199.68
         }, {
           "price" : 1.71,
           "size" : 3872.95
         }, {
           "price" : 1.72,
-          "size" : 3443.72
+          "size" : 3306.8
         } ],
         "tradedVolume" : [ ]
       }
@@ -3424,23 +3424,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 6.0,
-          "size" : 238.73
+          "size" : 189.67
         }, {
           "price" : 5.9,
-          "size" : 554.08
+          "size" : 1313.2
         }, {
           "price" : 5.8,
-          "size" : 746.4
+          "size" : 570.29
         } ],
         "availableToLay" : [ {
           "price" : 6.2,
-          "size" : 273.21
+          "size" : 311.42
         }, {
           "price" : 6.4,
-          "size" : 873.29
+          "size" : 952.03
         }, {
           "price" : 6.6,
-          "size" : 1315.39
+          "size" : 1895.51
         } ],
         "tradedVolume" : [ ]
       }
@@ -3453,23 +3453,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.0,
-          "size" : 375.59
+          "size" : 1398.89
         }, {
           "price" : 3.95,
-          "size" : 246.8
+          "size" : 372.05
         }, {
           "price" : 3.9,
-          "size" : 802.81
+          "size" : 665.87
         } ],
         "availableToLay" : [ {
           "price" : 4.1,
           "size" : 450.31
         }, {
           "price" : 4.2,
-          "size" : 2689.77
+          "size" : 2691.16
         }, {
           "price" : 4.3,
-          "size" : 3219.7
+          "size" : 3317.35
         } ],
         "tradedVolume" : [ ]
       }
@@ -3486,9 +3486,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:07:31.508Z",
-    "totalMatched" : 129926.05,
-    "totalAvailable" : 905240.16,
+    "lastMatchTime" : "2026-06-11T13:31:19.295Z",
+    "totalMatched" : 129977.01,
+    "totalAvailable" : 905083.55,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446722915,
@@ -3496,28 +3496,28 @@
       "selectionId" : 22,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 1.11,
+      "lastPriceTraded" : 1.1,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.1,
-          "size" : 122133.63
+          "size" : 123897.7
         }, {
           "price" : 1.09,
-          "size" : 189960.03
+          "size" : 189941.77
         }, {
           "price" : 1.08,
-          "size" : 80507.12
+          "size" : 78731.47
         } ],
         "availableToLay" : [ {
           "price" : 1.12,
-          "size" : 18125.59
+          "size" : 18323.37
         }, {
           "price" : 1.13,
-          "size" : 26469.17
+          "size" : 26445.89
         }, {
           "price" : 1.14,
-          "size" : 13425.95
+          "size" : 13538.02
         } ],
         "tradedVolume" : [ ]
       }
@@ -3530,7 +3530,7 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 30.0,
-          "size" : 13.89
+          "size" : 17.35
         }, {
           "price" : 29.0,
           "size" : 38.4
@@ -3543,10 +3543,10 @@
           "size" : 275.68
         }, {
           "price" : 34.0,
-          "size" : 106.94
+          "size" : 132.45
         }, {
           "price" : 36.0,
-          "size" : 260.52
+          "size" : 566.97
         } ],
         "tradedVolume" : [ ]
       }
@@ -3559,23 +3559,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 14.5,
-          "size" : 218.55
+          "size" : 225.49
         }, {
           "price" : 14.0,
-          "size" : 344.96
+          "size" : 344.93
         }, {
           "price" : 13.5,
-          "size" : 287.25
+          "size" : 251.45
         } ],
         "availableToLay" : [ {
           "price" : 15.0,
-          "size" : 153.43
+          "size" : 129.11
         }, {
           "price" : 15.5,
-          "size" : 289.62
+          "size" : 463.53
         }, {
           "price" : 16.0,
-          "size" : 853.26
+          "size" : 608.98
         } ],
         "tradedVolume" : [ ]
       }
@@ -3594,7 +3594,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:03:49.416Z",
     "totalMatched" : 27123.12,
-    "totalAvailable" : 336752.75,
+    "totalAvailable" : 337162.13,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446427334,
@@ -3610,20 +3610,20 @@
           "size" : 209.85
         }, {
           "price" : 2.22,
-          "size" : 208.69
+          "size" : 372.37
         }, {
           "price" : 2.2,
-          "size" : 4357.37
+          "size" : 4464.03
         } ],
         "availableToLay" : [ {
           "price" : 2.26,
-          "size" : 301.64
+          "size" : 298.18
         }, {
           "price" : 2.28,
-          "size" : 2736.19
+          "size" : 3081.15
         }, {
           "price" : 2.3,
-          "size" : 844.47
+          "size" : 756.44
         } ],
         "tradedVolume" : [ ]
       }
@@ -3639,20 +3639,20 @@
           "size" : 145.44
         }, {
           "price" : 3.6,
-          "size" : 366.5
+          "size" : 418.59
         }, {
           "price" : 3.55,
-          "size" : 1486.33
+          "size" : 1653.69
         } ],
         "availableToLay" : [ {
           "price" : 3.7,
           "size" : 372.98
         }, {
           "price" : 3.75,
-          "size" : 1728.47
+          "size" : 1956.21
         }, {
           "price" : 3.8,
-          "size" : 1437.92
+          "size" : 1009.57
         } ],
         "tradedVolume" : [ ]
       }
@@ -3668,20 +3668,20 @@
           "size" : 860.33
         }, {
           "price" : 3.5,
-          "size" : 477.12
+          "size" : 591.75
         }, {
           "price" : 3.45,
-          "size" : 2978.66
+          "size" : 2978.64
         } ],
         "availableToLay" : [ {
           "price" : 3.6,
           "size" : 381.62
         }, {
           "price" : 3.65,
-          "size" : 1623.6
+          "size" : 1623.27
         }, {
           "price" : 3.7,
-          "size" : 3074.05
+          "size" : 3172.26
         } ],
         "tradedVolume" : [ ]
       }
@@ -3700,7 +3700,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:00:33.818Z",
     "totalMatched" : 23869.52,
-    "totalAvailable" : 354919.61,
+    "totalAvailable" : 359535.05,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446824594,
@@ -3713,23 +3713,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.78,
-          "size" : 920.69
+          "size" : 920.7
         }, {
           "price" : 1.77,
-          "size" : 788.07
+          "size" : 3074.67
         }, {
           "price" : 1.76,
-          "size" : 7678.42
+          "size" : 6451.42
         } ],
         "availableToLay" : [ {
           "price" : 1.79,
           "size" : 36.75
         }, {
           "price" : 1.8,
-          "size" : 192.46
+          "size" : 193.58
         }, {
           "price" : 1.81,
-          "size" : 454.07
+          "size" : 516.1
         } ],
         "tradedVolume" : [ ]
       }
@@ -3745,7 +3745,7 @@
           "size" : 94.74
         }, {
           "price" : 5.2,
-          "size" : 611.25
+          "size" : 645.09
         }, {
           "price" : 5.1,
           "size" : 1853.96
@@ -3758,7 +3758,7 @@
           "size" : 1351.13
         }, {
           "price" : 5.6,
-          "size" : 634.08
+          "size" : 667.36
         } ],
         "tradedVolume" : [ ]
       }
@@ -3774,20 +3774,20 @@
           "size" : 388.2
         }, {
           "price" : 3.85,
-          "size" : 1965.92
+          "size" : 2981.48
         }, {
           "price" : 3.8,
-          "size" : 1578.11
+          "size" : 452.63
         } ],
         "availableToLay" : [ {
           "price" : 3.95,
           "size" : 572.3
         }, {
           "price" : 4.0,
-          "size" : 2583.18
+          "size" : 2049.28
         }, {
           "price" : 4.1,
-          "size" : 5857.12
+          "size" : 6377.98
         } ],
         "tradedVolume" : [ ]
       }
@@ -3804,9 +3804,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:00:48.539Z",
-    "totalMatched" : 91031.86,
-    "totalAvailable" : 461484.12,
+    "lastMatchTime" : "2026-06-11T13:28:46.838Z",
+    "totalMatched" : 92677.78,
+    "totalAvailable" : 458518.51,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446721939,
@@ -3814,28 +3814,28 @@
       "selectionId" : 231787,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 2.14,
+      "lastPriceTraded" : 2.12,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 2.12,
-          "size" : 143.03
-        }, {
           "price" : 2.1,
-          "size" : 3760.37
+          "size" : 1772.62
         }, {
           "price" : 2.08,
-          "size" : 8293.39
+          "size" : 8985.04
+        }, {
+          "price" : 2.06,
+          "size" : 8195.46
         } ],
         "availableToLay" : [ {
+          "price" : 2.12,
+          "size" : 603.64
+        }, {
           "price" : 2.14,
-          "size" : 1874.62
+          "size" : 4892.94
         }, {
           "price" : 2.16,
-          "size" : 10621.16
-        }, {
-          "price" : 2.18,
-          "size" : 15153.25
+          "size" : 7740.88
         } ],
         "tradedVolume" : [ ]
       }
@@ -3848,23 +3848,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.85,
-          "size" : 627.5
+          "size" : 358.29
         }, {
           "price" : 3.8,
-          "size" : 2399.46
+          "size" : 2347.22
         }, {
           "price" : 3.75,
-          "size" : 4495.06
+          "size" : 6364.29
         } ],
         "availableToLay" : [ {
           "price" : 3.9,
-          "size" : 839.79
+          "size" : 771.63
         }, {
           "price" : 3.95,
-          "size" : 1755.37
+          "size" : 1156.71
         }, {
           "price" : 4.0,
-          "size" : 2401.54
+          "size" : 3338.57
         } ],
         "tradedVolume" : [ ]
       }
@@ -3876,24 +3876,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 3.7,
+          "size" : 317.91
+        }, {
           "price" : 3.65,
-          "size" : 2424.61
+          "size" : 3537.91
         }, {
           "price" : 3.6,
-          "size" : 5141.41
-        }, {
-          "price" : 3.55,
-          "size" : 3009.73
+          "size" : 4900.97
         } ],
         "availableToLay" : [ {
-          "price" : 3.7,
-          "size" : 64.27
-        }, {
           "price" : 3.75,
-          "size" : 5510.59
+          "size" : 4199.37
         }, {
           "price" : 3.8,
-          "size" : 3861.01
+          "size" : 3669.71
+        }, {
+          "price" : 3.85,
+          "size" : 2355.56
         } ],
         "tradedVolume" : [ ]
       }
@@ -3912,7 +3912,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:00:18.312Z",
     "totalMatched" : 155670.04,
-    "totalAvailable" : 1443864.73,
+    "totalAvailable" : 1425557.27,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446721595,
@@ -3925,23 +3925,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.06,
-          "size" : 48908.63
+          "size" : 46616.31
         }, {
           "price" : 1.05,
-          "size" : 322284.31
+          "size" : 321846.77
         }, {
           "price" : 1.04,
-          "size" : 426298.47
+          "size" : 426176.82
         } ],
         "availableToLay" : [ {
           "price" : 1.07,
-          "size" : 32146.61
+          "size" : 31947.49
         }, {
           "price" : 1.08,
-          "size" : 40762.35
+          "size" : 41794.57
         }, {
           "price" : 1.09,
-          "size" : 18568.82
+          "size" : 19591.13
         } ],
         "tradedVolume" : [ ]
       }
@@ -3957,7 +3957,7 @@
           "size" : 79.35
         }, {
           "price" : 44.0,
-          "size" : 96.97
+          "size" : 128.45
         }, {
           "price" : 42.0,
           "size" : 104.88
@@ -3967,10 +3967,10 @@
           "size" : 26.47
         }, {
           "price" : 55.0,
-          "size" : 232.44
+          "size" : 188.52
         }, {
           "price" : 60.0,
-          "size" : 371.1
+          "size" : 361.57
         } ],
         "tradedVolume" : [ ]
       }
@@ -3983,23 +3983,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 23.0,
-          "size" : 128.74
+          "size" : 119.47
         }, {
           "price" : 22.0,
-          "size" : 266.76
+          "size" : 288.76
         }, {
           "price" : 21.0,
-          "size" : 870.05
+          "size" : 755.02
         } ],
         "availableToLay" : [ {
           "price" : 24.0,
           "size" : 122.83
         }, {
           "price" : 25.0,
-          "size" : 623.75
+          "size" : 663.07
         }, {
           "price" : 26.0,
-          "size" : 515.13
+          "size" : 316.63
         } ],
         "tradedVolume" : [ ]
       }
@@ -4016,9 +4016,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:04:40.113Z",
-    "totalMatched" : 114076.52,
-    "totalAvailable" : 429539.82,
+    "lastMatchTime" : "2026-06-11T13:24:36.234Z",
+    "totalMatched" : 114195.01,
+    "totalAvailable" : 428353.26,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446720941,
@@ -4031,23 +4031,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 6.4,
-          "size" : 491.1
+          "size" : 528.22
         }, {
           "price" : 6.2,
-          "size" : 2143.99
+          "size" : 2060.67
         }, {
           "price" : 6.0,
-          "size" : 3288.88
+          "size" : 3502.36
         } ],
         "availableToLay" : [ {
           "price" : 6.6,
-          "size" : 593.69
+          "size" : 582.62
         }, {
           "price" : 6.8,
-          "size" : 2250.75
+          "size" : 2204.63
         }, {
           "price" : 7.0,
-          "size" : 2011.97
+          "size" : 2149.73
         } ],
         "tradedVolume" : [ ]
       }
@@ -4055,28 +4055,28 @@
       "selectionId" : 447,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 1.6,
+      "lastPriceTraded" : 1.61,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.6,
-          "size" : 1408.33
+          "size" : 1254.84
         }, {
           "price" : 1.59,
-          "size" : 8336.22
+          "size" : 10426.34
         }, {
           "price" : 1.58,
-          "size" : 13805.28
+          "size" : 13989.52
         } ],
         "availableToLay" : [ {
           "price" : 1.61,
-          "size" : 3286.18
+          "size" : 3362.52
         }, {
           "price" : 1.62,
-          "size" : 5995.03
+          "size" : 3732.21
         }, {
           "price" : 1.63,
-          "size" : 4771.02
+          "size" : 7286.31
         } ],
         "tradedVolume" : [ ]
       }
@@ -4089,23 +4089,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.5,
-          "size" : 238.5
+          "size" : 246.42
         }, {
           "price" : 4.4,
-          "size" : 829.91
+          "size" : 847.46
         }, {
           "price" : 4.3,
-          "size" : 3683.21
+          "size" : 3902.11
         } ],
         "availableToLay" : [ {
           "price" : 4.6,
-          "size" : 2803.23
+          "size" : 2589.53
         }, {
           "price" : 4.7,
-          "size" : 3875.52
+          "size" : 4333.97
         }, {
           "price" : 4.8,
-          "size" : 6640.14
+          "size" : 6136.19
         } ],
         "tradedVolume" : [ ]
       }
@@ -4122,9 +4122,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:07:40.061Z",
-    "totalMatched" : 77301.47,
-    "totalAvailable" : 507662.44,
+    "lastMatchTime" : "2026-06-11T13:30:37.567Z",
+    "totalMatched" : 77484.86,
+    "totalAvailable" : 509086.0,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446720277,
@@ -4132,28 +4132,28 @@
       "selectionId" : 53447,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 16.0,
+      "lastPriceTraded" : 16.5,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
           "price" : 16.0,
-          "size" : 182.38
+          "size" : 118.77
         }, {
           "price" : 15.5,
-          "size" : 234.18
+          "size" : 326.79
         }, {
           "price" : 15.0,
-          "size" : 273.69
+          "size" : 314.44
         } ],
         "availableToLay" : [ {
           "price" : 16.5,
-          "size" : 275.59
+          "size" : 294.86
         }, {
           "price" : 17.0,
-          "size" : 242.37
+          "size" : 293.4
         }, {
           "price" : 17.5,
-          "size" : 552.61
+          "size" : 532.21
         } ],
         "tradedVolume" : [ ]
       }
@@ -4161,7 +4161,7 @@
       "selectionId" : 15293,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 1.24,
+      "lastPriceTraded" : 1.25,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
@@ -4169,20 +4169,20 @@
           "size" : 3315.57
         }, {
           "price" : 1.23,
-          "size" : 30952.58
+          "size" : 30846.89
         }, {
           "price" : 1.22,
-          "size" : 51982.35
+          "size" : 53728.01
         } ],
         "availableToLay" : [ {
           "price" : 1.25,
-          "size" : 10895.55
+          "size" : 11115.18
         }, {
           "price" : 1.26,
-          "size" : 13945.6
+          "size" : 15455.96
         }, {
           "price" : 1.27,
-          "size" : 11757.21
+          "size" : 12596.18
         } ],
         "tradedVolume" : [ ]
       }
@@ -4198,20 +4198,20 @@
           "size" : 1132.83
         }, {
           "price" : 7.2,
-          "size" : 299.51
+          "size" : 299.65
         }, {
           "price" : 7.0,
-          "size" : 2388.86
+          "size" : 2449.04
         } ],
         "availableToLay" : [ {
           "price" : 7.6,
           "size" : 372.91
         }, {
           "price" : 7.8,
-          "size" : 2239.97
+          "size" : 2238.79
         }, {
           "price" : 8.0,
-          "size" : 1022.72
+          "size" : 978.1
         } ],
         "tradedVolume" : [ ]
       }
@@ -4228,9 +4228,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:06:32.583Z",
-    "totalMatched" : 101321.8,
-    "totalAvailable" : 420816.72,
+    "lastMatchTime" : "2026-06-11T13:32:55.518Z",
+    "totalMatched" : 102884.99,
+    "totalAvailable" : 414364.78,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446720611,
@@ -4238,28 +4238,28 @@
       "selectionId" : 1408,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 1.72,
+      "lastPriceTraded" : 1.73,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 1.73,
+          "size" : 397.76
+        }, {
           "price" : 1.72,
-          "size" : 823.34
+          "size" : 2231.35
         }, {
           "price" : 1.71,
-          "size" : 11362.49
-        }, {
-          "price" : 1.7,
-          "size" : 7077.82
+          "size" : 9845.01
         } ],
         "availableToLay" : [ {
-          "price" : 1.73,
-          "size" : 435.84
-        }, {
           "price" : 1.74,
-          "size" : 3134.53
+          "size" : 2280.08
         }, {
           "price" : 1.75,
-          "size" : 5380.6
+          "size" : 6432.37
+        }, {
+          "price" : 1.76,
+          "size" : 2257.46
         } ],
         "tradedVolume" : [ ]
       }
@@ -4267,28 +4267,28 @@
       "selectionId" : 75103,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 5.9,
+      "lastPriceTraded" : 5.8,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 5.9,
-          "size" : 191.81
-        }, {
           "price" : 5.8,
-          "size" : 440.14
+          "size" : 462.8
         }, {
           "price" : 5.7,
-          "size" : 1319.38
+          "size" : 2208.35
+        }, {
+          "price" : 5.6,
+          "size" : 714.24
         } ],
         "availableToLay" : [ {
+          "price" : 5.9,
+          "size" : 335.18
+        }, {
           "price" : 6.0,
-          "size" : 304.17
+          "size" : 518.56
         }, {
           "price" : 6.2,
-          "size" : 4395.21
-        }, {
-          "price" : 6.4,
-          "size" : 4407.43
+          "size" : 4774.11
         } ],
         "tradedVolume" : [ ]
       }
@@ -4301,23 +4301,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.95,
-          "size" : 531.63
+          "size" : 412.54
         }, {
           "price" : 3.9,
-          "size" : 742.15
+          "size" : 1203.36
         }, {
           "price" : 3.85,
-          "size" : 2327.13
+          "size" : 1978.42
         } ],
         "availableToLay" : [ {
           "price" : 4.0,
-          "size" : 691.76
+          "size" : 424.06
         }, {
           "price" : 4.1,
-          "size" : 5101.3
+          "size" : 5890.28
         }, {
           "price" : 4.2,
-          "size" : 7048.67
+          "size" : 8071.11
         } ],
         "tradedVolume" : [ ]
       }
@@ -4336,7 +4336,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:05:59.155Z",
     "totalMatched" : 2262.18,
-    "totalAvailable" : 276033.89,
+    "totalAvailable" : 276094.47,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446429754,
@@ -4352,20 +4352,20 @@
           "size" : 29.98
         }, {
           "price" : 1.74,
-          "size" : 34.99
+          "size" : 59.31
         }, {
           "price" : 1.73,
-          "size" : 590.88
+          "size" : 526.34
         } ],
         "availableToLay" : [ {
-          "price" : 1.85,
-          "size" : 12.63
+          "price" : 1.84,
+          "size" : 12.03
         }, {
-          "price" : 1.86,
-          "size" : 14.09
+          "price" : 1.88,
+          "size" : 28.03
         }, {
-          "price" : 1.87,
-          "size" : 45.99
+          "price" : 1.9,
+          "size" : 45.59
         } ],
         "tradedVolume" : [ ]
       }
@@ -4377,14 +4377,14 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 4.6,
-          "size" : 77.21
-        }, {
-          "price" : 4.3,
-          "size" : 11.93
+          "price" : 4.4,
+          "size" : 108.82
         }, {
           "price" : 4.2,
-          "size" : 20.99
+          "size" : 17.36
+        }, {
+          "price" : 4.1,
+          "size" : 151.09
         } ],
         "availableToLay" : [ {
           "price" : 5.2,
@@ -4394,7 +4394,7 @@
           "size" : 94.68
         }, {
           "price" : 5.5,
-          "size" : 146.23
+          "size" : 143.61
         } ],
         "tradedVolume" : [ ]
       }
@@ -4407,23 +4407,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.0,
-          "size" : 43.9
+          "size" : 43.97
         }, {
-          "price" : 3.75,
-          "size" : 12.46
+          "price" : 3.8,
+          "size" : 97.26
         }, {
           "price" : 3.7,
-          "size" : 54.63
+          "size" : 64.89
         } ],
         "availableToLay" : [ {
           "price" : 4.3,
-          "size" : 155.68
+          "size" : 153.36
         }, {
           "price" : 4.4,
-          "size" : 229.26
+          "size" : 210.74
         }, {
           "price" : 4.5,
-          "size" : 162.21
+          "size" : 160.8
         } ],
         "tradedVolume" : [ ]
       }
@@ -4440,9 +4440,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:07:36.565Z",
-    "totalMatched" : 40002.33,
-    "totalAvailable" : 342212.18,
+    "lastMatchTime" : "2026-06-11T13:27:28.059Z",
+    "totalMatched" : 40041.28,
+    "totalAvailable" : 342693.27,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446723891,
@@ -4455,7 +4455,7 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.88,
-          "size" : 52.24
+          "size" : 67.29
         }, {
           "price" : 1.87,
           "size" : 594.0
@@ -4465,13 +4465,13 @@
         } ],
         "availableToLay" : [ {
           "price" : 1.89,
-          "size" : 39.51
+          "size" : 23.51
         }, {
           "price" : 1.9,
-          "size" : 612.38
+          "size" : 608.9
         }, {
           "price" : 1.91,
-          "size" : 4016.85
+          "size" : 4099.0
         } ],
         "tradedVolume" : [ ]
       }
@@ -4487,20 +4487,20 @@
           "size" : 18.56
         }, {
           "price" : 5.0,
-          "size" : 2389.78
+          "size" : 2592.43
         }, {
           "price" : 4.9,
-          "size" : 416.84
+          "size" : 427.06
         } ],
         "availableToLay" : [ {
           "price" : 5.2,
           "size" : 105.37
         }, {
           "price" : 5.3,
-          "size" : 1796.71
+          "size" : 1784.68
         }, {
           "price" : 5.4,
-          "size" : 776.02
+          "size" : 1035.39
         } ],
         "tradedVolume" : [ ]
       }
@@ -4519,7 +4519,7 @@
           "size" : 2814.94
         }, {
           "price" : 3.5,
-          "size" : 421.77
+          "size" : 715.78
         } ],
         "availableToLay" : [ {
           "price" : 3.65,
@@ -4529,7 +4529,7 @@
           "size" : 905.48
         }, {
           "price" : 3.75,
-          "size" : 1488.57
+          "size" : 1496.12
         } ],
         "tradedVolume" : [ ]
       }
@@ -4546,9 +4546,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T12:54:28.902Z",
-    "totalMatched" : 61106.32,
-    "totalAvailable" : 396092.05,
+    "lastMatchTime" : "2026-06-11T13:09:57.752Z",
+    "totalMatched" : 61113.08,
+    "totalAvailable" : 395865.91,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446426486,
@@ -4561,23 +4561,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.32,
-          "size" : 4721.77
+          "size" : 4723.26
         }, {
           "price" : 1.31,
-          "size" : 19471.52
+          "size" : 19414.33
         }, {
           "price" : 1.3,
-          "size" : 9532.75
+          "size" : 9426.79
         } ],
         "availableToLay" : [ {
           "price" : 1.33,
-          "size" : 4274.81
+          "size" : 1583.44
         }, {
           "price" : 1.34,
-          "size" : 5952.95
+          "size" : 9087.28
         }, {
           "price" : 1.35,
-          "size" : 8619.82
+          "size" : 9204.24
         } ],
         "tradedVolume" : [ ]
       }
@@ -4593,20 +4593,20 @@
           "size" : 103.05
         }, {
           "price" : 12.0,
-          "size" : 700.85
+          "size" : 700.83
         }, {
           "price" : 11.5,
-          "size" : 730.76
+          "size" : 476.45
         } ],
         "availableToLay" : [ {
           "price" : 13.0,
-          "size" : 105.96
+          "size" : 105.95
         }, {
           "price" : 13.5,
-          "size" : 169.55
+          "size" : 182.29
         }, {
           "price" : 14.0,
-          "size" : 529.27
+          "size" : 529.24
         } ],
         "tradedVolume" : [ ]
       }
@@ -4619,23 +4619,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 6.0,
-          "size" : 122.77
+          "size" : 151.44
         }, {
           "price" : 5.9,
-          "size" : 210.89
+          "size" : 210.82
         }, {
           "price" : 5.8,
-          "size" : 1293.93
+          "size" : 1386.42
         } ],
         "availableToLay" : [ {
           "price" : 6.2,
-          "size" : 782.57
+          "size" : 786.91
         }, {
           "price" : 6.4,
-          "size" : 2721.5
+          "size" : 2594.43
         }, {
           "price" : 6.6,
-          "size" : 1487.24
+          "size" : 1487.01
         } ],
         "tradedVolume" : [ ]
       }
@@ -4652,9 +4652,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:09:25.068Z",
-    "totalMatched" : 383534.96,
-    "totalAvailable" : 691923.18,
+    "lastMatchTime" : "2026-06-11T13:31:51.535Z",
+    "totalMatched" : 391340.81,
+    "totalAvailable" : 708120.9,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446823035,
@@ -4662,28 +4662,28 @@
       "selectionId" : 47965,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 2.86,
+      "lastPriceTraded" : 2.82,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 2.82,
-          "size" : 2031.39
-        }, {
           "price" : 2.8,
-          "size" : 4121.62
+          "size" : 2215.92
         }, {
           "price" : 2.78,
-          "size" : 13632.87
+          "size" : 9338.17
+        }, {
+          "price" : 2.76,
+          "size" : 3284.3
         } ],
         "availableToLay" : [ {
+          "price" : 2.82,
+          "size" : 187.88
+        }, {
+          "price" : 2.84,
+          "size" : 553.02
+        }, {
           "price" : 2.86,
-          "size" : 1994.41
-        }, {
-          "price" : 2.88,
-          "size" : 1947.0
-        }, {
-          "price" : 2.9,
-          "size" : 6207.1
+          "size" : 916.98
         } ],
         "tradedVolume" : [ ]
       }
@@ -4691,28 +4691,28 @@
       "selectionId" : 84483772,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 3.0,
+      "lastPriceTraded" : 3.05,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 3.0,
+          "size" : 2583.4
+        }, {
           "price" : 2.98,
-          "size" : 1104.36
+          "size" : 3361.83
         }, {
           "price" : 2.96,
-          "size" : 2216.47
-        }, {
-          "price" : 2.94,
-          "size" : 7401.85
+          "size" : 4859.2
         } ],
         "availableToLay" : [ {
-          "price" : 3.0,
-          "size" : 770.62
-        }, {
           "price" : 3.05,
-          "size" : 9295.59
+          "size" : 2056.61
         }, {
           "price" : 3.1,
-          "size" : 24141.44
+          "size" : 20292.83
+        }, {
+          "price" : 3.15,
+          "size" : 15508.04
         } ],
         "tradedVolume" : [ ]
       }
@@ -4725,23 +4725,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.15,
-          "size" : 14738.65
+          "size" : 14204.38
         }, {
           "price" : 3.1,
-          "size" : 20561.81
+          "size" : 21249.27
         }, {
           "price" : 3.05,
-          "size" : 17815.1
+          "size" : 12391.86
         } ],
         "availableToLay" : [ {
           "price" : 3.2,
-          "size" : 7129.42
+          "size" : 7266.5
         }, {
           "price" : 3.25,
-          "size" : 32258.03
+          "size" : 33756.42
         }, {
           "price" : 3.3,
-          "size" : 31053.18
+          "size" : 31439.27
         } ],
         "tradedVolume" : [ ]
       }
@@ -4758,9 +4758,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:03:13.997Z",
-    "totalMatched" : 61917.03,
-    "totalAvailable" : 420847.22,
+    "lastMatchTime" : "2026-06-11T13:30:33.849Z",
+    "totalMatched" : 61985.17,
+    "totalAvailable" : 427929.4,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446721105,
@@ -4773,23 +4773,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 5.6,
-          "size" : 661.01
+          "size" : 668.12
         }, {
           "price" : 5.5,
-          "size" : 2144.91
+          "size" : 2481.65
         }, {
           "price" : 5.4,
-          "size" : 2725.86
+          "size" : 2823.57
         } ],
         "availableToLay" : [ {
-          "price" : 5.7,
-          "size" : 24.12
-        }, {
           "price" : 5.8,
-          "size" : 1211.94
+          "size" : 1221.42
         }, {
           "price" : 5.9,
           "size" : 2266.6
+        }, {
+          "price" : 6.0,
+          "size" : 2103.24
         } ],
         "tradedVolume" : [ ]
       }
@@ -4802,13 +4802,13 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.75,
-          "size" : 2113.08
+          "size" : 2065.38
         }, {
           "price" : 1.74,
-          "size" : 5190.0
+          "size" : 5237.98
         }, {
           "price" : 1.73,
-          "size" : 6478.67
+          "size" : 6430.42
         } ],
         "availableToLay" : [ {
           "price" : 1.76,
@@ -4818,7 +4818,7 @@
           "size" : 4981.22
         }, {
           "price" : 1.78,
-          "size" : 1840.37
+          "size" : 2088.16
         } ],
         "tradedVolume" : [ ]
       }
@@ -4831,13 +4831,13 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.9,
-          "size" : 505.41
+          "size" : 484.0
         }, {
           "price" : 3.85,
-          "size" : 1867.86
+          "size" : 1889.55
         }, {
           "price" : 3.8,
-          "size" : 4819.68
+          "size" : 5004.2
         } ],
         "availableToLay" : [ {
           "price" : 3.95,
@@ -4847,7 +4847,7 @@
           "size" : 2701.37
         }, {
           "price" : 4.1,
-          "size" : 5200.52
+          "size" : 5216.01
         } ],
         "tradedVolume" : [ ]
       }
@@ -4864,9 +4864,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:06:40.002Z",
-    "totalMatched" : 195841.4,
-    "totalAvailable" : 498657.52,
+    "lastMatchTime" : "2026-06-11T13:30:54.089Z",
+    "totalMatched" : 201720.91,
+    "totalAvailable" : 502580.41,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446891303,
@@ -4879,23 +4879,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.89,
-          "size" : 153.38
+          "size" : 818.18
         }, {
           "price" : 1.88,
-          "size" : 2401.38
+          "size" : 719.52
         }, {
           "price" : 1.87,
-          "size" : 12213.35
+          "size" : 11694.15
         } ],
         "availableToLay" : [ {
           "price" : 1.9,
-          "size" : 501.98
+          "size" : 551.31
         }, {
           "price" : 1.91,
-          "size" : 6944.16
+          "size" : 7568.42
         }, {
           "price" : 1.92,
-          "size" : 14473.46
+          "size" : 14196.46
         } ],
         "tradedVolume" : [ ]
       }
@@ -4908,23 +4908,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.9,
-          "size" : 566.43
+          "size" : 660.25
         }, {
           "price" : 4.8,
-          "size" : 3457.51
+          "size" : 3613.1
         }, {
           "price" : 4.7,
-          "size" : 7297.25
+          "size" : 7630.99
         } ],
         "availableToLay" : [ {
           "price" : 5.0,
-          "size" : 1496.74
+          "size" : 1485.03
         }, {
           "price" : 5.1,
-          "size" : 4413.25
+          "size" : 4075.01
         }, {
           "price" : 5.2,
-          "size" : 6734.95
+          "size" : 7213.74
         } ],
         "tradedVolume" : [ ]
       }
@@ -4932,28 +4932,28 @@
       "selectionId" : 58805,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 3.7,
+      "lastPriceTraded" : 3.75,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.7,
-          "size" : 5828.97
+          "size" : 5983.53
         }, {
           "price" : 3.65,
-          "size" : 2328.5
+          "size" : 2372.35
         }, {
           "price" : 3.6,
-          "size" : 8367.5
+          "size" : 8308.45
         } ],
         "availableToLay" : [ {
           "price" : 3.75,
-          "size" : 7401.66
+          "size" : 7838.51
         }, {
           "price" : 3.8,
-          "size" : 10165.47
+          "size" : 9900.93
         }, {
           "price" : 3.85,
-          "size" : 4246.21
+          "size" : 3821.89
         } ],
         "tradedVolume" : [ ]
       }
@@ -4972,7 +4972,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:06:11.774Z",
     "totalMatched" : 44581.71,
-    "totalAvailable" : 377425.84,
+    "totalAvailable" : 380006.99,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446722421,
@@ -4985,23 +4985,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.99,
-          "size" : 276.65
+          "size" : 278.96
         }, {
           "price" : 1.98,
-          "size" : 464.12
+          "size" : 458.59
         }, {
           "price" : 1.97,
-          "size" : 4091.14
+          "size" : 3835.99
         } ],
         "availableToLay" : [ {
           "price" : 2.0,
           "size" : 54.49
         }, {
           "price" : 2.02,
-          "size" : 3829.74
+          "size" : 3627.83
         }, {
           "price" : 2.04,
-          "size" : 2177.73
+          "size" : 2600.24
         } ],
         "tradedVolume" : [ ]
       }
@@ -5014,23 +5014,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.6,
-          "size" : 128.63
+          "size" : 12.11
         }, {
           "price" : 4.5,
-          "size" : 1729.38
+          "size" : 1774.64
         }, {
           "price" : 4.4,
-          "size" : 2837.93
+          "size" : 3112.22
         } ],
         "availableToLay" : [ {
           "price" : 4.7,
           "size" : 367.68
         }, {
           "price" : 4.8,
-          "size" : 2422.66
+          "size" : 2421.34
         }, {
           "price" : 4.9,
-          "size" : 3207.37
+          "size" : 3699.42
         } ],
         "tradedVolume" : [ ]
       }
@@ -5046,20 +5046,20 @@
           "size" : 476.46
         }, {
           "price" : 3.45,
-          "size" : 3660.99
+          "size" : 3717.7
         }, {
           "price" : 3.4,
-          "size" : 1462.3
+          "size" : 1568.83
         } ],
         "availableToLay" : [ {
           "price" : 3.55,
           "size" : 346.08
         }, {
           "price" : 3.6,
-          "size" : 1612.19
+          "size" : 1483.24
         }, {
           "price" : 3.65,
-          "size" : 3646.18
+          "size" : 3753.9
         } ],
         "tradedVolume" : [ ]
       }
@@ -5076,9 +5076,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:02:06.427Z",
-    "totalMatched" : 19586.79,
-    "totalAvailable" : 360119.77,
+    "lastMatchTime" : "2026-06-11T13:16:55.050Z",
+    "totalMatched" : 19610.29,
+    "totalAvailable" : 362150.39,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446724525,
@@ -5094,10 +5094,10 @@
           "size" : 19.96
         }, {
           "price" : 16.0,
-          "size" : 81.05
+          "size" : 95.16
         }, {
           "price" : 15.5,
-          "size" : 98.39
+          "size" : 352.51
         } ],
         "availableToLay" : [ {
           "price" : 17.0,
@@ -5107,7 +5107,7 @@
           "size" : 38.29
         }, {
           "price" : 18.0,
-          "size" : 331.76
+          "size" : 114.65
         } ],
         "tradedVolume" : [ ]
       }
@@ -5120,23 +5120,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.23,
-          "size" : 466.27
+          "size" : 364.38
         }, {
           "price" : 1.22,
-          "size" : 16210.28
+          "size" : 13443.68
         }, {
           "price" : 1.21,
-          "size" : 14673.16
+          "size" : 20049.79
         } ],
         "availableToLay" : [ {
           "price" : 1.24,
-          "size" : 1313.33
+          "size" : 4464.87
         }, {
           "price" : 1.25,
-          "size" : 10612.94
+          "size" : 10920.49
         }, {
           "price" : 1.26,
-          "size" : 5704.21
+          "size" : 2876.49
         } ],
         "tradedVolume" : [ ]
       }
@@ -5155,14 +5155,14 @@
           "size" : 1024.78
         }, {
           "price" : 7.2,
-          "size" : 516.03
+          "size" : 785.34
         } ],
         "availableToLay" : [ {
           "price" : 7.8,
-          "size" : 285.77
+          "size" : 274.02
         }, {
           "price" : 8.0,
-          "size" : 559.15
+          "size" : 487.27
         }, {
           "price" : 8.2,
           "size" : 1259.76
@@ -5184,7 +5184,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:00:06.401Z",
     "totalMatched" : 2878.62,
-    "totalAvailable" : 276311.5,
+    "totalAvailable" : 276413.26,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446428892,
@@ -5197,23 +5197,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.63,
-          "size" : 47.88
+          "size" : 92.24
         }, {
           "price" : 1.62,
-          "size" : 148.23
+          "size" : 200.54
         }, {
           "price" : 1.61,
-          "size" : 183.32
+          "size" : 106.91
         } ],
         "availableToLay" : [ {
           "price" : 1.66,
-          "size" : 44.94
+          "size" : 38.37
         }, {
           "price" : 1.67,
-          "size" : 101.46
+          "size" : 112.53
         }, {
           "price" : 1.68,
-          "size" : 469.46
+          "size" : 434.57
         } ],
         "tradedVolume" : [ ]
       }
@@ -5226,23 +5226,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 6.0,
-          "size" : 132.43
+          "size" : 137.39
         }, {
           "price" : 5.9,
-          "size" : 29.64
+          "size" : 30.22
         }, {
           "price" : 5.7,
-          "size" : 13.12
+          "size" : 14.46
         } ],
         "availableToLay" : [ {
           "price" : 6.6,
-          "size" : 16.49
+          "size" : 29.33
         }, {
           "price" : 6.8,
-          "size" : 153.97
+          "size" : 142.19
         }, {
-          "price" : 7.4,
-          "size" : 130.47
+          "price" : 7.2,
+          "size" : 13.93
         } ],
         "tradedVolume" : [ ]
       }
@@ -5258,20 +5258,20 @@
           "size" : 18.75
         }, {
           "price" : 4.1,
-          "size" : 24.07
+          "size" : 29.43
         }, {
           "price" : 4.0,
-          "size" : 122.93
+          "size" : 133.63
         } ],
         "availableToLay" : [ {
           "price" : 4.3,
           "size" : 63.8
         }, {
           "price" : 4.4,
-          "size" : 59.18
+          "size" : 68.07
         }, {
           "price" : 4.5,
-          "size" : 74.27
+          "size" : 62.09
         } ],
         "tradedVolume" : [ ]
       }
@@ -5290,7 +5290,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:00:14.195Z",
     "totalMatched" : 6901.02,
-    "totalAvailable" : 277906.49,
+    "totalAvailable" : 277948.9,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446429178,
@@ -5303,23 +5303,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.33,
-          "size" : 240.58
+          "size" : 116.81
         }, {
           "price" : 1.32,
-          "size" : 1203.24
+          "size" : 1203.53
         }, {
           "price" : 1.31,
-          "size" : 227.74
+          "size" : 221.95
         } ],
         "availableToLay" : [ {
           "price" : 1.35,
-          "size" : 121.17
+          "size" : 157.29
         }, {
           "price" : 1.36,
-          "size" : 88.03
+          "size" : 58.08
         }, {
           "price" : 1.37,
-          "size" : 101.98
+          "size" : 100.71
         } ],
         "tradedVolume" : [ ]
       }
@@ -5335,10 +5335,10 @@
           "size" : 14.99
         }, {
           "price" : 11.5,
-          "size" : 141.96
+          "size" : 146.37
         }, {
           "price" : 11.0,
-          "size" : 12.99
+          "size" : 13.21
         } ],
         "availableToLay" : [ {
           "price" : 13.0,
@@ -5347,8 +5347,8 @@
           "price" : 13.5,
           "size" : 14.53
         }, {
-          "price" : 14.0,
-          "size" : 13.98
+          "price" : 15.0,
+          "size" : 21.58
         } ],
         "tradedVolume" : [ ]
       }
@@ -5363,11 +5363,11 @@
           "price" : 5.7,
           "size" : 22.96
         }, {
-          "price" : 5.5,
-          "size" : 26.87
+          "price" : 5.6,
+          "size" : 16.65
         }, {
           "price" : 5.4,
-          "size" : 21.11
+          "size" : 40.56
         } ],
         "availableToLay" : [ {
           "price" : 5.8,
@@ -5377,7 +5377,7 @@
           "size" : 62.08
         }, {
           "price" : 6.0,
-          "size" : 134.13
+          "size" : 119.09
         } ],
         "tradedVolume" : [ ]
       }
@@ -5394,9 +5394,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:07:05.476Z",
-    "totalMatched" : 1941.33,
-    "totalAvailable" : 276713.83,
+    "lastMatchTime" : "2026-06-11T13:30:59.910Z",
+    "totalMatched" : 2098.31,
+    "totalAvailable" : 276460.97,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446429464,
@@ -5412,20 +5412,20 @@
           "size" : 33.71
         }, {
           "price" : 1.81,
-          "size" : 112.55
+          "size" : 70.61
         }, {
           "price" : 1.8,
-          "size" : 98.02
+          "size" : 122.41
         } ],
         "availableToLay" : [ {
           "price" : 1.83,
-          "size" : 1116.88
+          "size" : 974.77
         }, {
           "price" : 1.84,
           "size" : 326.25
         }, {
-          "price" : 1.86,
-          "size" : 38.08
+          "price" : 1.85,
+          "size" : 44.53
         } ],
         "tradedVolume" : [ ]
       }
@@ -5438,23 +5438,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 5.0,
-          "size" : 50.2
+          "size" : 54.83
         }, {
           "price" : 4.9,
-          "size" : 98.91
+          "size" : 99.71
         }, {
           "price" : 4.8,
-          "size" : 114.78
+          "size" : 117.76
         } ],
         "availableToLay" : [ {
-          "price" : 5.2,
-          "size" : 15.98
-        }, {
           "price" : 5.3,
-          "size" : 57.83
+          "size" : 61.79
         }, {
           "price" : 5.4,
           "size" : 19.11
+        }, {
+          "price" : 5.6,
+          "size" : 15.61
         } ],
         "tradedVolume" : [ ]
       }
@@ -5467,10 +5467,10 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.8,
-          "size" : 51.33
+          "size" : 36.11
         }, {
           "price" : 3.75,
-          "size" : 126.36
+          "size" : 121.65
         }, {
           "price" : 3.7,
           "size" : 14.78
@@ -5480,10 +5480,10 @@
           "size" : 51.28
         }, {
           "price" : 3.95,
-          "size" : 62.78
+          "size" : 57.61
         }, {
           "price" : 4.0,
-          "size" : 17.38
+          "size" : 19.97
         } ],
         "tradedVolume" : [ ]
       }
@@ -5502,7 +5502,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:00:55.747Z",
     "totalMatched" : 1868.79,
-    "totalAvailable" : 274000.25,
+    "totalAvailable" : 274487.86,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446433050,
@@ -5518,20 +5518,20 @@
           "size" : 17.68
         }, {
           "price" : 4.8,
-          "size" : 22.39
+          "size" : 28.65
         }, {
           "price" : 4.7,
-          "size" : 98.79
+          "size" : 106.76
         } ],
         "availableToLay" : [ {
-          "price" : 5.4,
-          "size" : 27.89
+          "price" : 5.3,
+          "size" : 19.29
         }, {
           "price" : 5.5,
           "size" : 118.11
         }, {
           "price" : 5.6,
-          "size" : 44.0
+          "size" : 38.8
         } ],
         "tradedVolume" : [ ]
       }
@@ -5544,23 +5544,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.78,
-          "size" : 13.64
+          "size" : 56.82
         }, {
-          "price" : 1.77,
-          "size" : 43.42
+          "price" : 1.76,
+          "size" : 66.59
         }, {
-          "price" : 1.75,
-          "size" : 23.02
+          "price" : 1.72,
+          "size" : 362.18
         } ],
         "availableToLay" : [ {
           "price" : 1.83,
-          "size" : 48.82
+          "size" : 48.88
         }, {
-          "price" : 1.84,
-          "size" : 12.96
+          "price" : 1.85,
+          "size" : 12.93
         }, {
-          "price" : 1.87,
-          "size" : 43.43
+          "price" : 1.88,
+          "size" : 43.21
         } ],
         "tradedVolume" : [ ]
       }
@@ -5572,24 +5572,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 3.8,
-          "size" : 25.6
+          "price" : 3.75,
+          "size" : 49.68
         }, {
-          "price" : 3.7,
-          "size" : 26.46
+          "price" : 3.6,
+          "size" : 109.83
         }, {
-          "price" : 3.45,
-          "size" : 18.67
+          "price" : 3.4,
+          "size" : 148.59
         } ],
         "availableToLay" : [ {
+          "price" : 4.1,
+          "size" : 27.22
+        }, {
           "price" : 4.2,
-          "size" : 32.09
+          "size" : 20.61
         }, {
           "price" : 4.3,
-          "size" : 140.16
-        }, {
-          "price" : 4.4,
-          "size" : 25.6
+          "size" : 127.68
         } ],
         "tradedVolume" : [ ]
       }
@@ -5608,7 +5608,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:09:06.837Z",
     "totalMatched" : 1161.66,
-    "totalAvailable" : 272305.4,
+    "totalAvailable" : 275271.79,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446430912,
@@ -5620,24 +5620,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 1.66,
+          "size" : 54.56
+        }, {
           "price" : 1.65,
-          "size" : 40.75
+          "size" : 30.28
         }, {
-          "price" : 1.63,
-          "size" : 18.95
-        }, {
-          "price" : 1.61,
-          "size" : 148.73
+          "price" : 1.64,
+          "size" : 41.65
         } ],
         "availableToLay" : [ {
+          "price" : 1.71,
+          "size" : 85.27
+        }, {
+          "price" : 1.72,
+          "size" : 354.74
+        }, {
           "price" : 1.73,
-          "size" : 29.53
-        }, {
-          "price" : 1.76,
-          "size" : 45.7
-        }, {
-          "price" : 1.77,
-          "size" : 20.09
+          "size" : 266.95
         } ],
         "tradedVolume" : [ ]
       }
@@ -5649,24 +5649,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 5.1,
-          "size" : 27.42
+          "price" : 5.5,
+          "size" : 13.32
         }, {
-          "price" : 5.0,
-          "size" : 13.47
+          "price" : 5.4,
+          "size" : 92.27
         }, {
-          "price" : 4.5,
-          "size" : 30.06
+          "price" : 5.3,
+          "size" : 14.44
         } ],
         "availableToLay" : [ {
           "price" : 5.9,
-          "size" : 17.19
+          "size" : 29.61
         }, {
           "price" : 6.0,
-          "size" : 147.05
+          "size" : 148.53
         }, {
-          "price" : 6.2,
-          "size" : 21.8
+          "price" : 6.4,
+          "size" : 17.69
         } ],
         "tradedVolume" : [ ]
       }
@@ -5678,24 +5678,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 4.2,
+          "size" : 26.03
+        }, {
+          "price" : 4.1,
+          "size" : 85.64
+        }, {
           "price" : 4.0,
-          "size" : 19.82
-        }, {
-          "price" : 3.8,
-          "size" : 23.41
-        }, {
-          "price" : 1.01,
-          "size" : 21.6
+          "size" : 42.45
         } ],
         "availableToLay" : [ {
-          "price" : 4.6,
-          "size" : 14.56
+          "price" : 4.5,
+          "size" : 22.97
         }, {
           "price" : 4.7,
-          "size" : 50.95
+          "size" : 74.9
         }, {
           "price" : 4.8,
-          "size" : 13.62
+          "size" : 12.78
         } ],
         "tradedVolume" : [ ]
       }
@@ -5714,7 +5714,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:00:16.739Z",
     "totalMatched" : 1100.25,
-    "totalAvailable" : 274677.9,
+    "totalAvailable" : 274836.64,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446431198,
@@ -5727,23 +5727,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.56,
-          "size" : 308.57
+          "size" : 293.28
+        }, {
+          "price" : 1.54,
+          "size" : 170.38
         }, {
           "price" : 1.53,
-          "size" : 429.42
-        }, {
-          "price" : 1.47,
-          "size" : 187.58
+          "size" : 252.59
         } ],
         "availableToLay" : [ {
           "price" : 1.64,
-          "size" : 22.37
+          "size" : 38.39
+        }, {
+          "price" : 1.65,
+          "size" : 14.49
         }, {
           "price" : 1.67,
-          "size" : 264.64
-        }, {
-          "price" : 1.68,
-          "size" : 253.44
+          "size" : 40.36
         } ],
         "tradedVolume" : [ ]
       }
@@ -5755,24 +5755,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 5.6,
-          "size" : 52.71
-        }, {
           "price" : 5.4,
-          "size" : 11.78
+          "size" : 57.61
         }, {
           "price" : 5.1,
-          "size" : 12.44
+          "size" : 16.6
+        }, {
+          "price" : 4.9,
+          "size" : 22.55
         } ],
         "availableToLay" : [ {
+          "price" : 6.6,
+          "size" : 99.92
+        }, {
           "price" : 6.8,
-          "size" : 241.27
+          "size" : 120.46
         }, {
           "price" : 7.0,
-          "size" : 28.95
-        }, {
-          "price" : 7.6,
-          "size" : 140.62
+          "size" : 33.53
         } ],
         "tradedVolume" : [ ]
       }
@@ -5784,24 +5784,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 4.3,
-          "size" : 86.92
+          "price" : 4.7,
+          "size" : 15.54
+        }, {
+          "price" : 4.2,
+          "size" : 85.78
         }, {
           "price" : 1.09,
-          "size" : 12.89
-        }, {
-          "price" : 1.01,
-          "size" : 16.21
+          "size" : 14.45
         } ],
         "availableToLay" : [ {
           "price" : 5.0,
-          "size" : 141.31
+          "size" : 50.95
         }, {
-          "price" : 5.6,
-          "size" : 55.17
+          "price" : 5.1,
+          "size" : 104.72
         }, {
           "price" : 5.8,
-          "size" : 22.97
+          "size" : 76.98
         } ],
         "tradedVolume" : [ ]
       }
@@ -5818,9 +5818,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:04:25.896Z",
-    "totalMatched" : 5068.79,
-    "totalAvailable" : 302739.74,
+    "lastMatchTime" : "2026-06-11T13:15:37.445Z",
+    "totalMatched" : 5079.14,
+    "totalAvailable" : 302566.9,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446431484,
@@ -5833,17 +5833,17 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.22,
-          "size" : 210.55
+          "size" : 212.9
         }, {
           "price" : 1.21,
-          "size" : 697.13
+          "size" : 630.18
         }, {
           "price" : 1.2,
-          "size" : 297.54
+          "size" : 284.58
         } ],
         "availableToLay" : [ {
           "price" : 1.24,
-          "size" : 24.32
+          "size" : 34.0
         }, {
           "price" : 1.25,
           "size" : 105.5
@@ -5857,28 +5857,28 @@
       "selectionId" : 5774593,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 17.5,
+      "lastPriceTraded" : 18.0,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
           "price" : 16.0,
           "size" : 23.78
         }, {
-          "price" : 14.5,
-          "size" : 29.27
+          "price" : 15.0,
+          "size" : 26.0
         }, {
           "price" : 13.5,
-          "size" : 11.97
+          "size" : 15.45
         } ],
         "availableToLay" : [ {
           "price" : 18.0,
-          "size" : 18.53
+          "size" : 13.35
         }, {
           "price" : 19.5,
           "size" : 12.02
         }, {
-          "price" : 24.0,
-          "size" : 110.12
+          "price" : 25.0,
+          "size" : 226.16
         } ],
         "tradedVolume" : [ ]
       }
@@ -5893,11 +5893,11 @@
           "price" : 7.4,
           "size" : 12.88
         }, {
-          "price" : 7.0,
-          "size" : 18.08
+          "price" : 7.2,
+          "size" : 12.8
         }, {
           "price" : 6.8,
-          "size" : 57.75
+          "size" : 64.7
         } ],
         "availableToLay" : [ {
           "price" : 7.8,
@@ -5907,7 +5907,7 @@
           "size" : 14.51
         }, {
           "price" : 8.4,
-          "size" : 79.08
+          "size" : 79.42
         } ],
         "tradedVolume" : [ ]
       }
@@ -5926,7 +5926,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:03:12.006Z",
     "totalMatched" : 1530.07,
-    "totalAvailable" : 274982.2,
+    "totalAvailable" : 274838.75,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446431790,
@@ -5939,23 +5939,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 5.8,
-          "size" : 17.84
+          "size" : 27.94
         }, {
           "price" : 5.7,
-          "size" : 72.05
+          "size" : 64.45
         }, {
-          "price" : 5.5,
-          "size" : 15.56
+          "price" : 5.6,
+          "size" : 13.68
         } ],
         "availableToLay" : [ {
           "price" : 6.6,
-          "size" : 36.21
+          "size" : 30.8
         }, {
           "price" : 6.8,
-          "size" : 86.23
+          "size" : 18.94
         }, {
           "price" : 7.0,
-          "size" : 39.22
+          "size" : 112.49
         } ],
         "tradedVolume" : [ ]
       }
@@ -5974,17 +5974,17 @@
           "size" : 16.26
         }, {
           "price" : 1.69,
-          "size" : 30.83
+          "size" : 29.84
         } ],
         "availableToLay" : [ {
           "price" : 1.79,
-          "size" : 11.87
+          "size" : 17.52
         }, {
           "price" : 1.8,
-          "size" : 85.73
+          "size" : 72.68
         }, {
           "price" : 1.81,
-          "size" : 237.05
+          "size" : 503.34
         } ],
         "tradedVolume" : [ ]
       }
@@ -5996,24 +5996,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 3.55,
-          "size" : 12.59
+          "price" : 3.6,
+          "size" : 15.82
         }, {
-          "price" : 3.5,
-          "size" : 92.63
+          "price" : 3.55,
+          "size" : 92.85
         }, {
           "price" : 3.4,
-          "size" : 39.52
+          "size" : 58.2
         } ],
         "availableToLay" : [ {
           "price" : 3.95,
-          "size" : 17.77
+          "size" : 17.92
         }, {
           "price" : 4.0,
-          "size" : 105.08
+          "size" : 115.22
         }, {
-          "price" : 4.1,
-          "size" : 122.22
+          "price" : 4.2,
+          "size" : 138.5
         } ],
         "tradedVolume" : [ ]
       }
@@ -6032,7 +6032,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:07:34.162Z",
     "totalMatched" : 1885.9,
-    "totalAvailable" : 524774.05,
+    "totalAvailable" : 524681.98,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446432076,
@@ -6045,23 +6045,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.13,
-          "size" : 41.83
+          "size" : 41.53
         }, {
           "price" : 1.12,
-          "size" : 12832.33
+          "size" : 12832.61
         }, {
           "price" : 1.11,
           "size" : 23242.06
         } ],
         "availableToLay" : [ {
           "price" : 1.15,
-          "size" : 44.8
+          "size" : 282.23
         }, {
           "price" : 1.16,
-          "size" : 534.24
+          "size" : 219.32
         }, {
           "price" : 1.17,
-          "size" : 32.98
+          "size" : 128.67
         } ],
         "tradedVolume" : [ ]
       }
@@ -6073,21 +6073,21 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 25.0,
-          "size" : 13.03
+          "price" : 22.0,
+          "size" : 21.39
         }, {
           "price" : 21.0,
-          "size" : 27.13
+          "size" : 28.09
         }, {
-          "price" : 18.0,
-          "size" : 17.64
+          "price" : 14.5,
+          "size" : 26.7
         } ],
         "availableToLay" : [ {
           "price" : 42.0,
-          "size" : 66.15
+          "size" : 66.11
         }, {
           "price" : 46.0,
-          "size" : 63.68
+          "size" : 61.77
         }, {
           "price" : 48.0,
           "size" : 83.72
@@ -6103,23 +6103,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 10.5,
-          "size" : 33.58
+          "size" : 33.55
         }, {
-          "price" : 9.2,
-          "size" : 12.15
+          "price" : 9.4,
+          "size" : 39.31
         }, {
-          "price" : 8.8,
-          "size" : 31.57
+          "price" : 7.8,
+          "size" : 47.09
         } ],
         "availableToLay" : [ {
           "price" : 12.0,
           "size" : 62.37
         }, {
           "price" : 13.5,
-          "size" : 50.68
+          "size" : 48.69
         }, {
           "price" : 15.0,
-          "size" : 19.13
+          "size" : 13.26
         } ],
         "tradedVolume" : [ ]
       }
@@ -6138,7 +6138,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:04:02.455Z",
     "totalMatched" : 2825.33,
-    "totalAvailable" : 275842.42,
+    "totalAvailable" : 275856.41,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446432752,
@@ -6151,23 +6151,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.44,
-          "size" : 332.51
+          "size" : 357.68
         }, {
           "price" : 1.43,
-          "size" : 64.62
+          "size" : 32.85
         }, {
           "price" : 1.42,
-          "size" : 305.42
+          "size" : 324.1
         } ],
         "availableToLay" : [ {
           "price" : 1.49,
-          "size" : 52.16
+          "size" : 52.33
         }, {
           "price" : 1.5,
           "size" : 856.25
         }, {
           "price" : 1.52,
-          "size" : 33.74
+          "size" : 12.67
         } ],
         "tradedVolume" : [ ]
       }
@@ -6180,23 +6180,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 8.0,
-          "size" : 53.7
+          "size" : 11.76
+        }, {
+          "price" : 7.8,
+          "size" : 47.77
         }, {
           "price" : 7.6,
-          "size" : 13.69
-        }, {
-          "price" : 7.4,
-          "size" : 11.75
+          "size" : 12.79
         } ],
         "availableToLay" : [ {
           "price" : 9.6,
-          "size" : 181.32
+          "size" : 177.84
         }, {
           "price" : 11.0,
-          "size" : 364.21
+          "size" : 234.21
         }, {
           "price" : 11.5,
-          "size" : 36.43
+          "size" : 161.1
         } ],
         "tradedVolume" : [ ]
       }
@@ -6215,17 +6215,17 @@
           "size" : 23.32
         }, {
           "price" : 4.3,
-          "size" : 365.19
+          "size" : 365.25
         } ],
         "availableToLay" : [ {
           "price" : 5.1,
-          "size" : 101.06
-        }, {
-          "price" : 5.5,
-          "size" : 11.66
+          "size" : 106.44
         }, {
           "price" : 5.6,
-          "size" : 67.53
+          "size" : 18.85
+        }, {
+          "price" : 5.7,
+          "size" : 64.42
         } ],
         "tradedVolume" : [ ]
       }
@@ -6242,9 +6242,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T11:05:51.922Z",
-    "totalMatched" : 487.5,
-    "totalAvailable" : 274316.1,
+    "lastMatchTime" : "2026-06-11T13:14:20.398Z",
+    "totalMatched" : 492.85,
+    "totalAvailable" : 274420.94,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446430626,
@@ -6256,24 +6256,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 2.24,
+          "size" : 107.39
+        }, {
+          "price" : 2.22,
+          "size" : 277.98
+        }, {
           "price" : 2.2,
-          "size" : 182.33
-        }, {
-          "price" : 2.18,
-          "size" : 271.5
-        }, {
-          "price" : 2.16,
-          "size" : 62.39
+          "size" : 92.95
         } ],
         "availableToLay" : [ {
-          "price" : 2.48,
-          "size" : 89.4
-        }, {
           "price" : 2.5,
-          "size" : 485.99
+          "size" : 51.11
         }, {
           "price" : 2.52,
-          "size" : 40.68
+          "size" : 270.3
+        }, {
+          "price" : 2.54,
+          "size" : 299.83
         } ],
         "tradedVolume" : [ ]
       }
@@ -6281,28 +6281,28 @@
       "selectionId" : 55211,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 3.6,
+      "lastPriceTraded" : 3.55,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 3.5,
-          "size" : 47.6
-        }, {
-          "price" : 3.45,
-          "size" : 166.24
-        }, {
           "price" : 3.4,
-          "size" : 40.5
+          "size" : 41.48
+        }, {
+          "price" : 3.35,
+          "size" : 200.79
+        }, {
+          "price" : 3.3,
+          "size" : 34.56
         } ],
         "availableToLay" : [ {
+          "price" : 3.95,
+          "size" : 98.49
+        }, {
           "price" : 4.0,
-          "size" : 30.91
+          "size" : 192.55
         }, {
           "price" : 4.1,
-          "size" : 302.24
-        }, {
-          "price" : 4.2,
-          "size" : 111.72
+          "size" : 330.0
         } ],
         "tradedVolume" : [ ]
       }
@@ -6310,28 +6310,28 @@
       "selectionId" : 58805,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 3.25,
+      "lastPriceTraded" : 3.4,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 3.1,
+          "size" : 38.67
+        }, {
           "price" : 3.05,
-          "size" : 56.59
+          "size" : 119.04
         }, {
           "price" : 3.0,
-          "size" : 116.63
-        }, {
-          "price" : 2.88,
-          "size" : 23.68
+          "size" : 14.2
         } ],
         "availableToLay" : [ {
           "price" : 3.4,
-          "size" : 42.97
+          "size" : 43.01
         }, {
           "price" : 3.5,
-          "size" : 29.23
+          "size" : 29.25
         }, {
-          "price" : 3.55,
-          "size" : 149.52
+          "price" : 3.6,
+          "size" : 164.42
         } ],
         "tradedVolume" : [ ]
       }
@@ -6348,9 +6348,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:05:59.366Z",
-    "totalMatched" : 13331.47,
-    "totalAvailable" : 846445.01,
+    "lastMatchTime" : "2026-06-11T13:11:24.608Z",
+    "totalMatched" : 13335.37,
+    "totalAvailable" : 846509.73,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446430320,
@@ -6362,24 +6362,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 1.11,
+          "size" : 14.47
+        }, {
           "price" : 1.1,
-          "size" : 807.79
+          "size" : 612.66
         }, {
           "price" : 1.09,
-          "size" : 1030.28
-        }, {
-          "price" : 1.08,
-          "size" : 61277.96
+          "size" : 1203.62
         } ],
         "availableToLay" : [ {
           "price" : 1.12,
-          "size" : 308.81
+          "size" : 580.73
         }, {
           "price" : 1.13,
-          "size" : 1126.32
+          "size" : 793.28
         }, {
           "price" : 1.14,
-          "size" : 35.57
+          "size" : 263.16
         } ],
         "tradedVolume" : [ ]
       }
@@ -6387,28 +6387,28 @@
       "selectionId" : 834087,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 32.0,
+      "lastPriceTraded" : 30.0,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 26.0,
-          "size" : 15.73
+          "price" : 27.0,
+          "size" : 12.9
         }, {
-          "price" : 25.0,
-          "size" : 11.65
+          "price" : 26.0,
+          "size" : 13.42
         }, {
           "price" : 24.0,
-          "size" : 13.63
+          "size" : 25.93
         } ],
         "availableToLay" : [ {
+          "price" : 40.0,
+          "size" : 11.7
+        }, {
           "price" : 42.0,
-          "size" : 92.73
+          "size" : 19.33
         }, {
           "price" : 44.0,
           "size" : 42.1
-        }, {
-          "price" : 55.0,
-          "size" : 85.45
         } ],
         "tradedVolume" : [ ]
       }
@@ -6421,23 +6421,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 14.5,
-          "size" : 96.85
-        }, {
-          "price" : 14.0,
-          "size" : 22.44
+          "size" : 113.98
         }, {
           "price" : 13.0,
-          "size" : 14.0
+          "size" : 18.63
+        }, {
+          "price" : 12.5,
+          "size" : 14.64
         } ],
         "availableToLay" : [ {
           "price" : 15.0,
           "size" : 41.18
         }, {
           "price" : 16.5,
-          "size" : 13.48
+          "size" : 13.77
         }, {
           "price" : 17.5,
-          "size" : 35.42
+          "size" : 32.9
         } ],
         "tradedVolume" : [ ]
       }
@@ -6454,9 +6454,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T12:50:05.212Z",
-    "totalMatched" : 2064.63,
-    "totalAvailable" : 276010.97,
+    "lastMatchTime" : "2026-06-11T13:09:13.358Z",
+    "totalMatched" : 2064.86,
+    "totalAvailable" : 276222.97,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446428606,
@@ -6469,23 +6469,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 2.02,
-          "size" : 19.06
+          "size" : 18.18
         }, {
           "price" : 2.0,
-          "size" : 80.81
+          "size" : 79.58
         }, {
           "price" : 1.99,
-          "size" : 58.26
+          "size" : 66.27
         } ],
         "availableToLay" : [ {
           "price" : 2.08,
-          "size" : 50.47
+          "size" : 41.41
         }, {
           "price" : 2.1,
-          "size" : 83.42
+          "size" : 80.71
         }, {
           "price" : 2.12,
-          "size" : 214.18
+          "size" : 216.01
         } ],
         "tradedVolume" : [ ]
       }
@@ -6498,23 +6498,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.3,
-          "size" : 20.05
+          "size" : 20.03
         }, {
           "price" : 4.2,
-          "size" : 169.18
+          "size" : 163.32
         }, {
           "price" : 4.1,
           "size" : 49.38
         } ],
         "availableToLay" : [ {
           "price" : 4.6,
-          "size" : 28.16
+          "size" : 27.12
         }, {
           "price" : 4.7,
-          "size" : 119.06
+          "size" : 118.6
         }, {
           "price" : 4.8,
-          "size" : 31.07
+          "size" : 30.32
         } ],
         "tradedVolume" : [ ]
       }
@@ -6527,23 +6527,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.45,
-          "size" : 141.47
+          "size" : 141.48
         }, {
           "price" : 3.4,
-          "size" : 111.43
+          "size" : 111.39
         }, {
           "price" : 3.35,
           "size" : 100.64
         } ],
         "availableToLay" : [ {
           "price" : 3.55,
-          "size" : 112.03
+          "size" : 112.06
         }, {
           "price" : 3.6,
           "size" : 118.87
         }, {
           "price" : 3.7,
-          "size" : 144.09
+          "size" : 143.6
         } ],
         "tradedVolume" : [ ]
       }
@@ -6562,7 +6562,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:05:38.945Z",
     "totalMatched" : 3311.02,
-    "totalAvailable" : 275828.05,
+    "totalAvailable" : 275853.98,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446430030,
@@ -6575,23 +6575,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.4,
-          "size" : 132.07
+          "size" : 64.21
         }, {
           "price" : 4.3,
-          "size" : 47.62
+          "size" : 28.41
         }, {
           "price" : 4.2,
-          "size" : 58.34
+          "size" : 46.53
         } ],
         "availableToLay" : [ {
           "price" : 4.5,
           "size" : 24.98
         }, {
-          "price" : 4.7,
-          "size" : 175.19
+          "price" : 4.6,
+          "size" : 18.77
         }, {
-          "price" : 4.9,
-          "size" : 25.7
+          "price" : 4.7,
+          "size" : 170.28
         } ],
         "tradedVolume" : [ ]
       }
@@ -6604,23 +6604,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.98,
-          "size" : 79.27
+          "size" : 95.06
         }, {
           "price" : 1.96,
-          "size" : 25.76
+          "size" : 42.64
         }, {
           "price" : 1.94,
-          "size" : 455.07
+          "size" : 648.13
         } ],
         "availableToLay" : [ {
           "price" : 2.02,
           "size" : 27.52
         }, {
           "price" : 2.04,
-          "size" : 134.33
+          "size" : 139.86
         }, {
           "price" : 2.06,
-          "size" : 49.48
+          "size" : 52.12
         } ],
         "tradedVolume" : [ ]
       }
@@ -6639,17 +6639,17 @@
           "size" : 22.6
         }, {
           "price" : 3.5,
-          "size" : 36.15
+          "size" : 37.7
         } ],
         "availableToLay" : [ {
           "price" : 3.65,
           "size" : 277.9
         }, {
-          "price" : 3.7,
-          "size" : 140.94
-        }, {
           "price" : 3.75,
-          "size" : 22.32
+          "size" : 236.26
+        }, {
+          "price" : 3.9,
+          "size" : 53.25
         } ],
         "tradedVolume" : [ ]
       }
@@ -6666,9 +6666,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:01:57.753Z",
-    "totalMatched" : 1279.56,
-    "totalAvailable" : 277757.12,
+    "lastMatchTime" : "2026-06-11T13:29:59.084Z",
+    "totalMatched" : 1376.7,
+    "totalAvailable" : 277687.16,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446432409,
@@ -6686,18 +6686,18 @@
           "price" : 1.41,
           "size" : 53.86
         }, {
-          "price" : 1.4,
-          "size" : 47.48
+          "price" : 1.39,
+          "size" : 83.45
         } ],
         "availableToLay" : [ {
-          "price" : 1.43,
-          "size" : 20.0
-        }, {
           "price" : 1.44,
-          "size" : 45.96
+          "size" : 45.95
         }, {
           "price" : 1.46,
-          "size" : 55.44
+          "size" : 55.25
+        }, {
+          "price" : 1.48,
+          "size" : 290.97
         } ],
         "tradedVolume" : [ ]
       }
@@ -6710,23 +6710,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 8.6,
-          "size" : 51.58
+          "size" : 51.69
         }, {
           "price" : 8.4,
-          "size" : 16.0
+          "size" : 18.11
         }, {
-          "price" : 8.0,
-          "size" : 15.68
+          "price" : 7.6,
+          "size" : 17.36
         } ],
         "availableToLay" : [ {
           "price" : 9.8,
-          "size" : 22.83
+          "size" : 22.24
         }, {
           "price" : 10.0,
-          "size" : 114.99
+          "size" : 119.62
         }, {
           "price" : 10.5,
-          "size" : 82.67
+          "size" : 81.64
         } ],
         "tradedVolume" : [ ]
       }
@@ -6739,23 +6739,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 5.0,
-          "size" : 21.48
+          "size" : 17.57
         }, {
           "price" : 4.9,
-          "size" : 15.82
+          "size" : 12.28
         }, {
-          "price" : 4.8,
-          "size" : 62.57
+          "price" : 4.7,
+          "size" : 70.21
         } ],
         "availableToLay" : [ {
           "price" : 5.5,
-          "size" : 27.25
+          "size" : 27.21
         }, {
           "price" : 5.6,
-          "size" : 69.03
+          "size" : 73.63
         }, {
           "price" : 5.7,
-          "size" : 118.37
+          "size" : 121.08
         } ],
         "tradedVolume" : [ ]
       }
@@ -6772,9 +6772,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:06:24.774Z",
-    "totalMatched" : 1048.11,
-    "totalAvailable" : 275941.56,
+    "lastMatchTime" : "2026-06-11T13:11:24.173Z",
+    "totalMatched" : 1096.71,
+    "totalAvailable" : 276083.74,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446435273,
@@ -6782,28 +6782,28 @@
       "selectionId" : 15299,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 1.51,
+      "lastPriceTraded" : 1.5,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.5,
-          "size" : 1908.9
+          "size" : 1860.31
+        }, {
+          "price" : 1.49,
+          "size" : 18.8
         }, {
           "price" : 1.47,
-          "size" : 15.28
-        }, {
-          "price" : 1.45,
-          "size" : 430.66
+          "size" : 19.34
         } ],
         "availableToLay" : [ {
-          "price" : 1.51,
-          "size" : 20.0
-        }, {
           "price" : 1.52,
-          "size" : 21.83
+          "size" : 56.23
         }, {
-          "price" : 1.55,
-          "size" : 40.7
+          "price" : 1.53,
+          "size" : 13.57
+        }, {
+          "price" : 1.54,
+          "size" : 13.07
         } ],
         "tradedVolume" : [ ]
       }
@@ -6816,23 +6816,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 7.8,
-          "size" : 44.86
+          "size" : 43.4
         }, {
-          "price" : 7.4,
-          "size" : 13.78
+          "price" : 7.6,
+          "size" : 16.82
         }, {
-          "price" : 6.8,
-          "size" : 52.45
+          "price" : 7.0,
+          "size" : 21.27
         } ],
         "availableToLay" : [ {
           "price" : 9.2,
-          "size" : 20.18
+          "size" : 28.35
         }, {
           "price" : 9.4,
           "size" : 118.17
         }, {
           "price" : 10.0,
-          "size" : 96.19
+          "size" : 93.52
         } ],
         "tradedVolume" : [ ]
       }
@@ -6845,23 +6845,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.4,
-          "size" : 20.17
+          "size" : 18.16
+        }, {
+          "price" : 4.2,
+          "size" : 24.43
         }, {
           "price" : 4.1,
-          "size" : 91.98
-        }, {
-          "price" : 3.9,
-          "size" : 32.96
+          "size" : 81.9
         } ],
         "availableToLay" : [ {
           "price" : 4.8,
-          "size" : 15.77
+          "size" : 18.34
         }, {
           "price" : 4.9,
-          "size" : 56.42
+          "size" : 58.68
         }, {
           "price" : 5.0,
-          "size" : 136.0
+          "size" : 147.38
         } ],
         "tradedVolume" : [ ]
       }
@@ -6880,7 +6880,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:01:57.637Z",
     "totalMatched" : 1042.87,
-    "totalAvailable" : 273034.03,
+    "totalAvailable" : 274550.26,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446433344,
@@ -6893,23 +6893,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.64,
-          "size" : 62.36
+          "size" : 68.38
+        }, {
+          "price" : 1.61,
+          "size" : 24.62
         }, {
           "price" : 1.6,
-          "size" : 68.74
-        }, {
-          "price" : 1.59,
-          "size" : 16.42
+          "size" : 50.19
         } ],
         "availableToLay" : [ {
           "price" : 1.68,
-          "size" : 51.72
+          "size" : 63.21
         }, {
           "price" : 1.69,
-          "size" : 36.76
+          "size" : 18.09
         }, {
           "price" : 1.7,
-          "size" : 116.07
+          "size" : 33.29
         } ],
         "tradedVolume" : [ ]
       }
@@ -6921,24 +6921,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 5.9,
-          "size" : 44.65
-        }, {
           "price" : 5.8,
-          "size" : 17.68
+          "size" : 30.63
         }, {
           "price" : 5.7,
-          "size" : 23.5
+          "size" : 84.25
+        }, {
+          "price" : 5.6,
+          "size" : 18.0
         } ],
         "availableToLay" : [ {
           "price" : 6.6,
-          "size" : 12.3
+          "size" : 18.62
         }, {
           "price" : 7.0,
-          "size" : 216.95
+          "size" : 263.92
         }, {
           "price" : 7.2,
-          "size" : 34.74
+          "size" : 11.94
         } ],
         "tradedVolume" : [ ]
       }
@@ -6951,23 +6951,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.1,
-          "size" : 22.8
+          "size" : 25.21
         }, {
           "price" : 4.0,
-          "size" : 23.14
+          "size" : 16.04
         }, {
-          "price" : 3.9,
-          "size" : 18.85
+          "price" : 3.95,
+          "size" : 78.4
         } ],
         "availableToLay" : [ {
           "price" : 4.4,
-          "size" : 21.37
+          "size" : 23.55
         }, {
           "price" : 4.6,
-          "size" : 27.25
+          "size" : 29.79
         }, {
           "price" : 4.7,
-          "size" : 106.93
+          "size" : 105.94
         } ],
         "tradedVolume" : [ ]
       }
@@ -6986,7 +6986,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:06:24.882Z",
     "totalMatched" : 2971.91,
-    "totalAvailable" : 274449.63,
+    "totalAvailable" : 274530.63,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446433946,
@@ -6999,23 +6999,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 2.24,
-          "size" : 155.5
+          "size" : 160.12
+        }, {
+          "price" : 2.22,
+          "size" : 12.68
         }, {
           "price" : 2.18,
-          "size" : 38.07
-        }, {
-          "price" : 2.16,
-          "size" : 353.29
+          "size" : 32.35
         } ],
         "availableToLay" : [ {
           "price" : 2.36,
-          "size" : 41.52
+          "size" : 34.72
         }, {
           "price" : 2.38,
-          "size" : 16.51
+          "size" : 231.93
         }, {
           "price" : 2.4,
-          "size" : 226.94
+          "size" : 60.56
         } ],
         "tradedVolume" : [ ]
       }
@@ -7031,20 +7031,20 @@
           "size" : 13.27
         }, {
           "price" : 3.3,
-          "size" : 16.74
+          "size" : 16.14
         }, {
           "price" : 3.25,
-          "size" : 11.69
+          "size" : 117.36
         } ],
         "availableToLay" : [ {
           "price" : 3.55,
-          "size" : 29.33
+          "size" : 33.65
         }, {
           "price" : 3.6,
           "size" : 105.23
         }, {
-          "price" : 3.65,
-          "size" : 115.92
+          "price" : 3.75,
+          "size" : 17.42
         } ],
         "tradedVolume" : [ ]
       }
@@ -7063,17 +7063,17 @@
           "size" : 95.1
         }, {
           "price" : 3.35,
-          "size" : 33.38
+          "size" : 37.96
         } ],
         "availableToLay" : [ {
-          "price" : 3.8,
-          "size" : 113.74
+          "price" : 3.7,
+          "size" : 13.32
         }, {
-          "price" : 3.95,
-          "size" : 107.19
+          "price" : 3.8,
+          "size" : 103.08
         }, {
           "price" : 4.0,
-          "size" : 108.17
+          "size" : 119.11
         } ],
         "tradedVolume" : [ ]
       }
@@ -7092,7 +7092,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:02:06.359Z",
     "totalMatched" : 1557.02,
-    "totalAvailable" : 272927.38,
+    "totalAvailable" : 275530.9,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446434232,
@@ -7104,24 +7104,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 6.8,
+          "size" : 48.76
+        }, {
           "price" : 6.6,
-          "size" : 27.29
+          "size" : 29.99
         }, {
-          "price" : 5.8,
-          "size" : 13.42
-        }, {
-          "price" : 5.5,
-          "size" : 14.36
+          "price" : 6.4,
+          "size" : 26.92
         } ],
         "availableToLay" : [ {
           "price" : 7.6,
-          "size" : 16.23
+          "size" : 17.48
         }, {
           "price" : 7.8,
           "size" : 30.28
         }, {
           "price" : 8.4,
-          "size" : 97.05
+          "size" : 116.33
         } ],
         "tradedVolume" : [ ]
       }
@@ -7134,23 +7134,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.51,
-          "size" : 44.44
+          "size" : 69.8
         }, {
           "price" : 1.5,
-          "size" : 40.85
+          "size" : 47.01
         }, {
           "price" : 1.49,
           "size" : 35.14
         } ],
         "availableToLay" : [ {
-          "price" : 1.6,
-          "size" : 24.66
+          "price" : 1.57,
+          "size" : 59.63
         }, {
-          "price" : 1.62,
-          "size" : 21.3
+          "price" : 1.58,
+          "size" : 88.3
         }, {
-          "price" : 1.63,
-          "size" : 64.93
+          "price" : 1.59,
+          "size" : 329.6
         } ],
         "tradedVolume" : [ ]
       }
@@ -7162,24 +7162,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 4.6,
+          "size" : 22.87
+        }, {
+          "price" : 4.3,
+          "size" : 97.98
+        }, {
           "price" : 4.2,
-          "size" : 12.72
-        }, {
-          "price" : 4.1,
-          "size" : 19.7
-        }, {
-          "price" : 3.95,
-          "size" : 16.68
+          "size" : 14.78
         } ],
         "availableToLay" : [ {
           "price" : 5.0,
           "size" : 35.43
         }, {
           "price" : 5.1,
-          "size" : 133.39
+          "size" : 39.83
         }, {
-          "price" : 5.8,
-          "size" : 36.22
+          "price" : 5.2,
+          "size" : 121.54
         } ],
         "tradedVolume" : [ ]
       }
@@ -7196,9 +7196,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:08:30.598Z",
-    "totalMatched" : 3483.64,
-    "totalAvailable" : 277199.25,
+    "lastMatchTime" : "2026-06-11T13:10:04.064Z",
+    "totalMatched" : 3485.96,
+    "totalAvailable" : 277531.45,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446434804,
@@ -7206,28 +7206,28 @@
       "selectionId" : 27,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 1.33,
+      "lastPriceTraded" : 1.36,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
           "price" : 1.33,
-          "size" : 43.05
+          "size" : 81.46
         }, {
           "price" : 1.32,
-          "size" : 83.66
+          "size" : 560.63
         }, {
           "price" : 1.31,
-          "size" : 690.84
+          "size" : 227.28
         } ],
         "availableToLay" : [ {
           "price" : 1.37,
-          "size" : 64.94
+          "size" : 66.43
         }, {
           "price" : 1.38,
-          "size" : 73.24
+          "size" : 99.54
         }, {
           "price" : 1.39,
-          "size" : 34.31
+          "size" : 276.26
         } ],
         "tradedVolume" : [ ]
       }
@@ -7239,24 +7239,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 9.4,
-          "size" : 13.16
+          "price" : 9.6,
+          "size" : 14.1
         }, {
-          "price" : 9.2,
-          "size" : 35.24
+          "price" : 9.4,
+          "size" : 32.66
         }, {
           "price" : 9.0,
-          "size" : 14.82
+          "size" : 20.7
         } ],
         "availableToLay" : [ {
           "price" : 12.0,
-          "size" : 89.89
+          "size" : 87.77
         }, {
           "price" : 12.5,
-          "size" : 30.64
+          "size" : 28.18
         }, {
           "price" : 13.0,
-          "size" : 52.53
+          "size" : 58.61
         } ],
         "tradedVolume" : [ ]
       }
@@ -7269,23 +7269,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 5.8,
-          "size" : 16.4
+          "size" : 16.43
         }, {
           "price" : 5.6,
-          "size" : 54.95
+          "size" : 54.39
         }, {
           "price" : 5.4,
-          "size" : 15.09
+          "size" : 14.54
         } ],
         "availableToLay" : [ {
           "price" : 6.2,
-          "size" : 13.66
+          "size" : 14.5
         }, {
           "price" : 6.8,
-          "size" : 145.14
+          "size" : 148.55
         }, {
           "price" : 7.0,
-          "size" : 49.26
+          "size" : 52.5
         } ],
         "tradedVolume" : [ ]
       }
@@ -7304,7 +7304,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:05:57.299Z",
     "totalMatched" : 730.71,
-    "totalAvailable" : 271986.92,
+    "totalAvailable" : 273752.52,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446435090,
@@ -7317,20 +7317,20 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 6.8,
-          "size" : 14.72
+          "size" : 17.59
         }, {
           "price" : 6.4,
-          "size" : 35.73
+          "size" : 81.65
         }, {
           "price" : 5.9,
-          "size" : 13.42
+          "size" : 12.18
         } ],
         "availableToLay" : [ {
           "price" : 7.6,
           "size" : 30.28
         }, {
-          "price" : 7.8,
-          "size" : 77.07
+          "price" : 8.0,
+          "size" : 72.0
         }, {
           "price" : 8.4,
           "size" : 114.2
@@ -7345,24 +7345,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 1.56,
+          "size" : 17.09
+        }, {
           "price" : 1.55,
-          "size" : 27.64
+          "size" : 325.99
         }, {
           "price" : 1.54,
-          "size" : 139.32
-        }, {
-          "price" : 1.53,
-          "size" : 174.21
+          "size" : 129.14
         } ],
         "availableToLay" : [ {
+          "price" : 1.61,
+          "size" : 43.16
+        }, {
           "price" : 1.64,
-          "size" : 46.72
+          "size" : 40.24
         }, {
-          "price" : 1.66,
-          "size" : 35.08
-        }, {
-          "price" : 1.67,
-          "size" : 38.56
+          "price" : 1.68,
+          "size" : 19.06
         } ],
         "tradedVolume" : [ ]
       }
@@ -7375,23 +7375,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.1,
-          "size" : 17.14
+          "size" : 16.09
         }, {
-          "price" : 3.85,
-          "size" : 14.36
+          "price" : 4.0,
+          "size" : 19.69
         }, {
-          "price" : 3.75,
-          "size" : 12.47
+          "price" : 3.8,
+          "size" : 85.18
         } ],
         "availableToLay" : [ {
           "price" : 4.5,
-          "size" : 110.53
+          "size" : 114.18
         }, {
-          "price" : 5.2,
-          "size" : 34.46
+          "price" : 4.8,
+          "size" : 21.61
         }, {
-          "price" : 1000.0,
-          "size" : 3.59
+          "price" : 5.0,
+          "size" : 23.55
         } ],
         "tradedVolume" : [ ]
       }
@@ -7410,7 +7410,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:05:56.543Z",
     "totalMatched" : 1691.29,
-    "totalAvailable" : 292426.99,
+    "totalAvailable" : 292591.15,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446434518,
@@ -7429,17 +7429,17 @@
           "size" : 184.08
         }, {
           "price" : 1.24,
-          "size" : 865.03
+          "size" : 476.89
         } ],
         "availableToLay" : [ {
           "price" : 1.3,
-          "size" : 285.58
+          "size" : 21.53
         }, {
           "price" : 1.31,
-          "size" : 265.29
+          "size" : 321.34
         }, {
           "price" : 1.32,
-          "size" : 40.3
+          "size" : 227.75
         } ],
         "tradedVolume" : [ ]
       }
@@ -7455,10 +7455,10 @@
           "size" : 20.27
         }, {
           "price" : 11.5,
-          "size" : 26.34
+          "size" : 25.88
         }, {
           "price" : 11.0,
-          "size" : 52.68
+          "size" : 56.06
         } ],
         "availableToLay" : [ {
           "price" : 15.5,
@@ -7480,24 +7480,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 6.4,
-          "size" : 56.55
+          "price" : 6.2,
+          "size" : 60.18
         }, {
-          "price" : 6.0,
-          "size" : 64.75
+          "price" : 5.8,
+          "size" : 65.47
         }, {
-          "price" : 1.09,
-          "size" : 13.68
+          "price" : 5.1,
+          "size" : 12.2
         } ],
         "availableToLay" : [ {
           "price" : 7.2,
           "size" : 33.87
         }, {
-          "price" : 7.6,
-          "size" : 64.72
+          "price" : 7.8,
+          "size" : 87.55
         }, {
           "price" : 8.6,
-          "size" : 29.57
+          "size" : 25.39
         } ],
         "tradedVolume" : [ ]
       }
@@ -7516,7 +7516,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:02:24.169Z",
     "totalMatched" : 125.07,
-    "totalAvailable" : 271005.04,
+    "totalAvailable" : 271973.97,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446438520,
@@ -7531,15 +7531,21 @@
           "price" : 2.22,
           "size" : 14.67
         }, {
-          "price" : 2.16,
-          "size" : 21.35
+          "price" : 2.14,
+          "size" : 21.49
         }, {
-          "price" : 2.12,
-          "size" : 32.57
+          "price" : 2.1,
+          "size" : 243.15
         } ],
         "availableToLay" : [ {
+          "price" : 2.38,
+          "size" : 204.99
+        }, {
+          "price" : 2.52,
+          "size" : 123.06
+        }, {
           "price" : 1000.0,
-          "size" : 8.95
+          "size" : 5.49
         } ],
         "tradedVolume" : [ ]
       }
@@ -7551,14 +7557,14 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 1.81,
-          "size" : 24.55
+          "price" : 3.65,
+          "size" : 87.22
         }, {
-          "price" : 1.09,
-          "size" : 12.57
+          "price" : 3.3,
+          "size" : 147.59
         }, {
-          "price" : 1.06,
-          "size" : 10000.0
+          "price" : 1.8,
+          "size" : 22.33
         } ],
         "availableToLay" : [ {
           "price" : 3.9,
@@ -7567,8 +7573,8 @@
           "price" : 4.0,
           "size" : 16.67
         }, {
-          "price" : 4.1,
-          "size" : 95.24
+          "price" : 4.3,
+          "size" : 137.15
         } ],
         "tradedVolume" : [ ]
       }
@@ -7580,21 +7586,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 1.73,
-          "size" : 28.51
+          "price" : 3.05,
+          "size" : 134.43
         }, {
-          "price" : 1.09,
-          "size" : 12.88
+          "price" : 3.0,
+          "size" : 15.44
         }, {
-          "price" : 1.01,
-          "size" : 8.11
+          "price" : 2.86,
+          "size" : 131.2
         } ],
         "availableToLay" : [ {
-          "price" : 3.55,
-          "size" : 138.17
+          "price" : 3.6,
+          "size" : 155.79
+        }, {
+          "price" : 4.1,
+          "size" : 78.02
         }, {
           "price" : 1000.0,
-          "size" : 4.57
+          "size" : 2.01
         } ],
         "tradedVolume" : [ ]
       }
@@ -7613,7 +7622,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:09:14.067Z",
     "totalMatched" : 3049.2,
-    "totalAvailable" : 272944.94,
+    "totalAvailable" : 272796.58,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446436308,
@@ -7631,18 +7640,18 @@
           "price" : 6.2,
           "size" : 20.6
         }, {
-          "price" : 5.3,
-          "size" : 75.12
+          "price" : 5.4,
+          "size" : 16.34
         } ],
         "availableToLay" : [ {
           "price" : 8.4,
           "size" : 13.38
         }, {
-          "price" : 8.6,
-          "size" : 138.73
+          "price" : 8.8,
+          "size" : 149.36
         }, {
-          "price" : 9.4,
-          "size" : 43.97
+          "price" : 10.5,
+          "size" : 32.74
         } ],
         "tradedVolume" : [ ]
       }
@@ -7654,24 +7663,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 1.5,
-          "size" : 21.22
+          "price" : 1.48,
+          "size" : 27.64
         }, {
-          "price" : 1.49,
-          "size" : 299.04
+          "price" : 1.47,
+          "size" : 316.32
         }, {
           "price" : 1.46,
           "size" : 12.74
         } ],
         "availableToLay" : [ {
+          "price" : 1.59,
+          "size" : 235.79
+        }, {
           "price" : 1.6,
-          "size" : 256.87
+          "size" : 21.22
         }, {
           "price" : 1.61,
           "size" : 169.43
-        }, {
-          "price" : 1.63,
-          "size" : 24.54
         } ],
         "tradedVolume" : [ ]
       }
@@ -7686,21 +7695,21 @@
           "price" : 4.5,
           "size" : 76.83
         }, {
-          "price" : 3.9,
-          "size" : 28.77
+          "price" : 3.95,
+          "size" : 28.45
         }, {
-          "price" : 1.38,
-          "size" : 40.53
+          "price" : 3.85,
+          "size" : 66.4
         } ],
         "availableToLay" : [ {
           "price" : 5.3,
-          "size" : 113.6
+          "size" : 12.72
         }, {
-          "price" : 5.8,
-          "size" : 53.06
+          "price" : 5.4,
+          "size" : 102.0
         }, {
-          "price" : 6.0,
-          "size" : 21.29
+          "price" : 6.2,
+          "size" : 48.59
         } ],
         "tradedVolume" : [ ]
       }
@@ -7719,7 +7728,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:03:12.425Z",
     "totalMatched" : 152.4,
-    "totalAvailable" : 271909.98,
+    "totalAvailable" : 271685.28,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446441508,
@@ -7731,21 +7740,21 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 3.55,
-          "size" : 95.47
+          "price" : 3.45,
+          "size" : 101.52
         }, {
-          "price" : 3.25,
-          "size" : 140.16
+          "price" : 3.15,
+          "size" : 156.21
         }, {
           "price" : 1.06,
           "size" : 10004.24
         } ],
         "availableToLay" : [ {
-          "price" : 4.2,
-          "size" : 128.68
+          "price" : 4.1,
+          "size" : 137.62
         }, {
-          "price" : 4.8,
-          "size" : 75.92
+          "price" : 4.7,
+          "size" : 77.84
         } ],
         "tradedVolume" : [ ]
       }
@@ -7757,24 +7766,21 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 2.1,
-          "size" : 13.49
+          "price" : 2.12,
+          "size" : 214.44
         }, {
-          "price" : 2.08,
-          "size" : 204.44
+          "price" : 2.06,
+          "size" : 14.27
         }, {
-          "price" : 2.0,
-          "size" : 222.04
+          "price" : 1.06,
+          "size" : 10005.64
         } ],
         "availableToLay" : [ {
-          "price" : 2.34,
-          "size" : 240.03
-        }, {
-          "price" : 2.44,
-          "size" : 135.14
+          "price" : 2.38,
+          "size" : 211.01
         }, {
           "price" : 1000.0,
-          "size" : 3.31
+          "size" : 8.33
         } ],
         "tradedVolume" : [ ]
       }
@@ -7786,21 +7792,21 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 3.25,
-          "size" : 111.37
+          "price" : 3.2,
+          "size" : 113.71
         }, {
           "price" : 1.09,
-          "size" : 13.03
+          "size" : 12.82
         }, {
           "price" : 1.01,
           "size" : 8.11
         } ],
         "availableToLay" : [ {
-          "price" : 3.75,
-          "size" : 120.18
+          "price" : 3.8,
+          "size" : 150.27
         }, {
-          "price" : 1000.0,
-          "size" : 4.04
+          "price" : 4.2,
+          "size" : 83.12
         } ],
         "tradedVolume" : [ ]
       }
@@ -7819,7 +7825,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:05:58.772Z",
     "totalMatched" : 811.91,
-    "totalAvailable" : 271846.67,
+    "totalAvailable" : 272058.97,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446436017,
@@ -7832,7 +7838,7 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 2.24,
-          "size" : 22.3
+          "size" : 203.61
         }, {
           "price" : 2.22,
           "size" : 114.53
@@ -7841,14 +7847,14 @@
           "size" : 85.49
         } ],
         "availableToLay" : [ {
-          "price" : 2.48,
-          "size" : 16.01
+          "price" : 2.52,
+          "size" : 22.19
         }, {
-          "price" : 2.5,
-          "size" : 164.33
+          "price" : 2.54,
+          "size" : 12.37
         }, {
-          "price" : 1000.0,
-          "size" : 8.38
+          "price" : 2.56,
+          "size" : 198.68
         } ],
         "tradedVolume" : [ ]
       }
@@ -7861,20 +7867,20 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.35,
-          "size" : 237.68
+          "size" : 139.41
+        }, {
+          "price" : 3.3,
+          "size" : 100.48
         }, {
           "price" : 3.1,
-          "size" : 142.5
-        }, {
-          "price" : 1.06,
-          "size" : 10004.94
+          "size" : 15.28
         } ],
         "availableToLay" : [ {
           "price" : 3.7,
           "size" : 76.47
         }, {
           "price" : 3.9,
-          "size" : 146.77
+          "size" : 137.97
         }, {
           "price" : 4.0,
           "size" : 115.79
@@ -7890,23 +7896,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.15,
-          "size" : 25.82
+          "size" : 26.49
         }, {
           "price" : 3.1,
           "size" : 110.88
         }, {
-          "price" : 3.05,
-          "size" : 12.59
+          "price" : 3.0,
+          "size" : 12.71
         } ],
         "availableToLay" : [ {
           "price" : 3.55,
           "size" : 131.57
         }, {
-          "price" : 4.3,
-          "size" : 11.7
+          "price" : 3.95,
+          "size" : 111.54
         }, {
           "price" : 1000.0,
-          "size" : 2.9
+          "size" : 5.88
         } ],
         "tradedVolume" : [ ]
       }
@@ -7925,7 +7931,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:03:49.231Z",
     "totalMatched" : 1045.8,
-    "totalAvailable" : 272384.23,
+    "totalAvailable" : 272698.26,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446435714,
@@ -7940,21 +7946,21 @@
           "price" : 1.59,
           "size" : 18.23
         }, {
-          "price" : 1.57,
-          "size" : 24.8
+          "price" : 1.58,
+          "size" : 14.55
         }, {
           "price" : 1.56,
-          "size" : 20.84
+          "size" : 31.03
         } ],
         "availableToLay" : [ {
           "price" : 1.68,
-          "size" : 22.55
+          "size" : 38.76
         }, {
           "price" : 1.69,
-          "size" : 19.91
+          "size" : 231.34
         }, {
           "price" : 1.7,
-          "size" : 243.37
+          "size" : 12.08
         } ],
         "tradedVolume" : [ ]
       }
@@ -7969,21 +7975,21 @@
           "price" : 6.2,
           "size" : 48.26
         }, {
-          "price" : 5.2,
-          "size" : 15.46
+          "price" : 5.3,
+          "size" : 14.13
         }, {
-          "price" : 5.1,
-          "size" : 77.1
+          "price" : 5.2,
+          "size" : 75.18
         } ],
         "availableToLay" : [ {
-          "price" : 7.8,
-          "size" : 91.82
+          "price" : 7.4,
+          "size" : 82.45
         }, {
           "price" : 8.0,
           "size" : 116.11
         }, {
           "price" : 11.0,
-          "size" : 33.02
+          "size" : 30.52
         } ],
         "tradedVolume" : [ ]
       }
@@ -7995,21 +8001,21 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 3.9,
-          "size" : 14.2
-        }, {
           "price" : 3.85,
-          "size" : 81.02
+          "size" : 88.57
         }, {
-          "price" : 3.6,
-          "size" : 65.74
+          "price" : 3.7,
+          "size" : 17.59
+        }, {
+          "price" : 3.65,
+          "size" : 107.11
         } ],
         "availableToLay" : [ {
           "price" : 4.5,
           "size" : 14.15
         }, {
           "price" : 4.6,
-          "size" : 124.89
+          "size" : 122.05
         }, {
           "price" : 5.1,
           "size" : 12.89
@@ -8031,7 +8037,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:05:58.762Z",
     "totalMatched" : 104.96,
-    "totalAvailable" : 270822.45,
+    "totalAvailable" : 271661.41,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446438796,
@@ -8043,21 +8049,21 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 2.68,
-          "size" : 13.73
+          "price" : 2.5,
+          "size" : 19.79
         }, {
-          "price" : 2.56,
-          "size" : 19.44
+          "price" : 2.46,
+          "size" : 179.74
         }, {
-          "price" : 2.36,
-          "size" : 16.96
+          "price" : 1.06,
+          "size" : 10004.24
         } ],
         "availableToLay" : [ {
-          "price" : 3.05,
-          "size" : 13.69
+          "price" : 2.96,
+          "size" : 167.49
         }, {
-          "price" : 1000.0,
-          "size" : 9.57
+          "price" : 3.2,
+          "size" : 18.0
         } ],
         "tradedVolume" : [ ]
       }
@@ -8069,23 +8075,20 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 2.58,
-          "size" : 13.39
+          "size" : 159.93
         }, {
           "price" : 1.09,
-          "size" : 13.91
+          "size" : 15.66
         }, {
           "price" : 1.06,
           "size" : 10000.0
         } ],
         "availableToLay" : [ {
-          "price" : 2.84,
-          "size" : 22.9
-        }, {
-          "price" : 3.05,
-          "size" : 12.17
+          "price" : 2.92,
+          "size" : 163.91
         }, {
           "price" : 1000.0,
-          "size" : 8.78
+          "size" : 8.87
         } ],
         "tradedVolume" : [ ]
       }
@@ -8098,20 +8101,20 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.35,
-          "size" : 37.82
+          "size" : 136.16
         }, {
-          "price" : 3.2,
-          "size" : 11.96
+          "price" : 3.1,
+          "size" : 156.23
         }, {
           "price" : 1.01,
-          "size" : 19.5
+          "size" : 12.34
         } ],
         "availableToLay" : [ {
-          "price" : 3.9,
-          "size" : 133.99
+          "price" : 3.95,
+          "size" : 151.78
         }, {
           "price" : 4.3,
-          "size" : 84.29
+          "size" : 81.14
         } ],
         "tradedVolume" : [ ]
       }
@@ -8128,9 +8131,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T11:15:35.773Z",
+    "lastMatchTime" : "2026-06-11T13:09:26.869Z",
     "totalMatched" : 728.74,
-    "totalAvailable" : 272320.56,
+    "totalAvailable" : 272356.14,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446440278,
@@ -8142,21 +8145,21 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 11.5,
-          "size" : 26.06
+          "price" : 12.0,
+          "size" : 21.05
         }, {
-          "price" : 8.6,
-          "size" : 38.36
+          "price" : 9.0,
+          "size" : 39.78
         }, {
           "price" : 1.06,
-          "size" : 10114.81
+          "size" : 10011.21
         } ],
         "availableToLay" : [ {
           "price" : 13.5,
           "size" : 17.03
         }, {
           "price" : 14.5,
-          "size" : 39.49
+          "size" : 40.86
         }, {
           "price" : 24.0,
           "size" : 11.87
@@ -8174,21 +8177,21 @@
           "price" : 1.31,
           "size" : 36.7
         }, {
-          "price" : 1.28,
-          "size" : 108.64
+          "price" : 1.3,
+          "size" : 22.57
         }, {
-          "price" : 1.27,
-          "size" : 454.72
+          "price" : 1.28,
+          "size" : 85.69
         } ],
         "availableToLay" : [ {
+          "price" : 1.33,
+          "size" : 231.56
+        }, {
           "price" : 1.34,
-          "size" : 262.84
+          "size" : 191.29
         }, {
           "price" : 1.35,
-          "size" : 193.47
-        }, {
-          "price" : 1.36,
-          "size" : 12.2
+          "size" : 34.23
         } ],
         "tradedVolume" : [ ]
       }
@@ -8201,23 +8204,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 5.9,
-          "size" : 53.51
+          "size" : 74.79
         }, {
           "price" : 5.7,
-          "size" : 22.03
+          "size" : 16.54
         }, {
           "price" : 5.5,
-          "size" : 19.45
+          "size" : 18.35
         } ],
         "availableToLay" : [ {
-          "price" : 7.0,
-          "size" : 11.82
+          "price" : 6.6,
+          "size" : 11.99
         }, {
           "price" : 7.2,
-          "size" : 82.3
+          "size" : 83.75
         }, {
-          "price" : 8.0,
-          "size" : 33.2
+          "price" : 7.8,
+          "size" : 28.02
         } ],
         "tradedVolume" : [ ]
       }
@@ -8236,7 +8239,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:06:46.601Z",
     "totalMatched" : 3207.97,
-    "totalAvailable" : 55674.42,
+    "totalAvailable" : 56654.24,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446440897,
@@ -8249,23 +8252,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 10.0,
-          "size" : 31.11
+          "size" : 25.73
         }, {
-          "price" : 6.8,
-          "size" : 16.23
+          "price" : 8.8,
+          "size" : 14.9
         }, {
-          "price" : 6.6,
-          "size" : 32.12
+          "price" : 8.4,
+          "size" : 25.23
         } ],
         "availableToLay" : [ {
-          "price" : 13.0,
-          "size" : 71.15
+          "price" : 13.5,
+          "size" : 84.06
         }, {
           "price" : 16.0,
-          "size" : 24.45
+          "size" : 18.83
         }, {
           "price" : 20.0,
-          "size" : 26.11
+          "size" : 25.33
         } ],
         "tradedVolume" : [ ]
       }
@@ -8284,11 +8287,11 @@
           "size" : 202.63
         }, {
           "price" : 1.28,
-          "size" : 576.57
+          "size" : 31.86
         } ],
         "availableToLay" : [ {
           "price" : 1.35,
-          "size" : 43.04
+          "size" : 234.74
         }, {
           "price" : 1.36,
           "size" : 189.18
@@ -8309,11 +8312,11 @@
           "price" : 6.2,
           "size" : 69.26
         }, {
-          "price" : 4.6,
-          "size" : 73.57
+          "price" : 5.4,
+          "size" : 60.98
         }, {
-          "price" : 1.01,
-          "size" : 12.34
+          "price" : 1.08,
+          "size" : 761.64
         } ],
         "availableToLay" : [ {
           "price" : 7.0,
@@ -8323,7 +8326,7 @@
           "size" : 30.28
         }, {
           "price" : 7.6,
-          "size" : 84.34
+          "size" : 79.56
         } ],
         "tradedVolume" : [ ]
       }
@@ -8342,7 +8345,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:05:58.092Z",
     "totalMatched" : 1554.74,
-    "totalAvailable" : 34850.33,
+    "totalAvailable" : 34981.61,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446436584,
@@ -8354,24 +8357,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 1.3,
-          "size" : 64.24
-        }, {
           "price" : 1.29,
-          "size" : 731.12
+          "size" : 919.95
         }, {
           "price" : 1.16,
           "size" : 35.98
+        }, {
+          "price" : 1.08,
+          "size" : 14.96
         } ],
         "availableToLay" : [ {
           "price" : 1.35,
           "size" : 57.9
         }, {
-          "price" : 1.37,
-          "size" : 234.74
+          "price" : 1.36,
+          "size" : 231.37
         }, {
           "price" : 1.38,
-          "size" : 196.2
+          "size" : 190.89
         } ],
         "tradedVolume" : [ ]
       }
@@ -8384,20 +8387,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 10.5,
-          "size" : 25.48
+          "size" : 24.36
         }, {
-          "price" : 9.6,
-          "size" : 12.77
+          "price" : 9.2,
+          "size" : 13.13
         }, {
-          "price" : 8.6,
-          "size" : 43.1
+          "price" : 8.8,
+          "size" : 41.47
         } ],
         "availableToLay" : [ {
           "price" : 13.5,
-          "size" : 67.06
+          "size" : 61.09
         }, {
           "price" : 22.0,
-          "size" : 14.36
+          "size" : 14.12
+        }, {
+          "price" : 1000.0,
+          "size" : 1.09
         } ],
         "tradedVolume" : [ ]
       }
@@ -8410,20 +8416,20 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 5.6,
-          "size" : 55.65
+          "size" : 54.75
         }, {
           "price" : 5.4,
-          "size" : 16.79
+          "size" : 17.95
         }, {
-          "price" : 5.1,
-          "size" : 65.37
+          "price" : 5.2,
+          "size" : 60.46
         } ],
         "availableToLay" : [ {
-          "price" : 6.4,
-          "size" : 68.54
+          "price" : 6.6,
+          "size" : 102.84
         }, {
           "price" : 7.8,
-          "size" : 43.03
+          "size" : 32.9
         }, {
           "price" : 1000.0,
           "size" : 11.32
@@ -8443,9 +8449,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T11:02:58.189Z",
-    "totalMatched" : 256.01,
-    "totalAvailable" : 271976.74,
+    "lastMatchTime" : "2026-06-11T13:09:59.448Z",
+    "totalMatched" : 255.94,
+    "totalAvailable" : 272114.67,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446437140,
@@ -8461,17 +8467,17 @@
           "size" : 80.07
         }, {
           "price" : 3.7,
-          "size" : 36.71
+          "size" : 36.7
         }, {
           "price" : 3.65,
-          "size" : 116.38
+          "size" : 116.39
         } ],
         "availableToLay" : [ {
-          "price" : 5.0,
-          "size" : 129.87
+          "price" : 4.9,
+          "size" : 102.06
         }, {
           "price" : 1000.0,
-          "size" : 3.36
+          "size" : 8.79
         } ],
         "tradedVolume" : [ ]
       }
@@ -8487,14 +8493,14 @@
           "size" : 11.73
         }, {
           "price" : 1.91,
-          "size" : 252.36
+          "size" : 254.43
         }, {
-          "price" : 1.85,
-          "size" : 303.88
+          "price" : 1.86,
+          "size" : 269.74
         } ],
         "availableToLay" : [ {
           "price" : 2.12,
-          "size" : 64.01
+          "size" : 64.0
         }, {
           "price" : 2.14,
           "size" : 231.29
@@ -8514,8 +8520,11 @@
           "price" : 3.25,
           "size" : 110.44
         }, {
+          "price" : 3.05,
+          "size" : 42.87
+        }, {
           "price" : 1.01,
-          "size" : 17.33
+          "size" : 12.34
         } ],
         "availableToLay" : [ {
           "price" : 3.85,
@@ -8542,9 +8551,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T13:07:55.133Z",
-    "totalMatched" : 1610.64,
-    "totalAvailable" : 272713.3,
+    "lastMatchTime" : "2026-06-11T13:17:56.007Z",
+    "totalMatched" : 1615.01,
+    "totalAvailable" : 272778.88,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446437416,
@@ -8560,17 +8569,17 @@
           "size" : 17.14
         }, {
           "price" : 13.0,
-          "size" : 17.5
+          "size" : 16.42
         }, {
-          "price" : 10.0,
-          "size" : 29.94
+          "price" : 11.0,
+          "size" : 25.24
         } ],
         "availableToLay" : [ {
           "price" : 21.0,
-          "size" : 82.85
+          "size" : 82.39
         }, {
           "price" : 1000.0,
-          "size" : 9.57
+          "size" : 6.65
         } ],
         "tradedVolume" : [ ]
       }
@@ -8586,20 +8595,20 @@
           "size" : 18.53
         }, {
           "price" : 1.24,
-          "size" : 396.64
+          "size" : 31.88
         }, {
           "price" : 1.23,
-          "size" : 23.22
+          "size" : 46.38
         } ],
         "availableToLay" : [ {
           "price" : 1.29,
-          "size" : 46.9
+          "size" : 231.44
         }, {
           "price" : 1.3,
-          "size" : 386.81
+          "size" : 220.83
         }, {
-          "price" : 1.31,
-          "size" : 55.12
+          "price" : 1.41,
+          "size" : 32.3
         } ],
         "tradedVolume" : [ ]
       }
@@ -8607,28 +8616,28 @@
       "selectionId" : 58805,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 7.0,
+      "lastPriceTraded" : 6.4,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 6.2,
-          "size" : 51.5
+          "price" : 6.4,
+          "size" : 42.62
         }, {
-          "price" : 5.5,
-          "size" : 32.98
+          "price" : 5.7,
+          "size" : 32.29
         }, {
-          "price" : 5.4,
-          "size" : 26.63
+          "price" : 5.6,
+          "size" : 22.79
         } ],
         "availableToLay" : [ {
+          "price" : 7.0,
+          "size" : 11.72
+        }, {
           "price" : 7.4,
-          "size" : 37.72
+          "size" : 30.28
         }, {
-          "price" : 7.6,
-          "size" : 81.86
-        }, {
-          "price" : 8.2,
-          "size" : 45.27
+          "price" : 7.8,
+          "size" : 63.29
         } ],
         "tradedVolume" : [ ]
       }
@@ -8645,9 +8654,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T10:42:19.585Z",
-    "totalMatched" : 300.98,
-    "totalAvailable" : 272027.88,
+    "lastMatchTime" : "2026-06-11T13:10:01.023Z",
+    "totalMatched" : 301.02,
+    "totalAvailable" : 272259.69,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446437692,
@@ -8659,24 +8668,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 4.6,
-          "size" : 69.23
+          "price" : 4.7,
+          "size" : 67.47
         }, {
           "price" : 4.3,
           "size" : 14.23
         }, {
           "price" : 1.06,
-          "size" : 9997.34
+          "size" : 10004.24
         } ],
         "availableToLay" : [ {
           "price" : 5.4,
           "size" : 156.9
         }, {
-          "price" : 5.6,
-          "size" : 100.52
+          "price" : 5.7,
+          "size" : 112.66
         }, {
           "price" : 6.2,
-          "size" : 21.53
+          "size" : 27.85
         } ],
         "tradedVolume" : [ ]
       }
@@ -8694,15 +8703,15 @@
           "price" : 1.75,
           "size" : 393.01
         }, {
-          "price" : 1.73,
-          "size" : 278.35
+          "price" : 1.72,
+          "size" : 319.39
         } ],
         "availableToLay" : [ {
-          "price" : 1.94,
-          "size" : 14.42
+          "price" : 1.92,
+          "size" : 14.64
         }, {
           "price" : 2.02,
-          "size" : 22.47
+          "size" : 25.04
         }, {
           "price" : 2.06,
           "size" : 231.29
@@ -8725,13 +8734,13 @@
         } ],
         "availableToLay" : [ {
           "price" : 4.3,
-          "size" : 121.04
+          "size" : 121.38
         }, {
-          "price" : 4.5,
-          "size" : 49.46
+          "price" : 4.4,
+          "size" : 50.18
         }, {
           "price" : 4.9,
-          "size" : 17.52
+          "size" : 17.19
         } ],
         "tradedVolume" : [ ]
       }
@@ -8750,7 +8759,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:01:59.953Z",
     "totalMatched" : 528.72,
-    "totalAvailable" : 271160.51,
+    "totalAvailable" : 272192.66,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446438244,
@@ -8762,24 +8771,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 7.2,
+          "size" : 37.08
+        }, {
           "price" : 5.9,
-          "size" : 13.48
+          "size" : 69.39
         }, {
           "price" : 1.09,
-          "size" : 13.5
-        }, {
-          "price" : 1.06,
-          "size" : 10000.0
+          "size" : 15.36
         } ],
         "availableToLay" : [ {
           "price" : 8.2,
           "size" : 35.14
         }, {
-          "price" : 8.6,
-          "size" : 56.05
+          "price" : 8.8,
+          "size" : 57.51
         }, {
-          "price" : 1000.0,
-          "size" : 3.68
+          "price" : 12.5,
+          "size" : 27.22
         } ],
         "tradedVolume" : [ ]
       }
@@ -8802,13 +8811,13 @@
         } ],
         "availableToLay" : [ {
           "price" : 1.59,
-          "size" : 24.1
+          "size" : 231.45
+        }, {
+          "price" : 1.61,
+          "size" : 172.54
         }, {
           "price" : 1.63,
-          "size" : 17.36
-        }, {
-          "price" : 1000.0,
-          "size" : 5.77
+          "size" : 29.27
         } ],
         "tradedVolume" : [ ]
       }
@@ -8820,21 +8829,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 4.1,
-          "size" : 11.64
+          "price" : 4.2,
+          "size" : 78.84
         }, {
-          "price" : 1.14,
-          "size" : 16.83
+          "price" : 4.0,
+          "size" : 74.05
         }, {
-          "price" : 1.01,
-          "size" : 12.34
+          "price" : 3.85,
+          "size" : 21.06
         } ],
         "availableToLay" : [ {
           "price" : 4.9,
           "size" : 115.03
         }, {
-          "price" : 5.3,
-          "size" : 11.91
+          "price" : 5.1,
+          "size" : 12.21
+        }, {
+          "price" : 5.6,
+          "size" : 40.49
         } ],
         "tradedVolume" : [ ]
       }
@@ -8853,7 +8865,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:05:58.614Z",
     "totalMatched" : 517.21,
-    "totalAvailable" : 272326.84,
+    "totalAvailable" : 274524.18,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446439348,
@@ -8865,24 +8877,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 3.95,
-          "size" : 12.71
+          "price" : 4.1,
+          "size" : 80.02
         }, {
-          "price" : 3.85,
-          "size" : 30.67
+          "price" : 3.9,
+          "size" : 12.57
         }, {
           "price" : 3.75,
-          "size" : 27.36
+          "size" : 31.58
         } ],
         "availableToLay" : [ {
           "price" : 4.8,
           "size" : 41.55
         }, {
-          "price" : 5.5,
-          "size" : 22.34
+          "price" : 5.0,
+          "size" : 123.13
         }, {
           "price" : 5.6,
-          "size" : 34.35
+          "size" : 43.32
         } ],
         "tradedVolume" : [ ]
       }
@@ -8900,18 +8912,18 @@
           "price" : 1.87,
           "size" : 1140.25
         }, {
-          "price" : 1.84,
-          "size" : 59.27
+          "price" : 1.85,
+          "size" : 258.12
         } ],
         "availableToLay" : [ {
           "price" : 2.02,
           "size" : 20.05
         }, {
-          "price" : 2.12,
-          "size" : 16.14
+          "price" : 2.06,
+          "size" : 235.49
         }, {
-          "price" : 2.16,
-          "size" : 25.88
+          "price" : 2.14,
+          "size" : 46.18
         } ],
         "tradedVolume" : [ ]
       }
@@ -8926,21 +8938,21 @@
           "price" : 3.5,
           "size" : 16.38
         }, {
-          "price" : 3.35,
-          "size" : 11.89
+          "price" : 3.45,
+          "size" : 97.98
         }, {
-          "price" : 3.05,
-          "size" : 18.98
+          "price" : 3.25,
+          "size" : 56.94
         } ],
         "availableToLay" : [ {
           "price" : 4.0,
           "size" : 32.19
         }, {
           "price" : 4.1,
-          "size" : 131.13
+          "size" : 123.61
         }, {
-          "price" : 4.6,
-          "size" : 30.34
+          "price" : 4.5,
+          "size" : 18.61
         } ],
         "tradedVolume" : [ ]
       }
@@ -8959,7 +8971,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:04:09.545Z",
     "totalMatched" : 113.26,
-    "totalAvailable" : 272077.9,
+    "totalAvailable" : 271873.78,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446439673,
@@ -8975,17 +8987,17 @@
           "size" : 60.11
         }, {
           "price" : 4.6,
-          "size" : 92.28
+          "size" : 91.66
         }, {
           "price" : 1.09,
-          "size" : 13.22
+          "size" : 13.29
         } ],
         "availableToLay" : [ {
-          "price" : 6.4,
-          "size" : 88.97
+          "price" : 6.6,
+          "size" : 90.56
         }, {
-          "price" : 7.8,
-          "size" : 44.54
+          "price" : 8.4,
+          "size" : 41.59
         } ],
         "tradedVolume" : [ ]
       }
@@ -8997,24 +9009,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 1.67,
-          "size" : 13.4
-        }, {
-          "price" : 1.65,
-          "size" : 257.74
+          "price" : 1.66,
+          "size" : 17.32
         }, {
           "price" : 1.62,
-          "size" : 287.79
+          "size" : 332.5
+        }, {
+          "price" : 1.56,
+          "size" : 13.0
         } ],
         "availableToLay" : [ {
-          "price" : 1.79,
-          "size" : 237.45
+          "price" : 1.78,
+          "size" : 237.31
         }, {
-          "price" : 1.81,
-          "size" : 17.41
+          "price" : 1.8,
+          "size" : 16.66
         }, {
           "price" : 1.82,
-          "size" : 161.06
+          "size" : 162.2
         } ],
         "tradedVolume" : [ ]
       }
@@ -9029,18 +9041,18 @@
           "price" : 3.8,
           "size" : 90.56
         }, {
-          "price" : 3.5,
-          "size" : 121.36
+          "price" : 3.45,
+          "size" : 122.23
         }, {
-          "price" : 1.09,
-          "size" : 14.05
+          "price" : 1.01,
+          "size" : 12.34
         } ],
         "availableToLay" : [ {
-          "price" : 4.4,
-          "size" : 105.96
+          "price" : 4.5,
+          "size" : 121.78
         }, {
-          "price" : 4.8,
-          "size" : 67.72
+          "price" : 5.1,
+          "size" : 64.3
         } ],
         "tradedVolume" : [ ]
       }
@@ -9057,9 +9069,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T11:02:32.664Z",
-    "totalMatched" : 4442.97,
-    "totalAvailable" : 273652.45,
+    "lastMatchTime" : "2026-06-11T13:25:13.802Z",
+    "totalMatched" : 4905.65,
+    "totalAvailable" : 272920.8,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446439990,
@@ -9067,28 +9079,28 @@
       "selectionId" : 262717,
       "handicap" : 0.0,
       "status" : "ACTIVE",
-      "lastPriceTraded" : 2.68,
+      "lastPriceTraded" : 2.6,
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 2.68,
-          "size" : 118.43
+          "price" : 2.56,
+          "size" : 13.7
         }, {
-          "price" : 2.64,
-          "size" : 13.58
+          "price" : 2.54,
+          "size" : 13.54
         }, {
-          "price" : 2.6,
-          "size" : 104.21
+          "price" : 2.52,
+          "size" : 27.44
         } ],
         "availableToLay" : [ {
-          "price" : 2.82,
-          "size" : 30.22
+          "price" : 2.62,
+          "size" : 18.53
         }, {
-          "price" : 2.84,
-          "size" : 172.56
+          "price" : 2.66,
+          "size" : 12.72
         }, {
-          "price" : 2.88,
-          "size" : 14.11
+          "price" : 2.7,
+          "size" : 14.31
         } ],
         "tradedVolume" : [ ]
       }
@@ -9100,24 +9112,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 2.72,
-          "size" : 13.43
-        }, {
-          "price" : 2.7,
-          "size" : 139.43
-        }, {
-          "price" : 2.68,
-          "size" : 12.89
-        } ],
-        "availableToLay" : [ {
-          "price" : 2.92,
+          "price" : 2.86,
           "size" : 19.29
         }, {
-          "price" : 2.94,
-          "size" : 19.93
+          "price" : 2.82,
+          "size" : 16.58
         }, {
+          "price" : 2.8,
+          "size" : 18.36
+        } ],
+        "availableToLay" : [ {
           "price" : 2.98,
-          "size" : 30.39
+          "size" : 18.77
+        }, {
+          "price" : 3.0,
+          "size" : 12.95
+        }, {
+          "price" : 3.05,
+          "size" : 14.52
         } ],
         "tradedVolume" : [ ]
       }
@@ -9129,24 +9141,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 3.55,
+          "size" : 21.4
+        }, {
           "price" : 3.5,
-          "size" : 14.8
+          "size" : 17.58
         }, {
           "price" : 3.45,
-          "size" : 22.25
-        }, {
-          "price" : 3.4,
-          "size" : 817.14
+          "size" : 17.86
         } ],
         "availableToLay" : [ {
           "price" : 3.7,
-          "size" : 45.99
+          "size" : 46.0
         }, {
           "price" : 3.75,
-          "size" : 163.13
+          "size" : 163.1
         }, {
           "price" : 3.85,
-          "size" : 20.98
+          "size" : 17.72
         } ],
         "tradedVolume" : [ ]
       }
@@ -9165,7 +9177,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:04:07.183Z",
     "totalMatched" : 163.3,
-    "totalAvailable" : 272309.91,
+    "totalAvailable" : 272263.9,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446441210,
@@ -9181,20 +9193,20 @@
           "size" : 17.99
         }, {
           "price" : 1.61,
-          "size" : 294.77
+          "size" : 322.72
         }, {
-          "price" : 1.58,
-          "size" : 26.48
+          "price" : 1.6,
+          "size" : 303.57
         } ],
         "availableToLay" : [ {
-          "price" : 1.75,
-          "size" : 15.11
+          "price" : 1.74,
+          "size" : 15.22
         }, {
           "price" : 1.76,
-          "size" : 231.31
+          "size" : 243.87
         }, {
-          "price" : 1.78,
-          "size" : 13.43
+          "price" : 1.79,
+          "size" : 155.25
         } ],
         "tradedVolume" : [ ]
       }
@@ -9207,17 +9219,17 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 6.0,
-          "size" : 46.32
+          "size" : 51.32
         }, {
-          "price" : 4.8,
-          "size" : 90.47
+          "price" : 5.1,
+          "size" : 85.39
         }, {
-          "price" : 4.3,
-          "size" : 23.05
+          "price" : 4.5,
+          "size" : 22.02
         } ],
         "availableToLay" : [ {
           "price" : 7.2,
-          "size" : 102.31
+          "size" : 103.01
         }, {
           "price" : 9.6,
           "size" : 37.15
@@ -9239,17 +9251,17 @@
           "size" : 12.13
         }, {
           "price" : 3.4,
-          "size" : 110.25
+          "size" : 110.27
         } ],
         "availableToLay" : [ {
-          "price" : 4.4,
-          "size" : 147.24
+          "price" : 4.2,
+          "size" : 127.46
+        }, {
+          "price" : 4.7,
+          "size" : 12.87
         }, {
           "price" : 4.8,
-          "size" : 58.34
-        }, {
-          "price" : 1000.0,
-          "size" : 2.65
+          "size" : 56.63
         } ],
         "tradedVolume" : [ ]
       }
@@ -9268,7 +9280,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:02:08.841Z",
     "totalMatched" : 453.63,
-    "totalAvailable" : 272207.17,
+    "totalAvailable" : 272030.03,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446442340,
@@ -9286,15 +9298,15 @@
           "price" : 3.5,
           "size" : 16.87
         }, {
-          "price" : 3.25,
-          "size" : 153.4
+          "price" : 3.3,
+          "size" : 54.6
         } ],
         "availableToLay" : [ {
           "price" : 4.2,
-          "size" : 127.59
+          "size" : 130.06
         }, {
-          "price" : 4.8,
-          "size" : 73.75
+          "price" : 5.0,
+          "size" : 68.65
         } ],
         "tradedVolume" : [ ]
       }
@@ -9310,17 +9322,17 @@
           "size" : 13.04
         }, {
           "price" : 2.12,
-          "size" : 211.6
+          "size" : 25.43
         }, {
-          "price" : 2.04,
-          "size" : 233.52
+          "price" : 2.08,
+          "size" : 214.28
         } ],
         "availableToLay" : [ {
-          "price" : 2.38,
-          "size" : 231.05
+          "price" : 2.36,
+          "size" : 212.85
         }, {
           "price" : 2.48,
-          "size" : 133.85
+          "size" : 133.94
         }, {
           "price" : 1000.0,
           "size" : 3.14
@@ -9336,10 +9348,10 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.15,
-          "size" : 111.82
+          "size" : 111.81
         }, {
-          "price" : 2.92,
-          "size" : 183.28
+          "price" : 2.94,
+          "size" : 170.73
         }, {
           "price" : 1.01,
           "size" : 12.34
@@ -9349,10 +9361,10 @@
           "size" : 17.37
         }, {
           "price" : 3.65,
-          "size" : 181.89
+          "size" : 47.22
         }, {
-          "price" : 3.95,
-          "size" : 11.62
+          "price" : 3.7,
+          "size" : 130.0
         } ],
         "tradedVolume" : [ ]
       }
@@ -9371,7 +9383,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:01:24.203Z",
     "totalMatched" : 848.19,
-    "totalAvailable" : 35810.53,
+    "totalAvailable" : 35837.7,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446442060,
@@ -9390,17 +9402,17 @@
           "size" : 15.96
         }, {
           "price" : 11.0,
-          "size" : 26.63
+          "size" : 26.58
         } ],
         "availableToLay" : [ {
           "price" : 19.0,
           "size" : 21.04
         }, {
           "price" : 22.0,
-          "size" : 54.13
+          "size" : 55.07
         }, {
           "price" : 1000.0,
-          "size" : 7.04
+          "size" : 7.23
         } ],
         "tradedVolume" : [ ]
       }
@@ -9416,17 +9428,17 @@
           "size" : 27.26
         }, {
           "price" : 1.2,
-          "size" : 70.54
+          "size" : 69.06
         }, {
           "price" : 1.19,
-          "size" : 900.19
+          "size" : 913.26
         } ],
         "availableToLay" : [ {
           "price" : 1.25,
-          "size" : 313.71
+          "size" : 313.69
         }, {
           "price" : 1.26,
-          "size" : 176.34
+          "size" : 177.53
         }, {
           "price" : 1.27,
           "size" : 12.4
@@ -9442,17 +9454,17 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 7.2,
-          "size" : 44.13
+          "size" : 44.14
         }, {
           "price" : 6.8,
-          "size" : 21.22
+          "size" : 21.19
         }, {
           "price" : 6.6,
-          "size" : 25.47
+          "size" : 25.45
         } ],
         "availableToLay" : [ {
           "price" : 9.0,
-          "size" : 82.41
+          "size" : 83.11
         }, {
           "price" : 10.5,
           "size" : 15.66
@@ -9477,7 +9489,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:08:26.304Z",
     "totalMatched" : 797.0,
-    "totalAvailable" : 271449.71,
+    "totalAvailable" : 272213.03,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446437968,
@@ -9489,14 +9501,14 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 2.12,
+          "size" : 20.34
+        }, {
+          "price" : 2.1,
+          "size" : 210.32
+        }, {
           "price" : 2.08,
-          "size" : 18.06
-        }, {
-          "price" : 2.04,
-          "size" : 234.82
-        }, {
-          "price" : 1.94,
-          "size" : 24.89
+          "size" : 13.11
         } ],
         "availableToLay" : [ {
           "price" : 2.16,
@@ -9524,18 +9536,18 @@
           "price" : 3.55,
           "size" : 25.11
         }, {
-          "price" : 3.5,
-          "size" : 29.53
+          "price" : 3.45,
+          "size" : 36.54
         } ],
         "availableToLay" : [ {
           "price" : 3.85,
-          "size" : 139.56
+          "size" : 14.85
+        }, {
+          "price" : 3.9,
+          "size" : 125.27
         }, {
           "price" : 4.4,
-          "size" : 26.86
-        }, {
-          "price" : 1000.0,
-          "size" : 11.44
+          "size" : 29.39
         } ],
         "tradedVolume" : [ ]
       }
@@ -9548,20 +9560,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.6,
-          "size" : 41.89
+          "size" : 21.38
         }, {
-          "price" : 3.45,
-          "size" : 19.74
+          "price" : 3.55,
+          "size" : 20.8
         }, {
           "price" : 3.4,
-          "size" : 15.43
+          "size" : 116.23
         } ],
         "availableToLay" : [ {
           "price" : 3.95,
-          "size" : 125.49
+          "size" : 25.08
         }, {
-          "price" : 1000.0,
-          "size" : 7.8
+          "price" : 4.0,
+          "size" : 132.64
+        }, {
+          "price" : 4.2,
+          "size" : 23.53
         } ],
         "tradedVolume" : [ ]
       }
@@ -9578,9 +9593,9 @@
     "numberOfWinners" : 1,
     "numberOfRunners" : 3,
     "numberOfActiveRunners" : 3,
-    "lastMatchTime" : "2026-06-11T12:18:56.591Z",
-    "totalMatched" : 652.05,
-    "totalAvailable" : 2292.14,
+    "lastMatchTime" : "2026-06-11T13:09:47.820Z",
+    "totalMatched" : 652.09,
+    "totalAvailable" : 2051.52,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446441784,
@@ -9592,24 +9607,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 2.34,
+          "size" : 23.41
+        }, {
           "price" : 2.32,
-          "size" : 38.36
+          "size" : 12.46
         }, {
           "price" : 2.3,
-          "size" : 188.76
-        }, {
-          "price" : 2.28,
-          "size" : 18.77
+          "size" : 179.61
         } ],
         "availableToLay" : [ {
           "price" : 2.6,
-          "size" : 19.21
+          "size" : 15.28
         }, {
           "price" : 2.62,
-          "size" : 184.64
+          "size" : 203.5
         }, {
-          "price" : 2.78,
-          "size" : 125.2
+          "price" : 2.72,
+          "size" : 12.58
         } ],
         "tradedVolume" : [ ]
       }
@@ -9621,24 +9636,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 2.98,
-          "size" : 116.67
-        }, {
-          "price" : 2.92,
-          "size" : 16.95
+          "price" : 2.96,
+          "size" : 22.27
         }, {
           "price" : 2.9,
-          "size" : 31.78
+          "size" : 37.71
+        }, {
+          "price" : 2.86,
+          "size" : 101.01
         } ],
         "availableToLay" : [ {
-          "price" : 3.4,
-          "size" : 16.94
-        }, {
           "price" : 3.45,
-          "size" : 12.41
+          "size" : 18.83
         }, {
           "price" : 3.5,
-          "size" : 165.1
+          "size" : 132.91
+        }, {
+          "price" : 3.75,
+          "size" : 14.81
         } ],
         "tradedVolume" : [ ]
       }
@@ -9651,23 +9666,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.3,
-          "size" : 108.32
+          "size" : 108.19
         }, {
           "price" : 3.1,
-          "size" : 18.71
+          "size" : 11.93
         }, {
           "price" : 3.0,
-          "size" : 161.21
+          "size" : 166.88
         } ],
         "availableToLay" : [ {
           "price" : 3.65,
-          "size" : 39.05
+          "size" : 39.06
         }, {
           "price" : 3.7,
-          "size" : 78.06
+          "size" : 78.08
         }, {
           "price" : 3.85,
-          "size" : 126.56
+          "size" : 123.55
         } ],
         "tradedVolume" : [ ]
       }
@@ -9686,7 +9701,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:00:41.425Z",
     "totalMatched" : 2782.74,
-    "totalAvailable" : 272006.98,
+    "totalAvailable" : 272034.06,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446436864,
@@ -9709,10 +9724,10 @@
         } ],
         "availableToLay" : [ {
           "price" : 5.6,
-          "size" : 99.07
+          "size" : 93.51
         }, {
           "price" : 7.0,
-          "size" : 61.66
+          "size" : 62.06
         } ],
         "tradedVolume" : [ ]
       }
@@ -9728,10 +9743,10 @@
           "size" : 17.5
         }, {
           "price" : 1.76,
-          "size" : 17.14
+          "size" : 17.11
         }, {
           "price" : 1.75,
-          "size" : 278.07
+          "size" : 279.41
         } ],
         "availableToLay" : [ {
           "price" : 1.92,
@@ -9754,23 +9769,20 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 3.55,
-          "size" : 103.14
+          "size" : 12.61
         }, {
-          "price" : 3.4,
-          "size" : 12.62
+          "price" : 3.5,
+          "size" : 101.59
         }, {
-          "price" : 3.25,
-          "size" : 147.44
+          "price" : 3.3,
+          "size" : 13.04
         } ],
         "availableToLay" : [ {
-          "price" : 4.1,
-          "size" : 12.45
-        }, {
           "price" : 4.2,
-          "size" : 138.45
+          "size" : 146.35
         }, {
-          "price" : 1000.0,
-          "size" : 1.28
+          "price" : 4.7,
+          "size" : 66.47
         } ],
         "tradedVolume" : [ ]
       }
@@ -9789,7 +9801,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:01:29.691Z",
     "totalMatched" : 2650.75,
-    "totalAvailable" : 408314.76,
+    "totalAvailable" : 408694.3,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446433639,
@@ -9808,17 +9820,17 @@
           "size" : 247.25
         }, {
           "price" : 1.13,
-          "size" : 1016.62
+          "size" : 409.66
         } ],
         "availableToLay" : [ {
+          "price" : 1.16,
+          "size" : 13.76
+        }, {
           "price" : 1.17,
-          "size" : 543.81
+          "size" : 591.2
         }, {
           "price" : 1.18,
-          "size" : 93.98
-        }, {
-          "price" : 1.19,
-          "size" : 25.24
+          "size" : 38.16
         } ],
         "tradedVolume" : [ ]
       }
@@ -9830,24 +9842,24 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 25.0,
-          "size" : 12.6
+          "price" : 26.0,
+          "size" : 12.83
         }, {
           "price" : 22.0,
-          "size" : 12.72
+          "size" : 13.04
         }, {
           "price" : 21.0,
-          "size" : 25.0
+          "size" : 23.84
         } ],
         "availableToLay" : [ {
           "price" : 40.0,
           "size" : 57.55
         }, {
           "price" : 42.0,
-          "size" : 105.58
+          "size" : 51.93
         }, {
           "price" : 44.0,
-          "size" : 20.0
+          "size" : 55.63
         } ],
         "tradedVolume" : [ ]
       }
@@ -9860,13 +9872,13 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 9.6,
-          "size" : 26.68
+          "size" : 26.67
         }, {
-          "price" : 8.8,
-          "size" : 12.02
+          "price" : 9.0,
+          "size" : 11.99
         }, {
           "price" : 8.4,
-          "size" : 43.03
+          "size" : 42.9
         } ],
         "availableToLay" : [ {
           "price" : 10.0,
@@ -9876,7 +9888,7 @@
           "size" : 33.76
         }, {
           "price" : 12.0,
-          "size" : 112.47
+          "size" : 110.16
         } ],
         "tradedVolume" : [ ]
       }
@@ -9895,7 +9907,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:07:30.936Z",
     "totalMatched" : 345.06,
-    "totalAvailable" : 271518.08,
+    "totalAvailable" : 271913.08,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446439072,
@@ -9914,17 +9926,17 @@
           "size" : 13.07
         }, {
           "price" : 1.41,
-          "size" : 301.58
+          "size" : 18.58
         } ],
         "availableToLay" : [ {
+          "price" : 1.5,
+          "size" : 231.29
+        }, {
           "price" : 1.51,
-          "size" : 39.96
+          "size" : 18.17
         }, {
-          "price" : 1.53,
-          "size" : 12.42
-        }, {
-          "price" : 1.82,
-          "size" : 12.08
+          "price" : 1.52,
+          "size" : 152.81
         } ],
         "tradedVolume" : [ ]
       }
@@ -9936,21 +9948,21 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 4.4,
-          "size" : 14.68
+          "price" : 8.6,
+          "size" : 30.2
+        }, {
+          "price" : 6.6,
+          "size" : 54.66
         }, {
           "price" : 1.06,
-          "size" : 10115.7
-        }, {
-          "price" : 1.05,
-          "size" : 10000.0
+          "size" : 10119.89
         } ],
         "availableToLay" : [ {
           "price" : 10.5,
           "size" : 89.48
         }, {
-          "price" : 1000.0,
-          "size" : 2.98
+          "price" : 16.0,
+          "size" : 19.03
         } ],
         "tradedVolume" : [ ]
       }
@@ -9963,20 +9975,23 @@
       "ex" : {
         "availableToBack" : [ {
           "price" : 4.5,
-          "size" : 12.56
+          "size" : 72.13
         }, {
-          "price" : 3.0,
-          "size" : 13.65
+          "price" : 4.2,
+          "size" : 84.92
         }, {
           "price" : 1.01,
-          "size" : 12.34
+          "size" : 15.49
         } ],
         "availableToLay" : [ {
           "price" : 5.3,
-          "size" : 101.42
+          "size" : 13.9
         }, {
-          "price" : 1000.0,
-          "size" : 5.33
+          "price" : 5.4,
+          "size" : 98.87
+        }, {
+          "price" : 6.0,
+          "size" : 35.66
         } ],
         "tradedVolume" : [ ]
       }
@@ -9995,7 +10010,7 @@
     "numberOfActiveRunners" : 3,
     "lastMatchTime" : "2026-06-11T13:03:51.519Z",
     "totalMatched" : 375.0,
-    "totalAvailable" : 272116.26,
+    "totalAvailable" : 271932.81,
     "crossMatching" : true,
     "runnersVoidable" : false,
     "version" : 7446440565,
@@ -10007,24 +10022,21 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
+          "price" : 2.24,
+          "size" : 14.3
+        }, {
           "price" : 2.22,
-          "size" : 180.31
+          "size" : 189.71
         }, {
           "price" : 2.14,
-          "size" : 19.08
-        }, {
-          "price" : 2.12,
-          "size" : 217.72
+          "size" : 15.84
         } ],
         "availableToLay" : [ {
           "price" : 2.38,
           "size" : 31.87
         }, {
-          "price" : 2.46,
-          "size" : 168.18
-        }, {
-          "price" : 2.58,
-          "size" : 127.32
+          "price" : 2.52,
+          "size" : 210.93
         } ],
         "tradedVolume" : [ ]
       }
@@ -10036,24 +10048,21 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 3.65,
-          "size" : 89.9
+          "price" : 3.55,
+          "size" : 93.22
         }, {
-          "price" : 3.5,
-          "size" : 23.89
+          "price" : 3.4,
+          "size" : 24.44
         }, {
-          "price" : 3.3,
-          "size" : 122.91
+          "price" : 3.15,
+          "size" : 157.47
         } ],
         "availableToLay" : [ {
           "price" : 4.2,
-          "size" : 118.41
+          "size" : 133.16
         }, {
-          "price" : 4.7,
-          "size" : 73.99
-        }, {
-          "price" : 1000.0,
-          "size" : 3.14
+          "price" : 4.8,
+          "size" : 76.08
         } ],
         "tradedVolume" : [ ]
       }
@@ -10065,21 +10074,21 @@
       "totalMatched" : 0.0,
       "ex" : {
         "availableToBack" : [ {
-          "price" : 2.98,
-          "size" : 119.4
+          "price" : 2.96,
+          "size" : 137.27
         }, {
           "price" : 2.92,
-          "size" : 31.03
+          "size" : 14.29
         }, {
-          "price" : 2.8,
-          "size" : 147.51
+          "price" : 2.72,
+          "size" : 174.32
         } ],
         "availableToLay" : [ {
-          "price" : 3.4,
-          "size" : 141.68
+          "price" : 3.45,
+          "size" : 165.83
         }, {
-          "price" : 3.65,
-          "size" : 90.02
+          "price" : 3.75,
+          "size" : 88.52
         }, {
           "price" : 1000.0,
           "size" : 2.14

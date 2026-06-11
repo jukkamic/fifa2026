@@ -12,11 +12,15 @@ import dev.scaffoldkit.fifa.service.BracketService;
 import dev.scaffoldkit.fifa.service.GroupStageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -258,6 +262,55 @@ public class TournamentController {
         result.put("success", true);
         result.put("message", "Odds snapshot created");
         return ResponseEntity.ok(result);
+    }
+
+    // ── Fallback Odds Timestamp ──────────────────────────────────────────
+
+    private static final DateTimeFormatter FINNISH_FORMATTER =
+            DateTimeFormatter.ofPattern("d.M. HH:mm:ss")
+                    .withZone(ZoneId.of("Europe/Helsinki"));
+
+    @GetMapping("/fallback-odds-timestamp")
+    public Map<String, Object> getFallbackOdsTimestamp() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        try {
+            long lastModified = 0;
+
+            // 1. Try source directory first (works in dev when snapshot writes to src/main/resources)
+            var sourceFile = new java.io.File("src/main/resources/fallback-odds.json");
+            if (sourceFile.exists()) {
+                lastModified = sourceFile.lastModified();
+            }
+
+            // 2. Fall back to classpath resource (works in packaged JAR)
+            if (lastModified == 0) {
+                try {
+                    var resource = new ClassPathResource("fallback-odds.json");
+                    lastModified = resource.lastModified();
+                } catch (Exception ignored) {
+                    // getFile() fails inside a packaged JAR — try URL connection
+                }
+            }
+
+            if (lastModified == 0) {
+                try {
+                    var resource = new ClassPathResource("fallback-odds.json");
+                    var conn = resource.getURL().openConnection();
+                    lastModified = conn.getLastModified();
+                    conn.getInputStream().close();
+                } catch (Exception ignored) {}
+            }
+
+            if (lastModified > 0) {
+                String formatted = FINNISH_FORMATTER.format(Instant.ofEpochMilli(lastModified));
+                result.put("timestamp", formatted);
+            } else {
+                result.put("timestamp", (String) null);
+            }
+        } catch (Exception e) {
+            result.put("timestamp", (String) null);
+        }
+        return result;
     }
 
     // ── App Events ───────────────────────────────────────────────────────

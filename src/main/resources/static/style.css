@@ -153,8 +153,13 @@ body {
 
 .btn-betfair.btn-success {
     background: linear-gradient(135deg, #16a34a, #15803d);
-    border-color: #22c55e;
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+.odds-snapshot-time {
+    display: block;
+    font-size: 0.75em;
+    opacity: 0.8;
+    margin-top: 2px;
 }
 
 /* ===== TABS ===== */
