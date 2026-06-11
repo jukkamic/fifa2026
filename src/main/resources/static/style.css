@@ -360,24 +360,35 @@ body {
 
 /* ===== MATCH INFO ICON (tooltip with date & odds) ===== */
 .match-info-icon {
-    font-size: 13px;
-    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    color: #111;
+    font-size: 9px;
+    font-weight: 700;
+    font-family: 'Segoe UI', system-ui, sans-serif;
     cursor: help;
-    padding: 2px 4px;
     line-height: 1;
-    opacity: 0.4;
-    transition: opacity 0.15s;
+    opacity: 0.55;
+    transition: opacity 0.15s, transform 0.15s, background 0.15s;
     flex-shrink: 0;
     user-select: none;
+    padding: 0;
+    margin-left: 6px;
 }
 
 .group-match-row:hover .match-info-icon {
-    opacity: 0.8;
+    opacity: 0.85;
 }
 
 .match-info-icon:hover {
     opacity: 1 !important;
-    color: var(--accent-glow);
+    transform: scale(1.2);
+    background: #fff;
 }
 
 .match-separator {

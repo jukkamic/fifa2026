@@ -330,7 +330,7 @@ async function loadGroupStage() {
                 : '';
             const tooltipText = buildMatchTooltip(m);
             const infoIcon = tooltipText
-                ? `<span class="match-info-icon" title="${tooltipText.replace(/"/g, '"').replace(/\n/g, '&#10;')}">ℹ</span>`
+? `<span class="match-info-icon" title="${tooltipText.replace(/"/g, '"').replace(/\n/g, '&#10;')}">i</span>`
                 : '';
             html += `<div class="group-match-row${lockedClass}">
                 <div class="group-match-teams">
