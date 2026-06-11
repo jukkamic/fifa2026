@@ -353,6 +353,28 @@ body {
     padding-left: 4px;
 }
 
+/* ===== MATCH INFO ICON (tooltip with date & odds) ===== */
+.match-info-icon {
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: help;
+    padding: 2px 4px;
+    line-height: 1;
+    opacity: 0.4;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.group-match-row:hover .match-info-icon {
+    opacity: 0.8;
+}
+
+.match-info-icon:hover {
+    opacity: 1 !important;
+    color: var(--accent-glow);
+}
+
 .match-separator {
     color: var(--text-muted);
     font-size: 11px;

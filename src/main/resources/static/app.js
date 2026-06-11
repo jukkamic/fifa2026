@@ -211,6 +211,34 @@ async function showTab(tab) {
     }
 }
 
+// ===== ODDS TOOLTIP HELPER =====
+function buildMatchTooltip(m) {
+    const parts = [];
+    if (m.matchDate) {
+        try {
+            const d = new Date(m.matchDate);
+            const dateStr = d.toLocaleDateString('en-GB', {
+                weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+            });
+            const timeStr = d.toLocaleTimeString('en-GB', {
+                hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+            });
+            parts.push('📅 ' + dateStr + ', ' + timeStr);
+        } catch (e) {
+            parts.push('📅 ' + m.matchDate);
+        }
+    }
+    if (m.odds1 != null && m.oddsDraw != null && m.odds2 != null) {
+        const pHome = Math.round((1 / m.odds1) * 100);
+        const pDraw = Math.round((1 / m.oddsDraw) * 100);
+        const pAway = Math.round((1 / m.odds2) * 100);
+        parts.push('🏟️ ' + m.team1 + ' win: ' + pHome + '%');
+        parts.push('🤝 Draw: ' + pDraw + '%');
+        parts.push('🏟️ ' + m.team2 + ' win: ' + pAway + '%');
+    }
+    return parts.length > 0 ? parts.join('\n') : null;
+}
+
 // ===== FLAG HELPER =====
 function flagImg(code) {
     const t = TEAMS[code];
@@ -281,6 +309,10 @@ async function loadGroupStage() {
                        ${isLocked ? '🔒' : '🔓'}
                    </button>`
                 : '';
+            const tooltipText = buildMatchTooltip(m);
+            const infoIcon = tooltipText
+                ? `<span class="match-info-icon" title="${tooltipText.replace(/"/g, '"').replace(/\n/g, '&#10;')}">ℹ</span>`
+                : '';
             html += `<div class="group-match-row${lockedClass}">
                 <div class="group-match-teams">
                     ${flagImg(m.team1)}
@@ -305,7 +337,7 @@ async function loadGroupStage() {
                     <span class="team-code">${m.team2}</span>
                     ${flagImg(m.team2)}
                 </div>
-                ${lockBtn}
+                ${infoIcon}${lockBtn}
             </div>`;
         }
         html += `</div></div>`;

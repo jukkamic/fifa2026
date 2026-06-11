@@ -14,6 +14,10 @@ public class GroupMatch {
     private final String team2Code;
     private Integer score1;
     private Integer score2;
+    private String matchDate;
+    private Double odds1;
+    private Double oddsDraw;
+    private Double odds2;
 
     public GroupMatch(String id, String group, String team1Code, String team2Code) {
         this.id = id;
@@ -31,6 +35,15 @@ public class GroupMatch {
 
     public void setScore1(Integer score1) { this.score1 = score1; }
     public void setScore2(Integer score2) { this.score2 = score2; }
+
+    public String getMatchDate() { return matchDate; }
+    public void setMatchDate(String matchDate) { this.matchDate = matchDate; }
+    public Double getOdds1() { return odds1; }
+    public void setOdds1(Double odds1) { this.odds1 = odds1; }
+    public Double getOddsDraw() { return oddsDraw; }
+    public void setOddsDraw(Double oddsDraw) { this.oddsDraw = oddsDraw; }
+    public Double getOdds2() { return odds2; }
+    public void setOdds2(Double odds2) { this.odds2 = odds2; }
 
     public boolean hasResult() {
         return score1 != null && score2 != null;

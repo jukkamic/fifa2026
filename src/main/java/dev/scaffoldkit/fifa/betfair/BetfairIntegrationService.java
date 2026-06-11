@@ -302,6 +302,207 @@ public class BetfairIntegrationService {
         log.info("═══════════════════════════════════════════════════════════");
     }
 
+    // ── Match Metadata Enrichment (matchDate + odds) ────────────────────
+
+    /**
+     * Enriches group matches with Betfair metadata: match start time and best
+     * back odds. Uses live data if available, otherwise falls back to
+     * {@code fallback-odds.json}.
+     *
+     * <p>Sets the following fields on each matched {@link GroupMatch}:
+     * <ul>
+     *   <li>{@code matchDate} — from Betfair's {@code marketStartTime} (ISO-8601)</li>
+     *   <li>{@code odds1} / {@code oddsDraw} / {@code odds2} — best back prices,
+     *       aligned to the GroupMatch's team1/team2 order</li>
+     * </ul>
+     *
+     * @param groupMatches the full map of match-id → {@link GroupMatch}
+     */
+    public void enrichMatchesWithBetfairData(Map<String, GroupMatch> groupMatches) {
+        if (sessionToken == null) {
+            authenticate();
+        }
+
+        try {
+            // ── Build reverse lookup: sorted team-pair → match-id ─────────
+            Map<String, String> pairToMatchId = new LinkedHashMap<>();
+            for (var entry : groupMatches.entrySet()) {
+                GroupMatch match = entry.getValue();
+                String key = sortedPair(match.getTeam1Code(), match.getTeam2Code());
+                pairToMatchId.put(key, entry.getKey());
+            }
+
+            // ── Fetch market catalogue (live if authenticated, else fallback) ─
+            String catalogueJson = null;
+            if (sessionToken != null) {
+                try {
+                    catalogueJson = marketClient.listMarketCatalogue(sessionToken);
+                } catch (Exception e) {
+                    log.warn("Exception fetching market catalogue for enrichment: {}", e.getMessage());
+                }
+            }
+
+            var rootNode = objectMapper.createObjectNode();
+            boolean usingFallback = false;
+
+            if (catalogueJson == null) {
+                try {
+                    ClassPathResource resource = new ClassPathResource("fallback-odds.json");
+                    String fallbackJson;
+                    try (var is = resource.getInputStream()) {
+                        fallbackJson = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                    }
+                    rootNode = (com.fasterxml.jackson.databind.node.ObjectNode) objectMapper.readTree(fallbackJson);
+                    usingFallback = true;
+                } catch (Exception e) {
+                    log.warn("Failed to read fallback-odds.json for enrichment: {}", e.getMessage());
+                    return;
+                }
+            }
+
+            var markets = usingFallback ? rootNode.path("catalogue") : objectMapper.readTree(catalogueJson);
+            if (markets.isMissingNode() || markets.isEmpty()) return;
+
+            // selectionId → RunnerMeta per market
+            Map<String, Map<Long, RunnerMeta>> marketSelections = new LinkedHashMap<>();
+            Map<String, GroupMatch> marketToMatch = new LinkedHashMap<>();
+            // marketId → marketStartTime
+            Map<String, String> marketStartTimes = new LinkedHashMap<>();
+            List<String> matchedMarketIds = new ArrayList<>();
+
+            for (var market : markets) {
+                String marketId = market.path("marketId").asText();
+                String marketStartTime = market.path("marketStartTime").asText("");
+                var runners = market.path("runners");
+
+                Map<Long, RunnerMeta> selMap = new LinkedHashMap<>();
+                String homeCode = null;
+                String awayCode = null;
+
+                for (var runner : runners) {
+                    String runnerName = runner.path("runnerName").asText("").trim();
+                    long selectionId = runner.path("selectionId").asLong();
+                    int sortPriority = runner.path("sortPriority").asInt(0);
+
+                    if (runnerName.equalsIgnoreCase("Draw")
+                            || runnerName.equalsIgnoreCase("The Draw")) {
+                        selMap.put(selectionId, new RunnerMeta("DRAW", sortPriority));
+                        continue;
+                    }
+                    String fifaCode = BetfairNamesToCodes.BETFAIR_TO_FIFA.get(runnerName);
+                    if (fifaCode != null) {
+                        selMap.put(selectionId, new RunnerMeta(fifaCode, sortPriority));
+                        if (sortPriority == 1) homeCode = fifaCode;
+                        else if (sortPriority == 2) awayCode = fifaCode;
+                    }
+                }
+
+                if (homeCode != null && awayCode != null) {
+                    String pairKey = sortedPair(homeCode, awayCode);
+                    String matchId = pairToMatchId.get(pairKey);
+                    if (matchId != null) {
+                        GroupMatch groupMatch = groupMatches.get(matchId);
+                        marketSelections.put(marketId, selMap);
+                        marketToMatch.put(marketId, groupMatch);
+                        marketStartTimes.put(marketId, marketStartTime);
+                        matchedMarketIds.add(marketId);
+
+                        // Set matchDate on the GroupMatch
+                        if (!marketStartTime.isEmpty()) {
+                            groupMatch.setMatchDate(marketStartTime);
+                        }
+                    }
+                }
+            }
+
+            // ── Fetch market books and extract odds ──────────────────────
+            if (usingFallback) {
+                var books = rootNode.path("books");
+                for (var book : books) {
+                    enrichOddsFromBook(book, marketToMatch, marketSelections);
+                }
+            } else {
+                int batchSize = 40;
+                for (int i = 0; i < matchedMarketIds.size(); i += batchSize) {
+                    List<String> batch = matchedMarketIds.subList(
+                            i, Math.min(i + batchSize, matchedMarketIds.size()));
+                    String bookJson = null;
+                    try {
+                        bookJson = marketClient.listMarketBook(sessionToken, batch);
+                    } catch (Exception e) {
+                        log.warn("Exception fetching market book for enrichment: {}", e.getMessage());
+                    }
+                    if (bookJson == null) continue;
+
+                    var books = objectMapper.readTree(bookJson);
+                    for (var book : books) {
+                        enrichOddsFromBook(book, marketToMatch, marketSelections);
+                    }
+                }
+            }
+
+            log.debug("enrichMatchesWithBetfairData: enriched {} match(es) with Betfair metadata",
+                    matchedMarketIds.size());
+
+        } catch (Exception e) {
+            log.warn("Failed to enrich matches with Betfair metadata: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Extracts best back odds from a market book node and sets them on the
+     * corresponding GroupMatch, aligned to team1/team2 order.
+     */
+    private void enrichOddsFromBook(com.fasterxml.jackson.databind.JsonNode book,
+                                     Map<String, GroupMatch> marketToMatch,
+                                     Map<String, Map<Long, RunnerMeta>> marketSelections) {
+        String marketId = book.path("marketId").asText();
+        GroupMatch match = marketToMatch.get(marketId);
+        if (match == null) return;
+
+        Map<Long, RunnerMeta> selMap = marketSelections.get(marketId);
+        if (selMap == null) return;
+
+        Double homeOdds = null;
+        Double drawOdds = null;
+        Double awayOdds = null;
+
+        for (var runner : book.path("runners")) {
+            long selId = runner.path("selectionId").asLong();
+            RunnerMeta meta = selMap.get(selId);
+            if (meta == null) continue;
+
+            var backPrices = runner.path("ex").path("availableToBack");
+            if (backPrices.size() == 0) continue;
+            double bestBack = backPrices.get(0).path("price").asDouble();
+            if (bestBack <= 1.0) continue;
+
+            switch (meta.sortPriority()) {
+                case 1 -> homeOdds = bestBack;
+                case 2 -> awayOdds = bestBack;
+                case 3 -> drawOdds = bestBack;
+            }
+        }
+
+        // Align odds to GroupMatch team1/team2 order
+        String homeCode = null;
+        for (var entry : selMap.entrySet()) {
+            if (entry.getValue().sortPriority() == 1 && !"DRAW".equals(entry.getValue().fifaCode())) {
+                homeCode = entry.getValue().fifaCode();
+                break;
+            }
+        }
+
+        if (homeCode != null && homeCode.equals(match.getTeam1Code())) {
+            match.setOdds1(homeOdds);
+            match.setOdds2(awayOdds);
+        } else {
+            match.setOdds1(awayOdds);
+            match.setOdds2(homeOdds);
+        }
+        match.setOddsDraw(drawOdds);
+    }
+
     // ── Diagnostic: dump Betfair runner names for World Cup markets ───────
 
     /** Matches score-line patterns like "0 - 0", "1 - 2", etc. */

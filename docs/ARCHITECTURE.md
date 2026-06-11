@@ -121,7 +121,22 @@ Root-level files:
 - `getAllGroupWinners()` / `getAllRunnersUp()` / `getAllThirdPlaces()` — maps of group → team code
 - `getBestThirdPlaceGroups()` — the 8 groups whose 3rd-place teams advance
 - `getBestThirdPlaceTeamCodes()` — the actual team codes (not group letters)
+- `getMatchesForGroup(group)` — returns matches for a group (sorted chronologically when served via API)
 - `resetAll()` — clears all scores
+
+### 4.1.1 Match Metadata Enrichment
+
+Group matches can be enriched with Betfair metadata (match date and odds) via `BetfairIntegrationService.enrichMatchesWithBetfairData()`. This is triggered lazily by the `TournamentController` on the first API call that needs match data, and re-triggered after Betfair simulation.
+
+**Enriched fields on `GroupMatch`:**
+| Field | Type | Source |
+|-------|------|--------|
+| `matchDate` | `String` | Betfair `marketStartTime` (ISO-8601, e.g. `"2026-06-11T19:00:00.000Z"`) |
+| `odds1` | `Double` | Best back price for team1 (home or away, aligned to GroupMatch order) |
+| `oddsDraw` | `Double` | Best back price for the draw |
+| `odds2` | `Double` | Best back price for team2 |
+
+**API responses** include these fields when available (omitted when `null`). Matches within each group are sorted chronologically by `matchDate` in the API responses.
 
 ### 4.2 `BracketService`
 
@@ -417,6 +432,7 @@ If authentication fails, the app continues without live odds (graceful degradati
 - `getSessionToken()` → `String` — returns cached token
 - `snapshotOddsLocally()` → `void` — fetches live odds and writes to `fallback-odds.json`
 - `simulateGroupStageOdds(groupMatches)` → `Map<String, int[]>` — simulates all 72 group matches using odds
+- `enrichMatchesWithBetfairData(groupMatches)` → `void` — populates `matchDate`, `odds1`, `oddsDraw`, `odds2` on each GroupMatch from Betfair market data (live or fallback)
 - `collectWorldCupRunnerNames()` → `Set<String>` — diagnostic: collects all team names from Betfair
 
 ### 7.6 Diagnostic Tool — `DumpRunnerNamesRunner`

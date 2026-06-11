@@ -92,6 +92,8 @@ public class TournamentController {
 
     @GetMapping("/groups/{group}")
     public Map<String, Object> getGroup(@PathVariable String group) {
+        ensureMatchesEnriched();
+
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("group", group);
         result.put("teams", groupStageService.getGroups().get(group));
@@ -110,11 +112,11 @@ public class TournamentController {
         }
         result.put("standings", standingsList);
 
-        // Matches
+        // Matches — sorted chronologically by matchDate
         List<Map<String, Object>> matchesList = new ArrayList<>();
-        for (GroupMatch gm : groupStageService.getMatchesForGroup(group)) {
-            matchesList.add(formatGroupMatch(gm));
-        }
+        groupStageService.getMatchesForGroup(group).stream()
+                .sorted(this::compareByMatchDate)
+                .forEach(gm -> matchesList.add(formatGroupMatch(gm)));
         result.put("matches", matchesList);
 
         return result;
@@ -290,12 +292,35 @@ public class TournamentController {
 
     // ── Group Matches (all) ──────────────────────────────────────────────
 
+    /**
+     * Tracks whether matches have been enriched with Betfair metadata
+     * (matchDate + odds) during this request cycle.
+     */
+    private volatile boolean matchesEnriched = false;
+
+    /**
+     * Enriches group matches with Betfair metadata (matchDate + odds) once.
+     * Subsequent calls are no-ops. Re-enrich on Betfair simulation.
+     */
+    private void ensureMatchesEnriched() {
+        if (!matchesEnriched) {
+            try {
+                betfairService.enrichMatchesWithBetfairData(groupStageService.getGroupMatches());
+                matchesEnriched = true;
+            } catch (Exception e) {
+                // Enrichment failure is non-fatal — matches will just lack dates/odds
+            }
+        }
+    }
+
     @GetMapping("/group-matches")
     public Map<String, Object> getAllGroupMatches() {
+        ensureMatchesEnriched();
+
         List<Map<String, Object>> matchList = new ArrayList<>();
-        for (GroupMatch gm : groupStageService.getGroupMatches().values()) {
-            matchList.add(formatGroupMatch(gm));
-        }
+        groupStageService.getGroupMatches().values().stream()
+                .sorted(this::compareByMatchDate)
+                .forEach(gm -> matchList.add(formatGroupMatch(gm)));
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("matches", matchList);
         return result;
@@ -363,6 +388,10 @@ public class TournamentController {
             overwritten++;
         }
 
+        // Re-enrich matches after simulation (odds may have changed)
+        matchesEnriched = false;
+        ensureMatchesEnriched();
+
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("success", true);
         result.put("matchesSimulated", updated);
@@ -385,7 +414,32 @@ public class TournamentController {
         m.put("team2", gm.getTeam2Code());
         m.put("score1", gm.getScore1());
         m.put("score2", gm.getScore2());
+        if (gm.getMatchDate() != null) {
+            m.put("matchDate", gm.getMatchDate());
+        }
+        if (gm.getOdds1() != null) {
+            m.put("odds1", gm.getOdds1());
+        }
+        if (gm.getOddsDraw() != null) {
+            m.put("oddsDraw", gm.getOddsDraw());
+        }
+        if (gm.getOdds2() != null) {
+            m.put("odds2", gm.getOdds2());
+        }
         return m;
+    }
+
+    /**
+     * Compares two GroupMatches by matchDate for chronological sorting.
+     * Matches without a date sort after those with a date.
+     */
+    private int compareByMatchDate(GroupMatch a, GroupMatch b) {
+        String dateA = a.getMatchDate();
+        String dateB = b.getMatchDate();
+        if (dateA == null && dateB == null) return 0;
+        if (dateA == null) return 1;
+        if (dateB == null) return -1;
+        return dateA.compareTo(dateB);
     }
 
     private Map<String, Object> formatKnockoutMatch(KnockoutMatch km) {
