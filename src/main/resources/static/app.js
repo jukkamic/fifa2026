@@ -53,6 +53,7 @@ let bracketData = null;
 let lastSeenEventTimestamp = null; // track which events we've already shown
 let isAdmin = false;
 let lockedMatches = {}; // matchId → [score1, score2]
+let cachedUserState = null; // cached response from /api/user/state (reused by restoreSavedState)
 
 // Utility: Delays function execution until X ms of inactivity
 function debounce(func, wait) {
@@ -164,14 +165,44 @@ async function init() {
     }
     const groupsData = await apiGet('/api/groups');
     GROUPS = groupsData.groups;
+
+    // Load user metadata (isAdmin, lockedMatches) BEFORE rendering,
+    // so lock icons and disabled states appear correctly on first load.
+    await loadUserMeta();
+
     await loadGroupStage();
     await loadBracket();
 
-    // Restore saved user state (needed after server restart)
+    // Restore saved user scores (needed after server restart)
     await restoreSavedState();
 
     // Load fallback odds snapshot timestamp for the simulate button
     loadOddsSnapshotTimestamp();
+}
+
+/**
+ * Fetches user metadata from /api/user/state and populates
+ * isAdmin, lockedMatches, and the email display — but does NOT
+ * restore any scores. Called before the first render so that
+ * lock icons and disabled inputs are shown immediately.
+ */
+async function loadUserMeta() {
+    try {
+        const response = await fetch('/api/user/state');
+        if (!response.ok) return;
+        const wrapper = await response.json();
+        cachedUserState = wrapper; // cache for reuse by restoreSavedState()
+
+        if (wrapper.email) {
+            const emailEl = document.getElementById('user-email');
+            if (emailEl) emailEl.textContent = wrapper.email;
+        }
+
+        isAdmin = wrapper.isAdmin === true;
+        lockedMatches = wrapper.lockedMatches || {};
+    } catch (error) {
+        console.error('Failed to load user metadata:', error);
+    }
 }
 
 /**
@@ -193,20 +224,9 @@ async function loadOddsSnapshotTimestamp() {
 // ===== STATE RESTORATION =====
 async function restoreSavedState() {
     try {
-        const response = await fetch('/api/user/state');
-        if (!response.ok) return;
-
-        const wrapper = await response.json();
-
-        // Display user email from the wrapper
-        if (wrapper.email) {
-            const emailEl = document.getElementById('user-email');
-            if (emailEl) emailEl.textContent = wrapper.email;
-        }
-
-        // Store admin status and locked matches
-        isAdmin = wrapper.isAdmin === true;
-        lockedMatches = wrapper.lockedMatches || {};
+        // Reuse the cached user state from loadUserMeta() to avoid a redundant fetch
+        const wrapper = cachedUserState;
+        if (!wrapper) return;
 
         const savedState = wrapper.state;
         if (!savedState || !(savedState.groups || savedState.bracket)) return;

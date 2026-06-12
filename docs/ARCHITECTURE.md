@@ -653,7 +653,7 @@ A vanilla HTML/JS/CSS single-page application with no framework dependencies.
 - Renders group cards with inline score editors (number inputs)
 - On score change → `POST /api/groups/{matchId}/score` → refreshes standings
 - **Auto-save:** Collects all scores from the DOM, POSTs to `/api/user/state` via a 500ms debounced function
-- **State restoration:** On startup, loads saved state from `GET /api/user/state`, checks if backend is fresh, and replays scores if needed
+- **State restoration:** On startup, loads user metadata (isAdmin, lockedMatches) from `GET /api/user/state` **before** the first render via `loadUserMeta()`, then after initial rendering calls `restoreSavedState()` (reusing the cached response) to replay any user scores missing from the backend. This ensures lock icons, disabled inputs, and admin controls are visible immediately on page load without requiring a simulation click.
 - Bracket tab calls `POST /api/bracket/seed` then `GET /api/bracket`
 - Knockout score changes → `POST /api/bracket/{matchId}/score`
 - Champion displayed when the Final has a result
