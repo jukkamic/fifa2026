@@ -280,6 +280,9 @@ async function showTab(tab) {
 
 // ===== ODDS TOOLTIP HELPER =====
 function buildMatchTooltip(m) {
+    if (m.isLocked) {
+        return '⚽ Game played — result is final.';
+    }
     const parts = [];
     if (m.matchDate) {
         try {

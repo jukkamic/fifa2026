@@ -1,6 +1,7 @@
 package dev.scaffoldkit.fifa.controller;
 
 import java.time.Instant;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -80,9 +81,15 @@ public class UserStateController {
     @PostMapping("/state")
     public ResponseEntity<Void> saveState(@RequestBody String rawJson,
                                           @AuthenticationPrincipal UserProfile profile) {
-        profile.setPredictionsJson(rawJson);
-        profile.setUpdatedAt(Instant.now());
-        userProfileRepository.save(profile);
+        // The authentication filter may create a transient UserProfile (id=null)
+        // on every request (e.g. MockAuthenticationFilter in dev). If a row already
+        // exists for this email we must load the managed entity so that JPA performs
+        // an UPDATE instead of an INSERT, which would violate the unique email constraint.
+        Optional<UserProfile> existing = userProfileRepository.findByEmail(profile.getEmail());
+        UserProfile managed = existing.orElse(profile);
+        managed.setPredictionsJson(rawJson);
+        managed.setUpdatedAt(Instant.now());
+        userProfileRepository.save(managed);
         return ResponseEntity.ok().build();
     }
 }

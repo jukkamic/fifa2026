@@ -222,7 +222,7 @@ All endpoints are under `/api`. The controllers are `TournamentController` and `
 | `GET` | `/api/user/state` | Returns the current user's saved tournament state as JSON |
 | `POST` | `/api/user/state` | Saves the request body as the current user's tournament state |
 
-Both endpoints use `@AuthenticationPrincipal UserProfile` to identify the user.
+Both endpoints use `@AuthenticationPrincipal UserProfile` to identify the user. The `POST` endpoint looks up any existing `UserProfile` by email before saving, so that JPA performs an `UPDATE` rather than an `INSERT` (important because the mock auth filter creates a transient entity with `id=null` on every request).
 
 **`GET /api/user/state` response format:**
 ```json
@@ -916,7 +916,7 @@ echo "$BETFAIR_KEY_B64" | base64 -d > /app/ssl/client-2048.key
 
 2. **`BETFAIR.md` says POST but code uses GET** — The documentation file `BETFAIR.md` instructs users to send a `POST` request to `/api/admin/snapshot-odds`, but the actual controller method is annotated with `@GetMapping`. The endpoint currently only responds to GET requests.
 
-3. **Mock user not persisted** — `LocalSecurityConfig.MockAuthenticationFilter` creates a transient `UserProfile` (`new UserProfile(...)`) that is not saved to the database. The mock user's predictions can still be saved via `UserStateController.saveState()` (which calls `userProfileRepository.save()`), but the entity has no `id` until that first save.
+3. **Mock user not persisted** — `LocalSecurityConfig.MockAuthenticationFilter` creates a transient `UserProfile` (`new UserProfile(...)`) that is not saved to the database. `UserStateController.saveState()` handles this by looking up any existing profile by email before saving, so the first call INSERTs and subsequent calls UPDATE the existing row. The transient entity has no `id` until that first save.
 
 4. **Hardcoded competition ID** — `BetfairMarketClient` hardcodes the FIFA World Cup competition ID (`12469077`) in the market catalogue filter. If Betfair changes this ID between tournaments, the filter would need to be updated in source code.
 
