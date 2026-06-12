@@ -274,31 +274,21 @@ public class TournamentController {
     public Map<String, Object> getFallbackOdsTimestamp() {
         Map<String, Object> result = new LinkedHashMap<>();
         try {
-            long lastModified = 0;
+            // Primary: read snapshotTimestamp embedded in the JSON file
+            // (works reliably in all environments including packaged JARs)
+            String snapshotTimestamp = readSnapshotTimestampFromJson();
+            if (snapshotTimestamp != null) {
+                Instant instant = Instant.parse(snapshotTimestamp);
+                String formatted = FINNISH_FORMATTER.format(instant);
+                result.put("timestamp", formatted);
+                return result;
+            }
 
-            // 1. Try source directory first (works in dev when snapshot writes to src/main/resources)
+            // Fallback: try filesystem lastModified (works in dev mode)
+            long lastModified = 0;
             var sourceFile = new java.io.File("src/main/resources/fallback-odds.json");
             if (sourceFile.exists()) {
                 lastModified = sourceFile.lastModified();
-            }
-
-            // 2. Fall back to classpath resource (works in packaged JAR)
-            if (lastModified == 0) {
-                try {
-                    var resource = new ClassPathResource("fallback-odds.json");
-                    lastModified = resource.lastModified();
-                } catch (Exception ignored) {
-                    // getFile() fails inside a packaged JAR — try URL connection
-                }
-            }
-
-            if (lastModified == 0) {
-                try {
-                    var resource = new ClassPathResource("fallback-odds.json");
-                    var conn = resource.getURL().openConnection();
-                    lastModified = conn.getLastModified();
-                    conn.getInputStream().close();
-                } catch (Exception ignored) {}
             }
 
             if (lastModified > 0) {
@@ -311,6 +301,30 @@ public class TournamentController {
             result.put("timestamp", (String) null);
         }
         return result;
+    }
+
+    /**
+     * Reads the {@code snapshotTimestamp} field from {@code fallback-odds.json}
+     * via classpath resource. This works reliably inside packaged JARs where
+     * filesystem-based {@code lastModified()} returns 0.
+     *
+     * @return the ISO-8601 timestamp string, or {@code null} if not found
+     */
+    private String readSnapshotTimestampFromJson() {
+        try {
+            var resource = new ClassPathResource("fallback-odds.json");
+            try (var is = resource.getInputStream()) {
+                var tree = new com.fasterxml.jackson.databind.ObjectMapper()
+                        .readTree(is);
+                var node = tree.path("snapshotTimestamp");
+                if (!node.isMissingNode() && !node.asText().isEmpty()) {
+                    return node.asText();
+                }
+            }
+        } catch (Exception ignored) {
+            // File not found or parse error — fall through
+        }
+        return null;
     }
 
     // ── App Events ───────────────────────────────────────────────────────

@@ -486,14 +486,17 @@ Betfair restricts API access from certain IP addresses, including common cloud h
 
 #### Solution: `fallback-odds.json`
 
-A pre-saved snapshot of Betfair market data, stored as a classpath resource at `src/main/resources/fallback-odds.json` (~10,000 lines, ~72 markets). Contains both the market catalogue and market book data in a single JSON object:
+A pre-saved snapshot of Betfair market data, stored as a classpath resource at `src/main/resources/fallback-odds.json` (~10,000 lines, ~72 markets). Contains both the market catalogue and market book data in a single JSON object, along with an embedded snapshot timestamp:
 
 ```json
 {
+  "snapshotTimestamp": "2026-06-12T04:47:00Z",
   "catalogue": [ { "marketId": "...", "runners": [...], "event": {...}, ... } ],
   "books": [ { "marketId": "...", "runners": [ { "ex": { "availableToBack": [...], "availableToLay": [...] } } ] } ]
 }
 ```
+
+The `snapshotTimestamp` field is an ISO-8601 instant set when the snapshot is created. It is used by `GET /api/fallback-odds-timestamp` to display the snapshot age in the UI. This approach works reliably in all environments (including packaged JARs) because the timestamp is read from the JSON content via `ClassPathResource.getInputStream()`, rather than depending on filesystem `lastModified()` which returns 0 for classpath entries nested inside a JAR.
 
 #### Creating the Snapshot
 

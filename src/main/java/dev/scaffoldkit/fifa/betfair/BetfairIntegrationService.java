@@ -169,6 +169,7 @@ public class BetfairIntegrationService {
             }
 
             rootNode.set("books", booksArray);
+            rootNode.put("snapshotTimestamp", java.time.Instant.now().toString());
 
             Path path = Paths.get("src/main/resources/fallback-odds.json");
             Files.writeString(path, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode),
