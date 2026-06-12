@@ -289,9 +289,9 @@ Spring Security OAuth2 Resource Server
 | Security | `@EnableWebSecurity`, CSRF disabled, all requests permitted |
 | Auth mechanism | `MockAuthenticationFilter` (inner `OncePerRequestFilter`) |
 | Mock user | `testuser@example.com` with `ROLE_USER` authority |
-| Principal | Creates a transient `UserProfile` (not persisted) per request |
+| Principal | Loads persisted `UserProfile` from H2 database (or creates transient for first-time users) |
 
-> **Note:** The mock `UserProfile` is created with `new UserProfile(MOCK_EMAIL, "{}")` but is **not** persisted to the database. This means the mock user's state will not survive a server restart unless explicitly saved through a different mechanism.
+> **Note:** The `MockAuthenticationFilter` looks up the user's profile (including saved `predictionsJson`) from the H2 database via `UserProfileRepository.findByEmail()`. If no persisted profile exists yet (first-time user), it falls back to a transient `new UserProfile(MOCK_EMAIL, "{}")`. This ensures that user state saved via `POST /api/user/state` is correctly returned by `GET /api/user/state`, enabling state restoration after a server restart.
 
 ### 6.4 `UserProfileJwtAuthenticationConverter`
 
@@ -916,7 +916,7 @@ echo "$BETFAIR_KEY_B64" | base64 -d > /app/ssl/client-2048.key
 
 2. **`BETFAIR.md` says POST but code uses GET** — The documentation file `BETFAIR.md` instructs users to send a `POST` request to `/api/admin/snapshot-odds`, but the actual controller method is annotated with `@GetMapping`. The endpoint currently only responds to GET requests.
 
-3. **Mock user not persisted** — `LocalSecurityConfig.MockAuthenticationFilter` creates a transient `UserProfile` (`new UserProfile(...)`) that is not saved to the database. `UserStateController.saveState()` handles this by looking up any existing profile by email before saving, so the first call INSERTs and subsequent calls UPDATE the existing row. The transient entity has no `id` until that first save.
+3. **Mock user profile loaded from DB** — `LocalSecurityConfig.MockAuthenticationFilter` loads the user's persisted `UserProfile` from the H2 database via `UserProfileRepository.findByEmail()`, falling back to a transient entity for first-time users. `UserStateController.saveState()` still handles the lookup-before-save pattern for safety, ensuring JPA performs an UPDATE rather than an INSERT on subsequent saves.
 
 4. **Hardcoded competition ID** — `BetfairMarketClient` hardcodes the FIFA World Cup competition ID (`12469077`) in the market catalogue filter. If Betfair changes this ID between tournaments, the filter would need to be updated in source code.
 

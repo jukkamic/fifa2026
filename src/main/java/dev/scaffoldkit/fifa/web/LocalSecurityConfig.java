@@ -1,6 +1,7 @@
 package dev.scaffoldkit.fifa.web;
 
 import dev.scaffoldkit.fifa.model.UserProfile;
+import dev.scaffoldkit.fifa.repository.UserProfileRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,13 +38,16 @@ public class LocalSecurityConfig {
     private static final String MOCK_EMAIL = "testuser@example.com";
 
     @Bean
-    public SecurityFilterChain localSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain localSecurityFilterChain(
+            HttpSecurity http,
+            UserProfileRepository userProfileRepository) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .anyRequest().permitAll()
             )
-            .addFilterBefore(new MockAuthenticationFilter(),
+            .addFilterBefore(
+                    new MockAuthenticationFilter(userProfileRepository),
                     UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -53,8 +57,17 @@ public class LocalSecurityConfig {
      * Filter that creates a mock {@link UserProfile} authentication for every request,
      * so that controllers reading {@code @AuthenticationPrincipal UserProfile} work
      * identically to the production Cloudflare JWT flow.
+     * <p>
+     * Loads the user's persisted profile (including saved predictions) from the
+     * H2 database instead of always returning an empty transient entity.
      */
     static class MockAuthenticationFilter extends OncePerRequestFilter {
+
+        private final UserProfileRepository userProfileRepository;
+
+        MockAuthenticationFilter(UserProfileRepository userProfileRepository) {
+            this.userProfileRepository = userProfileRepository;
+        }
 
         @Override
         protected void doFilterInternal(HttpServletRequest request,
@@ -62,10 +75,15 @@ public class LocalSecurityConfig {
                                         FilterChain filterChain)
                 throws ServletException, IOException {
 
-            UserProfile mockProfile = new UserProfile(MOCK_EMAIL, "{}");
+            // Load persisted profile from DB (includes saved predictionsJson),
+            // or fall back to a fresh transient entity for first-time users.
+            UserProfile profile = userProfileRepository
+                    .findByEmail(MOCK_EMAIL)
+                    .orElseGet(() -> new UserProfile(MOCK_EMAIL, "{}"));
+
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            mockProfile,
+                            profile,
                             null,
                             List.of(new SimpleGrantedAuthority("ROLE_USER"))
                     );

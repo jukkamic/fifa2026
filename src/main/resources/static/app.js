@@ -216,37 +216,49 @@ async function restoreSavedState() {
 
         if (!hasGroups && !hasBracket) return;
 
-        // Check if backend is in a fresh state (no scores at all)
+        // Fetch current backend state to determine what needs restoring
         const matchesData = await apiGet('/api/group-matches');
-        const needsRestore = !matchesData.matches.some(m => m.score1 !== null || m.score2 !== null);
 
-        if (!needsRestore) {
-            console.log('Backend state intact, skipping restore.');
+        // Determine which group matches need restoring (backend score is null but saved state has a score)
+        const backendScores = {};
+        for (const m of matchesData.matches) {
+            if (m.score1 !== null && m.score2 !== null) {
+                backendScores[m.id] = true;
+            }
+        }
+
+        const groupEntriesToRestore = hasGroups
+            ? Object.entries(savedState.groups)
+                .filter(([matchId, scores]) =>
+                    scores.score1 !== null && scores.score2 !== null && !backendScores[matchId])
+            : [];
+
+        const bracketEntriesToRestore = hasBracket
+            ? Object.entries(savedState.bracket)
+                .filter(([_, scores]) => scores.score1 !== null && scores.score2 !== null)
+                .sort(([a], [b]) => parseInt(a) - parseInt(b))
+            : [];
+
+        const hasAnythingToRestore = groupEntriesToRestore.length > 0 || bracketEntriesToRestore.length > 0;
+
+        if (!hasAnythingToRestore) {
+            console.log('Backend state matches saved state, nothing to restore.');
             return;
         }
 
-        console.log('Backend state empty, restoring from saved state...');
+        console.log(`Restoring ${groupEntriesToRestore.length} group scores and ${bracketEntriesToRestore.length} bracket scores...`);
 
         // 1. Restore group scores first (bracket seeding depends on group results)
-        if (hasGroups) {
-            for (const [matchId, scores] of Object.entries(savedState.groups)) {
-                if (scores.score1 !== null && scores.score2 !== null) {
-                    await apiPost(`/api/groups/${matchId}/score`, scores);
-                }
-            }
+        for (const [matchId, scores] of groupEntriesToRestore) {
+            await apiPost(`/api/groups/${matchId}/score`, scores);
         }
         await loadGroupStage();
 
         // 2. Seed and restore bracket scores
-        if (hasBracket) {
+        if (bracketEntriesToRestore.length > 0) {
             await apiPost('/api/bracket/seed');
 
-            // Sort by matchId numeric to replay in round order (R32 → R16 → QF → SF → Final)
-            const bracketEntries = Object.entries(savedState.bracket)
-                .filter(([_, scores]) => scores.score1 !== null && scores.score2 !== null)
-                .sort(([a], [b]) => parseInt(a) - parseInt(b));
-
-            for (const [matchId, scores] of bracketEntries) {
+            for (const [matchId, scores] of bracketEntriesToRestore) {
                 await apiPost(`/api/bracket/${matchId}/score`, scores);
             }
             await loadBracket();
