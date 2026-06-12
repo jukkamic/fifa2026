@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,6 +37,7 @@ import java.time.Duration;
  * </ul>
  */
 @Configuration
+@Profile("!prod")
 class BetfairSslConfig {
 
     private static final Logger log = LoggerFactory.getLogger(BetfairSslConfig.class);

@@ -3,6 +3,7 @@ package dev.scaffoldkit.fifa.betfair;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ import java.util.Set;
  * mapping is established.
  */
 @Component
+@Profile("!prod")
 class DumpRunnerNamesRunner implements CommandLineRunner {
 
     private final Environment env;

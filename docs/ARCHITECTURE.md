@@ -345,7 +345,13 @@ The `betfair` package integrates with the **Betfair Exchange API** to fetch live
 
 The integration uses **mutual TLS (mTLS) certificate-based authentication** (Betfair's non-interactive login flow), which requires a client certificate and private key stored in the `ssl/` directory.
 
-**Fallback mechanism:** When Betfair is unreachable (e.g., from cloud servers due to IP restrictions), the system falls back to a pre-saved odds snapshot (`fallback-odds.json`). See §7.8 for details.
+**Production profile:** The Betfair API is **permanently blocked** from Railway.app hosting (IP restrictions). To avoid unnecessary connection errors, all live Betfair beans (`BetfairSslConfig`, `BetfairAuthClient`, `BetfairMarketClient`, `BetfairProperties`, `DumpRunnerNamesRunner`) are annotated with `@Profile("!prod")` — they are **not loaded** when the `prod` profile is active. In production, `BetfairIntegrationService` operates in **fallback-only mode**, reading exclusively from `fallback-odds.json`. This means:
+- No mTLS SSL context is built at startup
+- No authentication attempt is made
+- No live API calls are issued
+- The Docker container does not need SSL certificate environment variables
+
+**Fallback mechanism:** When Betfair is unreachable (or in production where live API is disabled), the system falls back to a pre-saved odds snapshot (`fallback-odds.json`). See §7.8 for details.
 
 ### 7.2 Authentication Flow
 
@@ -416,15 +422,15 @@ Communicates with the **Betfair Exchange Betting REST API** at:
 
 ### 7.5 Orchestration — `BetfairIntegrationService`
 
-**Purpose:** Top-level `@Service` that orchestrates the full Betfair pipeline. The only public class in the `betfair` package.
+**Purpose:** Top-level `@Service` that orchestrates the full Betfair pipeline. The only public class in the `betfair` package. Active in **all profiles** but behaves differently depending on whether live API beans are available.
+
+**Dependency injection:** Uses Spring `ObjectProvider<>` to optionally inject `BetfairAuthClient` and `BetfairMarketClient`. In the `prod` profile, these beans are absent (disabled via `@Profile("!prod")`), so `liveApiAvailable` is `false` and all live API calls are skipped.
 
 **Startup Sequence** (`@PostConstruct`):
-1. **Authenticate** — calls `authClient.login()`, caches the session token
-2. **Fetch market catalogue** — gets all soccer MATCH_ODDS markets
-3. **Fetch market book** — gets live odds for the first 5 markets
-4. **Log results** — prints a human-readable summary to the console
+- **Non-prod profiles:** Attempts authentication → fetches market catalogue → logs results.
+- **Prod profile:** Logs that live API is disabled and exits immediately — no network calls.
 
-If authentication fails, the app continues without live odds (graceful degradation).
+If authentication fails (non-prod), the app continues without live odds (graceful degradation).
 
 **Public API:**
 - `authenticate()` → `boolean` — performs login and caches session token
@@ -448,6 +454,8 @@ If authentication fails, the app continues without live odds (graceful degradati
 The app starts, writes the file, prints results, and exits. Used to refresh `BetfairNamesToCodes` when Betfair changes team name spellings. Marked as temporary in source comments.
 
 ### 7.7 SSL Configuration — `BetfairSslConfig`
+
+**Profile:** `!prod` (disabled in production — not loaded when `prod` is active)
 
 **Purpose:** Creates two `RestTemplate` beans configured with mutual TLS, using the Betfair client certificate and private key.
 
@@ -548,6 +556,8 @@ The `simulateGroupStageOdds()` method uses Betfair odds (live or fallback) to pr
 **REST endpoint:** `POST /api/betfair/simulate-groups`
 
 ### 7.10 Configuration — `BetfairProperties`
+
+**Profile:** `!prod` (disabled in production — the bean is not created when `prod` is active)
 
 A `@ConfigurationProperties(prefix = "betfair")` record with validated fields:
 
@@ -668,11 +678,11 @@ spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
 spring.jpa.hibernate.ddl-auto=update
 spring.h2.console.enabled=true
 
-# Betfair Integration
-betfair.api-key=${BETFAIR_API_KEY}
-betfair.username=${BETFAIR_USERNAME}
-betfair.password=${BETFAIR_PASSWORD}
-betfair.cert-path=${BETFAIR_CERT_PATH}
+# Betfair Integration (defaults to empty — not needed in prod)
+betfair.api-key=${BETFAIR_API_KEY:}
+betfair.username=${BETFAIR_USERNAME:}
+betfair.password=${BETFAIR_PASSWORD:}
+betfair.cert-path=${BETFAIR_CERT_PATH:}
 
 # Cloudflare Zero Trust (JWT validation)
 spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://scaffoldkit.cloudflareaccess.com/cdn-cgi/access/certs
@@ -863,11 +873,7 @@ BetfairIntegrationService
 | Builder | `eclipse-temurin:21-jdk` | Compiles the Spring Boot JAR via Gradle |
 | Runner | `eclipse-temurin:21-jre` | Runs the compiled JAR |
 
-**Certificate handling:** SSL certificates are stored as base64-encoded environment variables (`BETFAIR_CERT_B64`, `BETFAIR_KEY_B64`) and decoded to files at container startup:
-```
-echo "$BETFAIR_CERT_B64" | base64 -d > /app/ssl/client-2048.crt
-echo "$BETFAIR_KEY_B64" | base64 -d > /app/ssl/client-2048.key
-```
+**Certificate handling:** Not needed in production. Since the live Betfair API is disabled via `@Profile("!prod")`, the Docker container does not decode SSL certificates. The `BETFAIR_CERT_B64` and `BETFAIR_KEY_B64` environment variables are no longer required on Railway.app. (They are still needed for local development if testing the live Betfair connection.)
 
 ### Railway.app Configuration
 
@@ -878,7 +884,7 @@ echo "$BETFAIR_KEY_B64" | base64 -d > /app/ssl/client-2048.key
 | Spring profile | `prod` (set via `ENV SPRING_PROFILES_ACTIVE=prod` in Dockerfile; activates Cloudflare JWT validation) |
 | Domain | Auto-generated via Railway (e.g., `fifa-production.up.railway.app`) |
 
-**Environment variables:** `BETFAIR_API_KEY`, `BETFAIR_USERNAME`, `BETFAIR_PASSWORD`, `BETFAIR_CERT_B64`, `BETFAIR_KEY_B64`, `SPRING_DATASOURCE_URL`
+**Environment variables (Railway.app):** `SPRING_DATASOURCE_URL`. The Betfair-related variables (`BETFAIR_API_KEY`, `BETFAIR_USERNAME`, `BETFAIR_PASSWORD`, `BETFAIR_CERT_B64`, `BETFAIR_KEY_B64`) are **no longer required** in production since the live Betfair API is permanently blocked from Railway.app.
 
 > **Note:** The `prod` Spring profile is set by default in the Dockerfile via `ENV SPRING_PROFILES_ACTIVE=prod`. This ensures the Cloudflare Zero Trust JWT validation (`ProdSecurityConfig`) is always active in the Docker container. It can still be overridden at runtime by setting the `SPRING_PROFILES_ACTIVE` environment variable on the hosting platform.
 
@@ -886,7 +892,7 @@ echo "$BETFAIR_KEY_B64" | base64 -d > /app/ssl/client-2048.key
 
 ## 15. Key Design Decisions
 
-1. **Betfair integration is isolated** — The entire `betfair` package runs independently from the tournament engine. If Betfair credentials are missing or the API is unreachable, the tournament predictor works fully without it.
+1. **Betfair integration is isolated** — The entire `betfair` package runs independently from the tournament engine. If Betfair credentials are missing or the API is unreachable, the tournament predictor works fully without it. In the `prod` profile, live Betfair API beans are not even loaded (`@Profile("!prod")`), eliminating all connection attempts and associated errors.
 
 2. **Package-private encapsulation** — All Betfair classes except `BetfairIntegrationService` are package-private, keeping the integration's internals hidden from the rest of the application.
 
@@ -902,7 +908,7 @@ echo "$BETFAIR_KEY_B64" | base64 -d > /app/ssl/client-2048.key
 
 8. **H2 file-based persistence** — H2 was chosen as an embedded database that requires no external server. The file-based mode (`jdbc:h2:file:./data/fifa`) ensures data survives restarts while keeping the development experience simple. The H2 web console (`/h2-console`) provides a convenient way to inspect data during development.
 
-9. **Betfair fallback via file** — A snapshot mechanism allows odds to be captured on localhost (where Betfair works) and committed to the codebase. In production (where Betfair may be IP-blocked), the system seamlessly falls back to the snapshot. This avoids the need for a proxy or VPN on the production server.
+9. **Betfair fallback via file** — A snapshot mechanism allows odds to be captured on localhost (where Betfair works) and committed to the codebase. In production (where Betfair is IP-blocked), the system seamlessly falls back to the snapshot. The `prod` profile goes further by completely disabling live Betfair beans, so no connection is even attempted.
 
 10. **Auto-save with debouncing** — The frontend auto-saves the full tournament state after every score change (debounced by 500ms), so users don't lose work. On page load, the saved state is compared to the backend state and replayed if the backend is fresh (e.g., after a server restart).
 

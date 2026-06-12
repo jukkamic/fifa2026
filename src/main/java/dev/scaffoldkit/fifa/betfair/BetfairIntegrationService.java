@@ -7,6 +7,7 @@ import dev.scaffoldkit.fifa.service.AppEventService;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,6 +36,11 @@ import org.springframework.core.io.ClassPathResource;
  *   <li>Logs key data at each step for verification</li>
  * </ol>
  *
+ * <p>In the {@code prod} profile, the Betfair API dependencies (auth client,
+ * market client, SSL config) are not loaded, so this service operates in
+ * <b>fallback-only mode</b> — all live API calls are skipped and data is read
+ * from {@code fallback-odds.json} exclusively.
+ *
  * <p>This service is intentionally isolated from the primary tournament engine
  * and can be enabled/disabled via configuration.
  */
@@ -43,20 +49,27 @@ public class BetfairIntegrationService {
 
     private static final Logger log = LoggerFactory.getLogger(BetfairIntegrationService.class);
 
-    private final BetfairAuthClient authClient;
-    private final BetfairMarketClient marketClient;
     private final AppEventService appEvents;
     private final ObjectMapper objectMapper;
+
+    /** Live API clients — absent in the prod profile (Betfair blocked on Railway.app). */
+    private final BetfairAuthClient authClient;
+    private final BetfairMarketClient marketClient;
+
+    /** Whether the live Betfair API is available (false in prod). */
+    private final boolean liveApiAvailable;
 
     /** Currently active session token (cached after login). */
     private volatile String sessionToken;
 
-    public BetfairIntegrationService(BetfairAuthClient authClient,
-                                     BetfairMarketClient marketClient,
-                                     AppEventService appEvents) {
-        this.authClient = authClient;
-        this.marketClient = marketClient;
+    public BetfairIntegrationService(
+            ObjectProvider<BetfairAuthClient> authClientProvider,
+            ObjectProvider<BetfairMarketClient> marketClientProvider,
+            AppEventService appEvents) {
+        this.authClient = authClientProvider.getIfAvailable();
+        this.marketClient = marketClientProvider.getIfAvailable();
         this.appEvents = appEvents;
+        this.liveApiAvailable = this.authClient != null && this.marketClient != null;
         this.objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
@@ -64,9 +77,21 @@ public class BetfairIntegrationService {
     /**
      * Runs the full authentication + data-fetch pipeline on startup
      * so we can immediately verify the connection in logs.
+     *
+     * <p>In the prod profile this is a no-op — the live Betfair API is
+     * permanently blocked from Railway.app hosting.
      */
     @PostConstruct
     void init() {
+        if (!liveApiAvailable) {
+            log.info("═══════════════════════════════════════════════════════════");
+            log.info("  Betfair Integration Service – PRODUCTION MODE");
+            log.info("  Live Betfair API is disabled (blocked on Railway.app).");
+            log.info("  All odds features will use fallback-odds.json.");
+            log.info("═══════════════════════════════════════════════════════════");
+            return;
+        }
+
         log.info("═══════════════════════════════════════════════════════════");
         log.info("  Betfair Integration Service – initialising...");
         log.info("═══════════════════════════════════════════════════════════");
@@ -93,6 +118,13 @@ public class BetfairIntegrationService {
      * Snapshots the Betfair odds data locally.
      */
     public void snapshotOddsLocally() {
+        if (!liveApiAvailable) {
+            log.warn("Cannot snapshot odds: Betfair live API is not available in this environment.");
+            appEvents.emitWarning("Betfair",
+                    "Cannot create odds snapshot in production. Run locally to capture odds.");
+            return;
+        }
+
         log.info("Starting local snapshot of Betfair odds...");
         if (sessionToken == null) {
             authenticate();
@@ -154,6 +186,11 @@ public class BetfairIntegrationService {
      * @return {@code true} if authentication succeeded
      */
     public boolean authenticate() {
+        if (!liveApiAvailable) {
+            log.debug("authenticate() called but live Betfair API is not available — skipping.");
+            return false;
+        }
+
         log.info("→ Step 1: Authenticating with Betfair (mTLS certlogin)...");
         sessionToken = authClient.login();
 
@@ -175,6 +212,7 @@ public class BetfairIntegrationService {
      * @return raw JSON of the catalogue, or {@code null}
      */
     public String fetchMarketCatalogue() {
+        if (!liveApiAvailable) return null;
         ensureAuthenticated();
         return marketClient.listMarketCatalogue(sessionToken);
     }
@@ -186,6 +224,7 @@ public class BetfairIntegrationService {
      * @return raw JSON of the market book, or {@code null}
      */
     public String fetchMarketBook(List<String> marketIds) {
+        if (!liveApiAvailable) return null;
         ensureAuthenticated();
         return marketClient.listMarketBook(sessionToken, marketIds);
     }
@@ -319,7 +358,7 @@ public class BetfairIntegrationService {
      * @param groupMatches the full map of match-id → {@link GroupMatch}
      */
     public void enrichMatchesWithBetfairData(Map<String, GroupMatch> groupMatches) {
-        if (sessionToken == null) {
+        if (liveApiAvailable && sessionToken == null) {
             authenticate();
         }
 
@@ -334,7 +373,7 @@ public class BetfairIntegrationService {
 
             // ── Fetch market catalogue (live if authenticated, else fallback) ─
             String catalogueJson = null;
-            if (sessionToken != null) {
+            if (liveApiAvailable && sessionToken != null) {
                 try {
                     catalogueJson = marketClient.listMarketCatalogue(sessionToken);
                 } catch (Exception e) {
@@ -517,6 +556,10 @@ public class BetfairIntegrationService {
      * code-to-name mapping.
      */
     Set<String> collectWorldCupRunnerNames() {
+        if (!liveApiAvailable || sessionToken == null) {
+            return Set.of();
+        }
+
         Set<String> teamNames = new LinkedHashSet<>();
 
         for (String query : List.of("World Cup", "FIFA")) {
@@ -623,8 +666,8 @@ public class BetfairIntegrationService {
         Map<String, int[]> results = new LinkedHashMap<>();
         Random random = new Random();
 
-        // ── Ensure we have a valid session ────────────────────────────────
-        if (sessionToken == null) {
+        // ── Ensure we have a valid session (skip if live API unavailable) ──
+        if (liveApiAvailable && sessionToken == null) {
             authenticate();
         }
 
@@ -639,7 +682,7 @@ public class BetfairIntegrationService {
 
             // ── Fetch market catalogue (live if authenticated, else fallback) ─
             String catalogueJson = null;
-            if (sessionToken != null) {
+            if (liveApiAvailable && sessionToken != null) {
                 try {
                     catalogueJson = marketClient.listMarketCatalogue(sessionToken);
                 } catch (Exception e) {
@@ -651,8 +694,8 @@ public class BetfairIntegrationService {
             boolean usingFallback = false;
 
             if (catalogueJson == null) {
-                log.warn("No live market catalogue available (sessionToken={}, Betfair API unreachable). " +
-                        "Falling back to local snapshot...", sessionToken != null ? "present" : "null");
+                log.info("No live market catalogue available (liveApi={}, sessionToken={}). " +
+                        "Falling back to local snapshot...", liveApiAvailable, sessionToken != null ? "present" : "null");
                 try {
                     ClassPathResource resource = new ClassPathResource("fallback-odds.json");
                     String fallbackJson;
