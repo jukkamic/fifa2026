@@ -1,3 +1,51 @@
+// ===== STATIC MATCH SCHEDULE =====
+// Decoupled from the backend API to ensure reliable chronological ordering.
+// Keys are match IDs (A1–L6), values are ISO-8601 date strings.
+// TODO: Dates are structurally correct for sorting, but temporally inaccurate. Do not render.
+const STATIC_MATCH_SCHEDULE = {
+    // Matchday 1
+    "A1": "2026-06-11T19:00:00Z", "A2": "2026-06-11T22:00:00Z",
+    "B1": "2026-06-12T19:00:00Z", "B2": "2026-06-13T19:00:00Z",
+    "D1": "2026-06-12T22:00:00Z", "D2": "2026-06-13T22:00:00Z",
+    "C1": "2026-06-13T19:30:00Z", "C2": "2026-06-13T22:30:00Z",
+    "E1": "2026-06-14T19:00:00Z", "E2": "2026-06-14T22:00:00Z",
+    "F1": "2026-06-14T19:30:00Z", "F2": "2026-06-14T22:30:00Z",
+    "G1": "2026-06-15T19:00:00Z", "G2": "2026-06-15T22:00:00Z",
+    "H1": "2026-06-15T19:30:00Z", "H2": "2026-06-15T22:30:00Z",
+    "I1": "2026-06-16T19:00:00Z", "I2": "2026-06-16T22:00:00Z",
+    "J1": "2026-06-16T19:30:00Z", "J2": "2026-06-16T22:30:00Z",
+    "K1": "2026-06-17T19:00:00Z", "K2": "2026-06-17T22:00:00Z",
+    "L1": "2026-06-17T19:30:00Z", "L2": "2026-06-17T22:30:00Z",
+
+    // Matchday 2
+    "A3": "2026-06-18T19:00:00Z", "A4": "2026-06-18T22:00:00Z",
+    "B3": "2026-06-18T19:30:00Z", "B4": "2026-06-18T22:30:00Z",
+    "C3": "2026-06-19T19:00:00Z", "C4": "2026-06-19T22:00:00Z",
+    "D3": "2026-06-19T19:30:00Z", "D4": "2026-06-19T22:30:00Z",
+    "E3": "2026-06-20T19:00:00Z", "E4": "2026-06-20T22:00:00Z",
+    "F3": "2026-06-20T19:30:00Z", "F4": "2026-06-20T22:30:00Z",
+    "G3": "2026-06-21T19:00:00Z", "G4": "2026-06-21T22:00:00Z",
+    "H3": "2026-06-21T19:30:00Z", "H4": "2026-06-21T22:30:00Z",
+    "I3": "2026-06-22T19:00:00Z", "I4": "2026-06-22T22:00:00Z",
+    "J3": "2026-06-22T19:30:00Z", "J4": "2026-06-22T22:30:00Z",
+    "K3": "2026-06-23T19:00:00Z", "K4": "2026-06-23T22:00:00Z",
+    "L3": "2026-06-23T19:30:00Z", "L4": "2026-06-23T22:30:00Z",
+
+    // Matchday 3 (Final group games played simultaneously)
+    "A5": "2026-06-24T19:00:00Z", "A6": "2026-06-24T19:00:00Z",
+    "B5": "2026-06-24T22:00:00Z", "B6": "2026-06-24T22:00:00Z",
+    "C5": "2026-06-24T19:30:00Z", "C6": "2026-06-24T19:30:00Z",
+    "D5": "2026-06-25T19:00:00Z", "D6": "2026-06-25T19:00:00Z",
+    "E5": "2026-06-25T22:00:00Z", "E6": "2026-06-25T22:00:00Z",
+    "F5": "2026-06-25T19:30:00Z", "F6": "2026-06-25T19:30:00Z",
+    "G5": "2026-06-26T19:00:00Z", "G6": "2026-06-26T19:00:00Z",
+    "H5": "2026-06-26T22:00:00Z", "H6": "2026-06-26T22:00:00Z",
+    "I5": "2026-06-26T19:30:00Z", "I6": "2026-06-26T19:30:00Z",
+    "J5": "2026-06-27T19:00:00Z", "J6": "2026-06-27T19:00:00Z",
+    "K5": "2026-06-27T22:00:00Z", "K6": "2026-06-27T22:00:00Z",
+    "L5": "2026-06-27T19:30:00Z", "L6": "2026-06-27T19:30:00Z"
+};
+
 // ===== STATE =====
 let TEAMS = {};
 let GROUPS = {};
@@ -278,9 +326,49 @@ function flagImgLarge(code) {
 }
 
 // ===== GROUP STAGE RENDERING =====
+
+/**
+ * Processes raw group matches from the backend by:
+ * 1. Injecting reliable static dates from STATIC_MATCH_SCHEDULE
+ * 2. Merging locked match scores from admin-locked results
+ * 3. Sorting chronologically by matchDate
+ */
+function processGroupMatches(rawMatches) {
+    const processed = rawMatches.map(match => {
+        // 1. Force the static date (fallback to far-future if unknown)
+        const reliableDate = STATIC_MATCH_SCHEDULE[match.id] || "2026-12-31T00:00:00Z";
+
+        // 2. Apply locked scores if they exist
+        let s1 = match.score1;
+        let s2 = match.score2;
+        let locked = false;
+
+        if (lockedMatches && lockedMatches[match.id]) {
+            [s1, s2] = lockedMatches[match.id];
+            locked = true;
+        }
+
+        return {
+            ...match,
+            matchDate: reliableDate,
+            score1: s1,
+            score2: s2,
+            isLocked: locked
+        };
+    });
+
+    // 3. Sort chronologically
+    processed.sort((a, b) => new Date(a.matchDate) - new Date(b.matchDate));
+
+    return processed;
+}
+
 async function loadGroupStage() {
     const data = await apiGet('/api/standings');
     const matchesData = await apiGet('/api/group-matches');
+
+    // Process matches: inject static dates, merge locked scores, sort chronologically
+    const allProcessedMatches = processGroupMatches(matchesData.matches);
 
     const container = document.getElementById('groups-container');
     let html = '';
@@ -288,7 +376,7 @@ async function loadGroupStage() {
 
     for (const group of ['A','B','C','D','E','F','G','H','I','J','K','L']) {
         const standings = data.standings[group];
-        const groupMatches = matchesData.matches.filter(m => m.group === group);
+        const groupMatches = allProcessedMatches.filter(m => m.group === group);
 
         html += `<div class="group-card">`;
         html += `<div class="group-card-header">Group ${group}</div>`;

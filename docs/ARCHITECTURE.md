@@ -637,6 +637,8 @@ A vanilla HTML/JS/CSS single-page application with no framework dependencies.
 - Knockout Bracket view: horizontally-scrollable bracket visualization
 
 **`app.js`:**
+- **Static match schedule:** A hardcoded `STATIC_MATCH_SCHEDULE` dictionary maps all 72 group match IDs (A1–L6) to ISO-8601 date strings. This decouples match scheduling from the backend API, ensuring reliable chronological ordering even when Betfair markets close and dates disappear for past games.
+- **Match processing pipeline:** The `processGroupMatches()` function transforms raw backend matches by (1) injecting static dates from `STATIC_MATCH_SCHEDULE`, (2) merging admin-locked scores from `lockedMatches`, and (3) sorting chronologically. The processed array is used for all group stage rendering.
 - Loads team data from `/api/teams` and `/api/groups` on startup
 - Renders group cards with inline score editors (number inputs)
 - On score change → `POST /api/groups/{matchId}/score` → refreshes standings
