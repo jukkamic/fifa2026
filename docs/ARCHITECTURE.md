@@ -511,9 +511,11 @@ When running locally (localhost, where Betfair works), an admin can capture fres
 3. Fetches market books in batches of 40 (Betfair limit)
 4. Combines catalogue + books into a single JSON object
 5. Writes pretty-printed JSON to `src/main/resources/fallback-odds.json`
-6. **Pushes the same JSON to the production server** via `POST https://fifa2026.scaffoldkit.dev/api/admin/odds/upload` (authenticated with `Cf-Access-Jwt-Assertion` header using the `admin.cloudflare.jwt` property)
+6. **Pushes the same JSON to the production server** via `POST https://fifa2026.scaffoldkit.dev/api/admin/odds/upload` (authenticated with a `Cookie: CF_Authorization=<jwt>` header using the `admin.cloudflare.jwt` property)
 
 If the `ADMIN_CLOUDFLARE_JWT` environment variable is not set, the production push is silently skipped with an info-level log message.
+
+> **Local development note:** The `ADMIN_CLOUDFLARE_JWT` value must be the `CF_Authorization` cookie copied from an active production browser session. The Cloudflare Edge expects the JWT as a cookie (`Cookie: CF_Authorization=<token>`), not as a custom `Cf-Access-Jwt-Assertion` header. To obtain a fresh token, open the production site in your browser (authenticating through Cloudflare Zero Trust), then copy the `CF_Authorization` cookie value from your browser's developer tools into your `.env` file as `ADMIN_CLOUDFLARE_JWT`. Note that these tokens expire, so you may need to refresh the cookie periodically.
 
 The file is then committed to Git and deployed with the application.
 

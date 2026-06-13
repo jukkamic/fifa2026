@@ -222,7 +222,7 @@ public class BetfairIntegrationService {
             var response = restClient.post()
                     .uri(PROD_ODDS_UPLOAD_URL)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header("Cf-Access-Jwt-Assertion", cloudflareJwt)
+                    .header("Cookie", "CF_Authorization=" + cloudflareJwt)
                     .body(jsonPayload)
                     .retrieve()
                     .toEntity(String.class);
@@ -230,6 +230,10 @@ public class BetfairIntegrationService {
             if (response.getStatusCode().is2xxSuccessful()) {
                 log.info("✓ Successfully pushed odds to production server — HTTP {}",
                         response.getStatusCode().value());
+            } else if (response.getStatusCode().value() == 302) {
+                log.error("✗ Production server returned 302 redirect — the Cloudflare JWT " +
+                        "(ADMIN_CLOUDFLARE_JWT) is likely expired or invalid. " +
+                        "Generate a fresh token by copying the CF_Authorization cookie from your browser's developer tools.");
             } else {
                 log.warn("⚠ Production server returned non-2xx status: HTTP {} — body: {}",
                         response.getStatusCode().value(), response.getBody());

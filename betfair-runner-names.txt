@@ -1,4 +1,4 @@
-# Betfair runner names extracted 2026-06-07T23:32:05.585036100
+# Betfair runner names extracted 2026-06-13T07:11:50.177904600
 # Query: "World Cup" and "FIFA" - MATCH_ODDS markets only
 # Total unique team names: 48
 
