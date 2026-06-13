@@ -209,6 +209,7 @@ All endpoints are under `/api`. The controllers are `TournamentController` and `
 | `POST` | `/api/bracket/{matchId}/score` | Set knockout score. Body: `{"score1": int, "score2": int}` |
 | `POST` | `/api/reset` | Reset all group scores and bracket |
 | `GET` | `/api/admin/snapshot-odds` | Snapshot Betfair odds to `fallback-odds.json` (non-prod only) |
+| `POST` | `/api/admin/odds/upload` | **Admin only.** Upload raw Betfair JSON as the new `fallback-odds.json` to the persistent volume |
 | `GET` | `/api/fallback-odds-timestamp` | Returns the last-modified timestamp of `fallback-odds.json` formatted in Finnish 24h time (e.g. `"19.6. 13:23:50"`) |
 | `POST` | `/api/betfair/simulate-groups` | Simulate all group matches using Betfair odds (live or fallback). Respects locked actual results. |
 | `GET` | `/api/events` | Returns recent app events (errors, warnings, info) for UI notifications |
@@ -486,7 +487,7 @@ Betfair restricts API access from certain IP addresses, including common cloud h
 
 #### Solution: `fallback-odds.json`
 
-A pre-saved snapshot of Betfair market data, stored as a classpath resource at `src/main/resources/fallback-odds.json` (~10,000 lines, ~72 markets). Contains both the market catalogue and market book data in a single JSON object, along with an embedded snapshot timestamp:
+A pre-saved snapshot of Betfair market data, stored in the **persistent data directory** (`{app.data.dir}/fallback-odds.json` — e.g. `/app/data/fallback-odds.json` in prod, `./data/fallback-odds.json` in dev). This allows the file to be updated at runtime without redeploying. A copy is also bundled as a classpath resource at `src/main/resources/fallback-odds.json` as a bootstrapping fallback for fresh volumes. Contains both the market catalogue and market book data in a single JSON object, along with an embedded snapshot timestamp:
 
 ```json
 {
@@ -513,6 +514,13 @@ When running locally (localhost, where Betfair works), an admin can capture fres
 
 The file is then committed to Git and deployed with the application.
 
+#### File Location & Read Order
+
+The fallback odds file is resolved in this order:
+
+1. **Filesystem** — `{app.data.dir}/fallback-odds.json` (primary — writable at runtime via admin upload)
+2. **Classpath** — `classpath:fallback-odds.json` (bundled in JAR — used only for fresh volumes)
+
 #### Using the Fallback
 
 When `simulateGroupStageOdds()` is called:
@@ -525,14 +533,31 @@ Attempt live Betfair API call
         └── Failure (network error, BETTING_RESTRICTED_LOCATION, etc.)
                 │
                 ▼
-        Load fallback-odds.json from classpath
+        Load fallback-odds.json
                 │
-                ├── Success → use fallback data (flagged as non-live)
+                ├── 1. Try filesystem ({app.data.dir}/fallback-odds.json)
+                │      └── Success → use fallback data
+                │
+                ├── 2. Try classpath (bundled in JAR)
+                │      └── Success → use fallback data
                 │
                 └── Failure → use equal 33.3% probability for all matches
 ```
 
-The fallback path reads `fallback-odds.json` via `ClassPathResource.getInputStream()` (not `getFile()`, which would fail inside a packaged JAR), parses the `catalogue` and `books` arrays, and processes them identically to live data. The simulation method logs whether it's using live or fallback data.
+The fallback path is handled by `BetfairIntegrationService.readFallbackOddsJson()`, which tries the filesystem first, then the classpath resource. The simulation method logs whether it's using live or fallback data.
+
+#### Admin Upload Endpoint
+
+**Endpoint:** `POST /api/admin/odds/upload` (admin only)
+
+Allows an admin user to update the fallback odds file at runtime by POSTing raw Betfair JSON as the request body:
+
+1. Checks that the user's email matches the admin email (same security check as Lock Score)
+2. Validates the request body is valid JSON
+3. Writes the JSON to `{app.data.dir}/fallback-odds.json` (creating parent directories if needed)
+4. Emits an `INFO` event confirming the update
+
+This enables updating odds in production without redeploying.
 
 ### 7.9 Group Stage Simulation via Odds
 
@@ -837,9 +862,13 @@ BetfairIntegrationService
         │     └── Failure (network error, IP blocked, etc.)
         │           │
         │           ▼
-        │           Load classpath resource: fallback-odds.json
+        │           Load fallback-odds.json
         │           │
-        │           ├── Success → Parse catalogue + books, use as data source
+        │           ├── 1. Try filesystem ({app.data.dir}/fallback-odds.json)
+        │           │      └── Success → Parse catalogue + books, use as data source
+        │           │
+        │           ├── 2. Try classpath (bundled in JAR)
+        │           │      └── Success → Parse catalogue + books, use as data source
         │           │
         │           └── Failure → Equal 33.3% probability for all matches
         │
@@ -911,7 +940,7 @@ BetfairIntegrationService
 
 8. **H2 file-based persistence** — H2 was chosen as an embedded database that requires no external server. The file-based mode (`jdbc:h2:file:./data/fifa`) ensures data survives restarts while keeping the development experience simple. The H2 web console (`/h2-console`) provides a convenient way to inspect data during development.
 
-9. **Betfair fallback via file** — A snapshot mechanism allows odds to be captured on localhost (where Betfair works) and committed to the codebase. In production (where Betfair is IP-blocked), the system seamlessly falls back to the snapshot. The `prod` profile goes further by completely disabling live Betfair beans, so no connection is even attempted.
+9. **Betfair fallback via file** — A snapshot mechanism allows odds to be captured on localhost (where Betfair works) and stored in the persistent data directory (`{app.data.dir}/fallback-odds.json`). The file can be updated at runtime via the admin upload endpoint (`POST /api/admin/odds/upload`) without redeploying. The system reads from the filesystem first, falling back to the classpath-bundled copy for fresh volumes. In production (where Betfair is IP-blocked), the system seamlessly falls back to the snapshot. The `prod` profile goes further by completely disabling live Betfair beans, so no connection is even attempted.
 
 10. **Auto-save with debouncing** — The frontend auto-saves the full tournament state after every score change (debounced by 500ms), so users don't lose work. On page load, the saved state is compared to the backend state and replayed if the backend is fresh (e.g., after a server restart).
 

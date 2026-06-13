@@ -14,10 +14,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -45,6 +50,7 @@ public class TournamentController {
 
     private final String adminEmail;
     private final String devAdminEmail;
+    private final Path fallbackOddsPath;
     private final GroupStageService groupStageService;
     private final BracketService bracketService;
     private final BetfairIntegrationService betfairService;
@@ -61,6 +67,7 @@ public class TournamentController {
                                 ActualResultsService actualResultsService) {
         this.adminEmail = adminEmail;
         this.devAdminEmail = devAdminEmail;
+        this.fallbackOddsPath = betfairService.getFallbackOddsPath();
         this.groupStageService = groupStageService;
         this.bracketService = bracketService;
         this.betfairService = betfairService;
@@ -275,7 +282,6 @@ public class TournamentController {
         Map<String, Object> result = new LinkedHashMap<>();
         try {
             // Primary: read snapshotTimestamp embedded in the JSON file
-            // (works reliably in all environments including packaged JARs)
             String snapshotTimestamp = readSnapshotTimestampFromJson();
             if (snapshotTimestamp != null) {
                 Instant instant = Instant.parse(snapshotTimestamp);
@@ -284,9 +290,9 @@ public class TournamentController {
                 return result;
             }
 
-            // Fallback: try filesystem lastModified (works in dev mode)
+            // Fallback: try filesystem lastModified (dev mode source file)
             long lastModified = 0;
-            var sourceFile = new java.io.File("src/main/resources/fallback-odds.json");
+            var sourceFile = new File("src/main/resources/fallback-odds.json");
             if (sourceFile.exists()) {
                 lastModified = sourceFile.lastModified();
             }
@@ -304,13 +310,26 @@ public class TournamentController {
     }
 
     /**
-     * Reads the {@code snapshotTimestamp} field from {@code fallback-odds.json}
-     * via classpath resource. This works reliably inside packaged JARs where
-     * filesystem-based {@code lastModified()} returns 0.
+     * Reads the {@code snapshotTimestamp} field from {@code fallback-odds.json}.
+     * Tries the persistent filesystem location first (writable by admin upload),
+     * then falls back to the classpath resource (bundled in JAR).
      *
      * @return the ISO-8601 timestamp string, or {@code null} if not found
      */
     private String readSnapshotTimestampFromJson() {
+        // 1. Try filesystem (persistent volume)
+        if (Files.exists(fallbackOddsPath)) {
+            try {
+                var tree = new com.fasterxml.jackson.databind.ObjectMapper()
+                        .readTree(fallbackOddsPath.toFile());
+                var node = tree.path("snapshotTimestamp");
+                if (!node.isMissingNode() && !node.asText().isEmpty()) {
+                    return node.asText();
+                }
+            } catch (Exception ignored) { }
+        }
+
+        // 2. Fallback: classpath resource (bundled in JAR)
         try {
             var resource = new ClassPathResource("fallback-odds.json");
             try (var is = resource.getInputStream()) {
@@ -321,10 +340,69 @@ public class TournamentController {
                     return node.asText();
                 }
             }
-        } catch (Exception ignored) {
-            // File not found or parse error — fall through
-        }
+        } catch (Exception ignored) { }
+
         return null;
+    }
+
+    // ── Admin: Upload Fallback Odds ──────────────────────────────────────
+
+    /**
+     * Accepts a raw Betfair JSON string and writes it to the persistent
+     * fallback-odds.json file. Requires admin privileges (same security
+     * check as the Lock Score feature).
+     */
+    @PostMapping(value = "/admin/odds/upload", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> uploadFallbackOdds(
+            @RequestBody String jsonBody,
+            @AuthenticationPrincipal UserProfile profile) {
+        if (!isAdmin(profile.getEmail())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        if (jsonBody == null || jsonBody.isBlank()) {
+            Map<String, Object> err = new LinkedHashMap<>();
+            err.put("success", false);
+            err.put("message", "Request body is empty");
+            return ResponseEntity.badRequest().body(err);
+        }
+
+        // Validate that it's valid JSON
+        try {
+            var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            mapper.readTree(jsonBody);
+        } catch (Exception e) {
+            Map<String, Object> err = new LinkedHashMap<>();
+            err.put("success", false);
+            err.put("message", "Invalid JSON: " + e.getMessage());
+            return ResponseEntity.badRequest().body(err);
+        }
+
+        try {
+            // Ensure parent directory exists
+            Path parent = fallbackOddsPath.getParent();
+            if (parent != null && !Files.exists(parent)) {
+                Files.createDirectories(parent);
+            }
+            Files.writeString(fallbackOddsPath, jsonBody, StandardCharsets.UTF_8,
+                    java.nio.file.StandardOpenOption.CREATE,
+                    java.nio.file.StandardOpenOption.TRUNCATE_EXISTING);
+
+            appEvents.emitInfo("Betfair",
+                    "Fallback odds updated by admin (" + profile.getEmail() + ").");
+
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("success", true);
+            response.put("message", "Fallback odds saved to " + fallbackOddsPath.toAbsolutePath());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            appEvents.emitError("System",
+                    "Failed to save fallback odds: " + e.getMessage());
+            Map<String, Object> err = new LinkedHashMap<>();
+            err.put("success", false);
+            err.put("message", "Failed to write file: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
+        }
     }
 
     // ── App Events ───────────────────────────────────────────────────────

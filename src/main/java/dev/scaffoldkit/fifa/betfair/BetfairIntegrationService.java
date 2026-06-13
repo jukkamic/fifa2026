@@ -8,6 +8,7 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -59,17 +60,22 @@ public class BetfairIntegrationService {
     /** Whether the live Betfair API is available (false in prod). */
     private final boolean liveApiAvailable;
 
+    /** Path to the filesystem copy of fallback-odds.json (inside the persistent data directory). */
+    private final Path fallbackOddsPath;
+
     /** Currently active session token (cached after login). */
     private volatile String sessionToken;
 
     public BetfairIntegrationService(
             ObjectProvider<BetfairAuthClient> authClientProvider,
             ObjectProvider<BetfairMarketClient> marketClientProvider,
-            AppEventService appEvents) {
+            AppEventService appEvents,
+            @Value("${app.data.dir:./data}") String dataDir) {
         this.authClient = authClientProvider.getIfAvailable();
         this.marketClient = marketClientProvider.getIfAvailable();
         this.appEvents = appEvents;
         this.liveApiAvailable = this.authClient != null && this.marketClient != null;
+        this.fallbackOddsPath = Paths.get(dataDir, "fallback-odds.json");
         this.objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
@@ -248,6 +254,50 @@ public class BetfairIntegrationService {
     }
 
     /**
+     * Reads the fallback-odds.json content, trying the persistent filesystem
+     * location first (so the file can be updated without redeploy), then
+     * falling back to the classpath resource (bundled in the JAR).
+     *
+     * @return the JSON string, or {@code null} if no source is available
+     */
+    private String readFallbackOddsJson() {
+        // 1. Try filesystem (persistent volume in prod, local data dir in dev)
+        if (Files.exists(fallbackOddsPath)) {
+            try {
+                String json = Files.readString(fallbackOddsPath, java.nio.charset.StandardCharsets.UTF_8);
+                log.info("Read fallback-odds.json from filesystem: {}", fallbackOddsPath.toAbsolutePath());
+                return json;
+            } catch (Exception e) {
+                log.warn("Failed to read fallback-odds.json from filesystem ({}): {}",
+                        fallbackOddsPath.toAbsolutePath(), e.getMessage());
+            }
+        }
+
+        // 2. Fallback: classpath resource (bundled in JAR, immutable)
+        try {
+            ClassPathResource resource = new ClassPathResource("fallback-odds.json");
+            try (var is = resource.getInputStream()) {
+                String json = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                log.info("Read fallback-odds.json from classpath (filesystem file not found at {})",
+                        fallbackOddsPath.toAbsolutePath());
+                return json;
+            }
+        } catch (Exception e) {
+            log.warn("Failed to read fallback-odds.json from classpath: {}", e.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the filesystem path where fallback-odds.json is stored.
+     * Used by the admin upload endpoint to write new odds data.
+     */
+    public Path getFallbackOddsPath() {
+        return fallbackOddsPath;
+    }
+
+    /**
      * Fetches the catalogue and logs a human-readable summary of discovered
      * markets, then fetches the market book for the first few and logs prices.
      */
@@ -387,10 +437,10 @@ public class BetfairIntegrationService {
 
             if (catalogueJson == null) {
                 try {
-                    ClassPathResource resource = new ClassPathResource("fallback-odds.json");
-                    String fallbackJson;
-                    try (var is = resource.getInputStream()) {
-                        fallbackJson = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                    String fallbackJson = readFallbackOddsJson();
+                    if (fallbackJson == null) {
+                        log.warn("No fallback-odds.json found (filesystem or classpath)");
+                        return;
                     }
                     rootNode = (com.fasterxml.jackson.databind.node.ObjectNode) objectMapper.readTree(fallbackJson);
                     usingFallback = true;
@@ -698,10 +748,13 @@ public class BetfairIntegrationService {
                 log.info("No live market catalogue available (liveApi={}, sessionToken={}). " +
                         "Falling back to local snapshot...", liveApiAvailable, sessionToken != null ? "present" : "null");
                 try {
-                    ClassPathResource resource = new ClassPathResource("fallback-odds.json");
-                    String fallbackJson;
-                    try (var is = resource.getInputStream()) {
-                        fallbackJson = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                    String fallbackJson = readFallbackOddsJson();
+                    if (fallbackJson == null) {
+                        log.error("No fallback-odds.json found (filesystem or classpath)");
+                        appEvents.emitError("Betfair",
+                                "Failed to load odds data. Using equal-probability simulation.");
+                        groupMatches.forEach((id, m) -> results.put(id, simulateWithFallback(random)));
+                        return results;
                     }
                     rootNode = (com.fasterxml.jackson.databind.node.ObjectNode) objectMapper.readTree(fallbackJson);
                     usingFallback = true;
