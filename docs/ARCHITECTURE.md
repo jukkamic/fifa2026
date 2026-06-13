@@ -438,7 +438,7 @@ If authentication fails (non-prod), the app continues without live odds (gracefu
 - `fetchMarketCatalogue()` → `String` (raw JSON) — discovers markets
 - `fetchMarketBook(marketIds)` → `String` (raw JSON) — gets odds for specific markets
 - `getSessionToken()` → `String` — returns cached token
-- `snapshotOddsLocally()` → `void` — fetches live odds and writes to `fallback-odds.json`
+- `snapshotOddsLocally()` → `void` — fetches live odds, writes to `fallback-odds.json`, and pushes to production server via `POST /api/admin/odds/upload` (authenticated with Cloudflare JWT)
 - `simulateGroupStageOdds(groupMatches)` → `Map<String, int[]>` — simulates all 72 group matches using odds
 - `enrichMatchesWithBetfairData(groupMatches)` → `void` — populates `matchDate`, `odds1`, `oddsDraw`, `odds2` on each GroupMatch from Betfair market data (live or fallback)
 - `collectWorldCupRunnerNames()` → `Set<String>` — diagnostic: collects all team names from Betfair
@@ -511,6 +511,9 @@ When running locally (localhost, where Betfair works), an admin can capture fres
 3. Fetches market books in batches of 40 (Betfair limit)
 4. Combines catalogue + books into a single JSON object
 5. Writes pretty-printed JSON to `src/main/resources/fallback-odds.json`
+6. **Pushes the same JSON to the production server** via `POST https://fifa2026.scaffoldkit.dev/api/admin/odds/upload` (authenticated with `Cf-Access-Jwt-Assertion` header using the `admin.cloudflare.jwt` property)
+
+If the `ADMIN_CLOUDFLARE_JWT` environment variable is not set, the production push is silently skipped with an info-level log message.
 
 The file is then committed to Git and deployed with the application.
 

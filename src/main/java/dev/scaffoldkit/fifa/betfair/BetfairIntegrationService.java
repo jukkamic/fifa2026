@@ -25,6 +25,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.regex.Pattern;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestClient;
 
 /**
  * Top-level orchestrator for the Betfair Exchange API integration.
@@ -66,16 +68,25 @@ public class BetfairIntegrationService {
     /** Currently active session token (cached after login). */
     private volatile String sessionToken;
 
+    /** Cloudflare Access JWT for pushing odds to the production server. */
+    private final String cloudflareJwt;
+
+    /** Production server URL for the odds upload endpoint. */
+    private static final String PROD_ODDS_UPLOAD_URL =
+            "https://fifa2026.scaffoldkit.dev/api/admin/odds/upload";
+
     public BetfairIntegrationService(
             ObjectProvider<BetfairAuthClient> authClientProvider,
             ObjectProvider<BetfairMarketClient> marketClientProvider,
             AppEventService appEvents,
-            @Value("${app.data.dir:./data}") String dataDir) {
+            @Value("${app.data.dir:./data}") String dataDir,
+            @Value("${admin.cloudflare.jwt:}") String cloudflareJwt) {
         this.authClient = authClientProvider.getIfAvailable();
         this.marketClient = marketClientProvider.getIfAvailable();
         this.appEvents = appEvents;
         this.liveApiAvailable = this.authClient != null && this.marketClient != null;
         this.fallbackOddsPath = Paths.get(dataDir, "fallback-odds.json");
+        this.cloudflareJwt = cloudflareJwt;
         this.objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
@@ -177,13 +188,54 @@ public class BetfairIntegrationService {
             rootNode.set("books", booksArray);
             rootNode.put("snapshotTimestamp", java.time.Instant.now().toString());
 
+            String jsonPayload = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
+
+            // ── Save to local file ────────────────────────────────────────
             Path path = Paths.get("src/main/resources/fallback-odds.json");
-            Files.writeString(path, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode),
+            Files.writeString(path, jsonPayload,
                     StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             log.info("Successfully saved snapshot to {}", path.toAbsolutePath());
 
+            // ── Push to production server ─────────────────────────────────
+            pushOddsToProduction(jsonPayload);
+
         } catch (Exception e) {
             log.error("Error during snapshot", e);
+        }
+    }
+
+    /**
+     * Pushes the raw odds JSON to the production server via the admin upload
+     * endpoint. The request is authenticated with a Cloudflare Access JWT.
+     * Only attempts the push if the JWT is configured (non-empty).
+     */
+    private void pushOddsToProduction(String jsonPayload) {
+        if (cloudflareJwt == null || cloudflareJwt.isBlank()) {
+            log.info("Cloudflare JWT not configured — skipping push to production server. " +
+                    "Set ADMIN_CLOUDFLARE_JWT to enable automatic odds upload.");
+            return;
+        }
+
+        log.info("Pushing odds snapshot to production server ({})...", PROD_ODDS_UPLOAD_URL);
+        try {
+            RestClient restClient = RestClient.create();
+            var response = restClient.post()
+                    .uri(PROD_ODDS_UPLOAD_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Cf-Access-Jwt-Assertion", cloudflareJwt)
+                    .body(jsonPayload)
+                    .retrieve()
+                    .toEntity(String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("✓ Successfully pushed odds to production server — HTTP {}",
+                        response.getStatusCode().value());
+            } else {
+                log.warn("⚠ Production server returned non-2xx status: HTTP {} — body: {}",
+                        response.getStatusCode().value(), response.getBody());
+            }
+        } catch (Exception e) {
+            log.error("✗ Failed to push odds to production server: {}", e.getMessage());
         }
     }
 
