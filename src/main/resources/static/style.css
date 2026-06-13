@@ -135,6 +135,7 @@ body {
     border-color: #9333ea;
     color: white;
     padding: 10px 24px;
+    margin-top: 18px;
     font-size: 14px;
     box-shadow: 0 0 20px rgba(147, 51, 234, 0.25);
 }
