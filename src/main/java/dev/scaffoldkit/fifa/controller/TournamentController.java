@@ -264,11 +264,20 @@ public class TournamentController {
     @GetMapping("/admin/snapshot-odds")
     @Profile("!prod")
     public ResponseEntity<Map<String, Object>> snapshotOdds() {
-        betfairService.snapshotOddsLocally();
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("success", true);
-        result.put("message", "Odds snapshot created");
-        return ResponseEntity.ok(result);
+        try {
+            betfairService.snapshotOddsLocally();
+            Map<String, Object> result = new LinkedHashMap<>();
+            result.put("success", true);
+            result.put("message", "Odds snapshot created");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            appEvents.emitError("Betfair",
+                    "Failed to snapshot odds: " + e.getMessage());
+            Map<String, Object> err = new LinkedHashMap<>();
+            err.put("success", false);
+            err.put("message", "Failed to snapshot odds: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
+        }
     }
 
     // ── Fallback Odds Timestamp ──────────────────────────────────────────

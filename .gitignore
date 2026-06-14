@@ -4,8 +4,11 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+
+### App data
 .data/
 data/
+src/main/resources/fallback-odds.json
 
 ### SSL Credentials
 ssl/

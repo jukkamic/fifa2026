@@ -957,12 +957,10 @@ BetfairIntegrationService
 
 1. **`@Profile` on controller method** — `TournamentController.snapshotOdds()` uses `@Profile("!prod")` on an individual handler method. In Spring, `@Profile` is a component-level annotation and typically does not work on individual `@GetMapping` methods. This means the `/api/admin/snapshot-odds` endpoint may be accessible in all profiles, including production.
 
-2. **`BETFAIR.md` says POST but code uses GET** — The documentation file `BETFAIR.md` instructs users to send a `POST` request to `/api/admin/snapshot-odds`, but the actual controller method is annotated with `@GetMapping`. The endpoint currently only responds to GET requests.
+2. **Mock user profile loaded from DB** — `LocalSecurityConfig.MockAuthenticationFilter` loads the user's persisted `UserProfile` from the H2 database via `UserProfileRepository.findByEmail()`, falling back to a transient entity for first-time users. `UserStateController.saveState()` still handles the lookup-before-save pattern for safety, ensuring JPA performs an UPDATE rather than an INSERT on subsequent saves.
 
-3. **Mock user profile loaded from DB** — `LocalSecurityConfig.MockAuthenticationFilter` loads the user's persisted `UserProfile` from the H2 database via `UserProfileRepository.findByEmail()`, falling back to a transient entity for first-time users. `UserStateController.saveState()` still handles the lookup-before-save pattern for safety, ensuring JPA performs an UPDATE rather than an INSERT on subsequent saves.
+3. **Hardcoded competition ID** — `BetfairMarketClient` hardcodes the FIFA World Cup competition ID (`12469077`) in the market catalogue filter. If Betfair changes this ID between tournaments, the filter would need to be updated in source code.
 
-4. **Hardcoded competition ID** — `BetfairMarketClient` hardcodes the FIFA World Cup competition ID (`12469077`) in the market catalogue filter. If Betfair changes this ID between tournaments, the filter would need to be updated in source code.
+4. **`BetfairNamesToCodes` name discrepancy** — The mapping uses `"Cape Verde"` (Betfair's spelling) while `GroupStageService` uses `"Cabo Verde"` (FIFA's official spelling). Both map to the same FIFA code `CPV`, so the integration works correctly, but the internal display name differs from the Betfair name.
 
-5. **`BetfairNamesToCodes` name discrepancy** — The mapping uses `"Cape Verde"` (Betfair's spelling) while `GroupStageService` uses `"Cabo Verde"` (FIFA's official spelling). Both map to the same FIFA code `CPV`, so the integration works correctly, but the internal display name differs from the Betfair name.
-
-6. **`DumpRunnerNamesRunner` marked temporary** — Source comments indicate this `CommandLineRunner` should be removed once the name mapping is stable. It remains in the codebase as a diagnostic tool.
+5. **`DumpRunnerNamesRunner` marked temporary** — Source comments indicate this `CommandLineRunner` should be removed once the name mapping is stable. It remains in the codebase as a diagnostic tool.

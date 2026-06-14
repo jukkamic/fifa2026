@@ -31,20 +31,23 @@ import org.springframework.web.client.RestClient;
 /**
  * Top-level orchestrator for the Betfair Exchange API integration.
  *
- * <p>On application startup this service:
+ * <p>
+ * On application startup this service:
  * <ol>
- *   <li>Authenticates with Betfair via mutual-TLS certlogin</li>
- *   <li>Fetches the soccer market catalogue (Event Type 1 – MATCH_ODDS)</li>
- *   <li>Fetches market book data (current best back/lay prices)</li>
- *   <li>Logs key data at each step for verification</li>
+ * <li>Authenticates with Betfair via mutual-TLS certlogin</li>
+ * <li>Fetches the soccer market catalogue (Event Type 1 – MATCH_ODDS)</li>
+ * <li>Fetches market book data (current best back/lay prices)</li>
+ * <li>Logs key data at each step for verification</li>
  * </ol>
  *
- * <p>In the {@code prod} profile, the Betfair API dependencies (auth client,
+ * <p>
+ * In the {@code prod} profile, the Betfair API dependencies (auth client,
  * market client, SSL config) are not loaded, so this service operates in
  * <b>fallback-only mode</b> — all live API calls are skipped and data is read
  * from {@code fallback-odds.json} exclusively.
  *
- * <p>This service is intentionally isolated from the primary tournament engine
+ * <p>
+ * This service is intentionally isolated from the primary tournament engine
  * and can be enabled/disabled via configuration.
  */
 @Service
@@ -55,14 +58,20 @@ public class BetfairIntegrationService {
     private final AppEventService appEvents;
     private final ObjectMapper objectMapper;
 
-    /** Live API clients — absent in the prod profile (Betfair blocked on Railway.app). */
+    /**
+     * Live API clients — absent in the prod profile (Betfair blocked on
+     * Railway.app).
+     */
     private final BetfairAuthClient authClient;
     private final BetfairMarketClient marketClient;
 
     /** Whether the live Betfair API is available (false in prod). */
     private final boolean liveApiAvailable;
 
-    /** Path to the filesystem copy of fallback-odds.json (inside the persistent data directory). */
+    /**
+     * Path to the filesystem copy of fallback-odds.json (inside the persistent data
+     * directory).
+     */
     private final Path fallbackOddsPath;
 
     /** Currently active session token (cached after login). */
@@ -72,8 +81,7 @@ public class BetfairIntegrationService {
     private final String cloudflareJwt;
 
     /** Production server URL for the odds upload endpoint. */
-    private static final String PROD_ODDS_UPLOAD_URL =
-            "https://fifa2026.scaffoldkit.dev/api/admin/odds/upload";
+    private static final String PROD_ODDS_UPLOAD_URL = "https://fifa2026.scaffoldkit.dev/api/admin/odds/upload";
 
     public BetfairIntegrationService(
             ObjectProvider<BetfairAuthClient> authClientProvider,
@@ -95,23 +103,24 @@ public class BetfairIntegrationService {
      * Runs the full authentication + data-fetch pipeline on startup
      * so we can immediately verify the connection in logs.
      *
-     * <p>In the prod profile this is a no-op — the live Betfair API is
+     * <p>
+     * In the prod profile this is a no-op — the live Betfair API is
      * permanently blocked from Railway.app hosting.
      */
     @PostConstruct
     void init() {
         if (!liveApiAvailable) {
-            log.info("═══════════════════════════════════════════════════════════");
+            log.info("===========================================================");
             log.info("  Betfair Integration Service – PRODUCTION MODE");
             log.info("  Live Betfair API is disabled (blocked on Railway.app).");
             log.info("  All odds features will use fallback-odds.json.");
-            log.info("═══════════════════════════════════════════════════════════");
+            log.info("===========================================================");
             return;
         }
 
-        log.info("═══════════════════════════════════════════════════════════");
+        log.info("===========================================================");
         log.info("  Betfair Integration Service – initialising...");
-        log.info("═══════════════════════════════════════════════════════════");
+        log.info("===========================================================");
 
         try {
             authenticate();
@@ -125,7 +134,7 @@ public class BetfairIntegrationService {
                     "without live odds. Reason: {}", e.getMessage());
             appEvents.emitInfo("Betfair",
                     "Betfair API is not available. Odds features will use saved data. " +
-                    "This is normal in production environments.");
+                            "This is normal in production environments.");
         }
     }
 
@@ -134,12 +143,13 @@ public class BetfairIntegrationService {
     /**
      * Snapshots the Betfair odds data locally.
      */
-    public void snapshotOddsLocally() {
+    public void snapshotOddsLocally() throws Exception {
         if (!liveApiAvailable) {
             log.warn("Cannot snapshot odds: Betfair live API is not available in this environment.");
             appEvents.emitWarning("Betfair",
                     "Cannot create odds snapshot in production. Run locally to capture odds.");
-            return;
+            throw new IllegalStateException(
+                    "Betfair live API is not available in this environment. Run locally to capture odds.");
         }
 
         log.info("Starting local snapshot of Betfair odds...");
@@ -150,16 +160,17 @@ public class BetfairIntegrationService {
             log.error("Failed to authenticate for snapshot.");
             appEvents.emitWarning("Betfair",
                     "Cannot create odds snapshot: Betfair authentication failed.");
-            return;
+            throw new IllegalStateException("Cannot create odds snapshot: Betfair authentication failed.");
         }
 
         try {
-            // We'll query "World Cup" and get the market catalogue, then fetch books for those markets,
+            // We'll query "World Cup" and get the market catalogue, then fetch books for
+            // those markets,
             // and combine them into a single JSON object.
             String catalogueJson = marketClient.listMarketCatalogue(sessionToken);
             if (catalogueJson == null) {
                 log.error("Failed to fetch market catalogue for snapshot.");
-                return;
+                throw new IllegalStateException("Failed to fetch market catalogue for snapshot.");
             }
 
             var markets = objectMapper.readTree(catalogueJson);
@@ -201,6 +212,7 @@ public class BetfairIntegrationService {
 
         } catch (Exception e) {
             log.error("Error during snapshot", e);
+            throw e;
         }
     }
 
@@ -209,7 +221,7 @@ public class BetfairIntegrationService {
      * endpoint. The request is authenticated with a Cloudflare Access JWT.
      * Only attempts the push if the JWT is configured (non-empty).
      */
-    private void pushOddsToProduction(String jsonPayload) {
+    private void pushOddsToProduction(String jsonPayload) throws Exception {
         if (cloudflareJwt == null || cloudflareJwt.isBlank()) {
             log.info("Cloudflare JWT not configured — skipping push to production server. " +
                     "Set ADMIN_CLOUDFLARE_JWT to enable automatic odds upload.");
@@ -217,29 +229,25 @@ public class BetfairIntegrationService {
         }
 
         log.info("Pushing odds snapshot to production server ({})...", PROD_ODDS_UPLOAD_URL);
-        try {
-            RestClient restClient = RestClient.create();
-            var response = restClient.post()
-                    .uri(PROD_ODDS_UPLOAD_URL)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Cookie", "CF_Authorization=" + cloudflareJwt)
-                    .body(jsonPayload)
-                    .retrieve()
-                    .toEntity(String.class);
+        RestClient restClient = RestClient.create();
+        var response = restClient.post()
+                .uri(PROD_ODDS_UPLOAD_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Cookie", "CF_Authorization=" + cloudflareJwt)
+                .body(jsonPayload)
+                .retrieve()
+                .toEntity(String.class);
 
-            if (response.getStatusCode().is2xxSuccessful()) {
-                log.info("✓ Successfully pushed odds to production server — HTTP {}",
-                        response.getStatusCode().value());
-            } else if (response.getStatusCode().value() == 302) {
-                log.error("✗ Production server returned 302 redirect — the Cloudflare JWT " +
-                        "(ADMIN_CLOUDFLARE_JWT) is likely expired or invalid. " +
-                        "Generate a fresh token by copying the CF_Authorization cookie from your browser's developer tools.");
-            } else {
-                log.warn("⚠ Production server returned non-2xx status: HTTP {} — body: {}",
-                        response.getStatusCode().value(), response.getBody());
-            }
-        } catch (Exception e) {
-            log.error("✗ Failed to push odds to production server: {}", e.getMessage());
+        if (response.getStatusCode().is2xxSuccessful()) {
+            log.info("Successfully pushed odds to production server - HTTP {}",
+                    response.getStatusCode().value());
+        } else if (response.getStatusCode().value() == 302) {
+            throw new Exception("Production server returned 302 redirect — the Cloudflare JWT " +
+                    "(ADMIN_CLOUDFLARE_JWT) is likely expired or invalid. " +
+                    "Generate a fresh token by copying the CF_Authorization cookie from your browser's developer tools.");
+        } else {
+            throw new Exception("Production server returned non-2xx status: HTTP " +
+                    response.getStatusCode().value() + " — body: " + response.getBody());
         }
     }
 
@@ -275,7 +283,8 @@ public class BetfairIntegrationService {
      * @return raw JSON of the catalogue, or {@code null}
      */
     public String fetchMarketCatalogue() {
-        if (!liveApiAvailable) return null;
+        if (!liveApiAvailable)
+            return null;
         ensureAuthenticated();
         return marketClient.listMarketCatalogue(sessionToken);
     }
@@ -287,7 +296,8 @@ public class BetfairIntegrationService {
      * @return raw JSON of the market book, or {@code null}
      */
     public String fetchMarketBook(List<String> marketIds) {
-        if (!liveApiAvailable) return null;
+        if (!liveApiAvailable)
+            return null;
         ensureAuthenticated();
         return marketClient.listMarketBook(sessionToken, marketIds);
     }
@@ -455,11 +465,13 @@ public class BetfairIntegrationService {
      * back odds. Uses live data if available, otherwise falls back to
      * {@code fallback-odds.json}.
      *
-     * <p>Sets the following fields on each matched {@link GroupMatch}:
+     * <p>
+     * Sets the following fields on each matched {@link GroupMatch}:
      * <ul>
-     *   <li>{@code matchDate} — from Betfair's {@code marketStartTime} (ISO-8601)</li>
-     *   <li>{@code odds1} / {@code oddsDraw} / {@code odds2} — best back prices,
-     *       aligned to the GroupMatch's team1/team2 order</li>
+     * <li>{@code matchDate} — from Betfair's {@code marketStartTime}
+     * (ISO-8601)</li>
+     * <li>{@code odds1} / {@code oddsDraw} / {@code odds2} — best back prices,
+     * aligned to the GroupMatch's team1/team2 order</li>
      * </ul>
      *
      * @param groupMatches the full map of match-id → {@link GroupMatch}
@@ -507,7 +519,8 @@ public class BetfairIntegrationService {
             }
 
             var markets = usingFallback ? rootNode.path("catalogue") : objectMapper.readTree(catalogueJson);
-            if (markets.isMissingNode() || markets.isEmpty()) return;
+            if (markets.isMissingNode() || markets.isEmpty())
+                return;
 
             // selectionId → RunnerMeta per market
             Map<String, Map<Long, RunnerMeta>> marketSelections = new LinkedHashMap<>();
@@ -538,8 +551,10 @@ public class BetfairIntegrationService {
                     String fifaCode = BetfairNamesToCodes.BETFAIR_TO_FIFA.get(runnerName);
                     if (fifaCode != null) {
                         selMap.put(selectionId, new RunnerMeta(fifaCode, sortPriority));
-                        if (sortPriority == 1) homeCode = fifaCode;
-                        else if (sortPriority == 2) awayCode = fifaCode;
+                        if (sortPriority == 1)
+                            homeCode = fifaCode;
+                        else if (sortPriority == 2)
+                            awayCode = fifaCode;
                     }
                 }
 
@@ -578,7 +593,8 @@ public class BetfairIntegrationService {
                     } catch (Exception e) {
                         log.warn("Exception fetching market book for enrichment: {}", e.getMessage());
                     }
-                    if (bookJson == null) continue;
+                    if (bookJson == null)
+                        continue;
 
                     var books = objectMapper.readTree(bookJson);
                     for (var book : books) {
@@ -600,14 +616,16 @@ public class BetfairIntegrationService {
      * corresponding GroupMatch, aligned to team1/team2 order.
      */
     private void enrichOddsFromBook(com.fasterxml.jackson.databind.JsonNode book,
-                                     Map<String, GroupMatch> marketToMatch,
-                                     Map<String, Map<Long, RunnerMeta>> marketSelections) {
+            Map<String, GroupMatch> marketToMatch,
+            Map<String, Map<Long, RunnerMeta>> marketSelections) {
         String marketId = book.path("marketId").asText();
         GroupMatch match = marketToMatch.get(marketId);
-        if (match == null) return;
+        if (match == null)
+            return;
 
         Map<Long, RunnerMeta> selMap = marketSelections.get(marketId);
-        if (selMap == null) return;
+        if (selMap == null)
+            return;
 
         Double homeOdds = null;
         Double drawOdds = null;
@@ -616,12 +634,15 @@ public class BetfairIntegrationService {
         for (var runner : book.path("runners")) {
             long selId = runner.path("selectionId").asLong();
             RunnerMeta meta = selMap.get(selId);
-            if (meta == null) continue;
+            if (meta == null)
+                continue;
 
             var backPrices = runner.path("ex").path("availableToBack");
-            if (backPrices.size() == 0) continue;
+            if (backPrices.size() == 0)
+                continue;
             double bestBack = backPrices.get(0).path("price").asDouble();
-            if (bestBack <= 1.0) continue;
+            if (bestBack <= 1.0)
+                continue;
 
             switch (meta.sortPriority()) {
                 case 1 -> homeOdds = bestBack;
@@ -672,21 +693,25 @@ public class BetfairIntegrationService {
         for (String query : List.of("World Cup", "FIFA")) {
             try {
                 String json = marketClient.listMarketCatalogue(sessionToken, query);
-                if (json == null) continue;
+                if (json == null)
+                    continue;
 
                 var markets = objectMapper.readTree(json);
 
                 for (var market : markets) {
                     // Only process MATCH_ODDS markets (team vs team)
                     String marketName = market.path("marketName").asText();
-                    if (!"Match Odds".equals(marketName)) continue;
+                    if (!"Match Odds".equals(marketName))
+                        continue;
 
                     var runners = market.path("runners");
-                    if (runners.isMissingNode() || runners.isEmpty()) continue;
+                    if (runners.isMissingNode() || runners.isEmpty())
+                        continue;
 
                     for (var runner : runners) {
                         String name = runner.path("runnerName").asText("").trim();
-                        if (name.isBlank()) continue;
+                        if (name.isBlank())
+                            continue;
                         if (looksLikeTeamName(name)) {
                             teamNames.add(name);
                         }
@@ -701,23 +726,32 @@ public class BetfairIntegrationService {
 
     private boolean looksLikeTeamName(String name) {
         // Filter out "The Draw" / "Draw"
-        if (name.equalsIgnoreCase("Draw") || name.equalsIgnoreCase("The Draw")) return false;
+        if (name.equalsIgnoreCase("Draw") || name.equalsIgnoreCase("The Draw"))
+            return false;
         // Filter out score lines like "0 - 0", "1 - 2"
-        if (SCORE_LINE.matcher(name).matches()) return false;
+        if (SCORE_LINE.matcher(name).matches())
+            return false;
         // Filter out Over/Under
-        if (name.startsWith("Over ") || name.startsWith("Under ")) return false;
+        if (name.startsWith("Over ") || name.startsWith("Under "))
+            return false;
         // Filter out generic betting labels
-        if (name.equals("Yes") || name.equals("No")) return false;
-        if (name.equals("Odd") || name.equals("Even")) return false;
+        if (name.equals("Yes") || name.equals("No"))
+            return false;
+        if (name.equals("Odd") || name.equals("Even"))
+            return false;
         // Filter out handicap suffixes like "+1", "-2"
-        if (name.matches(".*\\s[+-]\\d$")) return false;
+        if (name.matches(".*\\s[+-]\\d$"))
+            return false;
         // Filter out combined-result patterns like "Team/Draw", "Team/Over 2.5 Goals"
         if (name.contains("/") && (name.contains("Over") || name.contains("Under")
-                || name.contains("Draw") || name.contains("Yes") || name.contains("No"))) return false;
+                || name.contains("Draw") || name.contains("Yes") || name.contains("No")))
+            return false;
         // Filter out "Any Other ..." and "Any Unquoted"
-        if (name.startsWith("Any ")) return false;
+        if (name.startsWith("Any "))
+            return false;
         // Filter out "Home or ...", "Draw or ..."
-        if (name.startsWith("Home or ") || name.startsWith("Draw or ")) return false;
+        if (name.startsWith("Home or ") || name.startsWith("Draw or "))
+            return false;
         return true;
     }
 
@@ -728,40 +762,46 @@ public class BetfairIntegrationService {
      * Used to map book runners (identified only by selectionId) back to
      * their sortPriority and FIFA team code.
      *
-     * @param fifaCode      the 3-letter FIFA team code, or "DRAW" for sortPriority 3
-     * @param sortPriority  Betfair sortPriority: 1 = Home, 2 = Away, 3 = Draw
+     * @param fifaCode     the 3-letter FIFA team code, or "DRAW" for sortPriority 3
+     * @param sortPriority Betfair sortPriority: 1 = Home, 2 = Away, 3 = Draw
      */
-    private record RunnerMeta(String fifaCode, int sortPriority) {}
+    private record RunnerMeta(String fifaCode, int sortPriority) {
+    }
 
     /** Realistic score-lines for a Team A (home) win. */
     private static final int[][] TEAM_A_WIN_SCORES = {
-            {1, 0}, {2, 0}, {2, 1}, {3, 0}, {3, 1}, {1, 0}, {2, 1}, {1, 0}
+            { 1, 0 }, { 2, 0 }, { 2, 1 }, { 3, 0 }, { 3, 1 }, { 1, 0 }, { 2, 1 }, { 1, 0 }
     };
 
     /** Realistic score-lines for a draw. */
     private static final int[][] DRAW_SCORES = {
-            {0, 0}, {1, 1}, {1, 1}, {2, 2}, {0, 0}, {1, 1}
+            { 0, 0 }, { 1, 1 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, { 1, 1 }
     };
 
     /** Realistic score-lines for a Team B (away) win. */
     private static final int[][] TEAM_B_WIN_SCORES = {
-            {0, 1}, {0, 2}, {1, 2}, {0, 3}, {1, 3}, {0, 1}, {1, 2}, {0, 1}
+            { 0, 1 }, { 0, 2 }, { 1, 2 }, { 0, 3 }, { 1, 3 }, { 0, 1 }, { 1, 2 }, { 0, 1 }
     };
 
     /**
      * Simulates all 72 group-stage matches using live Betfair odds.
      *
-     * <p>For each match the method:
+     * <p>
+     * For each match the method:
      * <ol>
-     *   <li>Fetches the MATCH_ODDS market catalogue for World Cup 2026</li>
-     *   <li>Maps Betfair runner names to internal FIFA team codes</li>
-     *   <li>Retrieves best Back prices via {@code listMarketBook} (batched, max 40)</li>
-     *   <li>Converts decimal odds → implied probabilities, normalises to sum = 1.0</li>
-     *   <li>Rolls a random double to pick the outcome (Team A win / Draw / Team B win)</li>
-     *   <li>Picks a realistic score-line for the chosen outcome</li>
+     * <li>Fetches the MATCH_ODDS market catalogue for World Cup 2026</li>
+     * <li>Maps Betfair runner names to internal FIFA team codes</li>
+     * <li>Retrieves best Back prices via {@code listMarketBook} (batched, max
+     * 40)</li>
+     * <li>Converts decimal odds → implied probabilities, normalises to sum =
+     * 1.0</li>
+     * <li>Rolls a random double to pick the outcome (Team A win / Draw / Team B
+     * win)</li>
+     * <li>Picks a realistic score-line for the chosen outcome</li>
      * </ol>
      *
-     * <p><b>Fallback:</b> If no odds are available for a match (or the market
+     * <p>
+     * <b>Fallback:</b> If no odds are available for a match (or the market
      * book is empty), the three outcomes default to an equal 33.3 % probability.
      *
      * @param groupMatches the full map of match-id → {@link GroupMatch} from
@@ -802,7 +842,8 @@ public class BetfairIntegrationService {
 
             if (catalogueJson == null) {
                 log.info("No live market catalogue available (liveApi={}, sessionToken={}). " +
-                        "Falling back to local snapshot...", liveApiAvailable, sessionToken != null ? "present" : "null");
+                        "Falling back to local snapshot...", liveApiAvailable,
+                        sessionToken != null ? "present" : "null");
                 try {
                     String fallbackJson = readFallbackOddsJson();
                     if (fallbackJson == null) {
@@ -816,7 +857,7 @@ public class BetfairIntegrationService {
                     usingFallback = true;
                     appEvents.emitInfo("Betfair",
                             "Using saved odds snapshot (live Betfair data unavailable). " +
-                            "Simulation results are based on previously captured data.");
+                                    "Simulation results are based on previously captured data.");
                 } catch (Exception e) {
                     log.error("Failed to read fallback-odds.json", e);
                     appEvents.emitError("Betfair",
@@ -832,7 +873,8 @@ public class BetfairIntegrationService {
                 groupMatches.forEach((id, m) -> results.put(id, simulateWithFallback(random)));
                 return results;
             }
-            log.info(" simulateGroupStageOdds: received {} market(s) from Betfair (fallback={})", markets.size(), usingFallback);
+            log.info(" simulateGroupStageOdds: received {} market(s) from Betfair (fallback={})", markets.size(),
+                    usingFallback);
 
             // selectionId → RunnerMeta (FIFA code + sortPriority), per market
             // sortPriority 1 = Home, 2 = Away, 3 = Draw — per Betfair API spec
@@ -909,7 +951,8 @@ public class BetfairIntegrationService {
                     } catch (Exception e) {
                         log.warn("Exception fetching market book: {}", e.getMessage());
                     }
-                    if (bookJson == null) continue;
+                    if (bookJson == null)
+                        continue;
 
                     var books = objectMapper.readTree(bookJson);
                     for (var book : books) {
@@ -935,7 +978,7 @@ public class BetfairIntegrationService {
             log.error("Error during Betfair group stage simulation – filling gaps with fallback", e);
             appEvents.emitError("Betfair",
                     "Error during odds simulation: " + shortenMessage(e.getMessage()) +
-                    ". Unresolved matches use equal probability.");
+                            ". Unresolved matches use equal probability.");
             for (var entry : groupMatches.entrySet()) {
                 if (!results.containsKey(entry.getKey())) {
                     results.put(entry.getKey(), simulateWithFallback(random));
@@ -947,13 +990,14 @@ public class BetfairIntegrationService {
     }
 
     private void processBookNode(com.fasterxml.jackson.databind.JsonNode book,
-                                 Map<String, String> marketToMatchId,
-                                 Map<String, GroupMatch> marketToMatch,
-                                 Map<String, Map<Long, RunnerMeta>> marketSelections,
-                                 Random random, Map<String, int[]> results) {
+            Map<String, String> marketToMatchId,
+            Map<String, GroupMatch> marketToMatch,
+            Map<String, Map<Long, RunnerMeta>> marketSelections,
+            Random random, Map<String, int[]> results) {
         String marketId = book.path("marketId").asText();
         String matchId = marketToMatchId.get(marketId);
-        if (matchId == null) return;
+        if (matchId == null)
+            return;
 
         GroupMatch match = marketToMatch.get(marketId);
         Map<Long, RunnerMeta> selMap = marketSelections.get(marketId);
@@ -966,17 +1010,20 @@ public class BetfairIntegrationService {
         for (var runner : book.path("runners")) {
             long selId = runner.path("selectionId").asLong();
             RunnerMeta meta = selMap.get(selId);
-            if (meta == null) continue;
+            if (meta == null)
+                continue;
 
             var backPrices = runner.path("ex").path("availableToBack");
-            if (backPrices.size() == 0) continue;
+            if (backPrices.size() == 0)
+                continue;
             double bestBack = backPrices.get(0).path("price").asDouble();
-            if (bestBack <= 1.0) continue; // invalid / no-market
+            if (bestBack <= 1.0)
+                continue; // invalid / no-market
 
             switch (meta.sortPriority()) {
-                case 1 -> homeOdds = bestBack;   // sortPriority 1 = Home
-                case 2 -> awayOdds = bestBack;   // sortPriority 2 = Away
-                case 3 -> drawOdds = bestBack;   // sortPriority 3 = Draw
+                case 1 -> homeOdds = bestBack; // sortPriority 1 = Home
+                case 2 -> awayOdds = bestBack; // sortPriority 2 = Away
+                case 3 -> drawOdds = bestBack; // sortPriority 3 = Draw
             }
         }
 
@@ -1070,7 +1117,8 @@ public class BetfairIntegrationService {
 
     /** Truncates a message to a user-friendly length (no stack traces). */
     private static String shortenMessage(String msg) {
-        if (msg == null) return "Unknown error";
+        if (msg == null)
+            return "Unknown error";
         // Take only the first line if multi-line
         int newline = msg.indexOf('\n');
         String firstLine = newline > 0 ? msg.substring(0, newline).trim() : msg;
