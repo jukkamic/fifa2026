@@ -397,7 +397,7 @@ public class TournamentController {
                     java.nio.file.StandardOpenOption.CREATE,
                     java.nio.file.StandardOpenOption.TRUNCATE_EXISTING);
 
-            appEvents.emitInfo("Betfair",
+            appEvents.emitInfo("BetfairUpdate",
                     "Fallback odds updated by admin (" + profile.getEmail() + ").");
 
             Map<String, Object> response = new LinkedHashMap<>();

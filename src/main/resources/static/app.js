@@ -855,6 +855,9 @@ async function pollAppEvents() {
             // Show new events (stagger slightly so they don't all appear at once)
             newEvents.forEach((event, i) => {
                 setTimeout(() => {
+                    if( event.category === "BetfairUpdate") {
+                        loadOddsSnapshotTimestamp();
+                    }
                     showNotification(event.type, event.category, event.message);
                 }, i * 200);
             });

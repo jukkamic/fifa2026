@@ -45,7 +45,7 @@ class BetfairOddsSnapshotScheduler {
         log.info("Scheduled Betfair odds snapshot starting...");
         try {
             betfairService.snapshotOddsLocally();
-            appEvents.emitInfo("Betfair", "Scheduled odds snapshot completed successfully.");
+            appEvents.emitInfo("BetfairUpdate", "Scheduled odds snapshot completed successfully.");
         } catch (Exception e) {
             log.error("Scheduled Betfair odds snapshot failed", e);
             appEvents.emitWarning("Betfair",
