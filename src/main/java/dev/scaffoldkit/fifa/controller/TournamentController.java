@@ -33,16 +33,16 @@ import java.util.stream.Collectors;
  * REST API for the FIFA 2026 World Cup tournament.
  *
  * Endpoints:
- *   GET  /api/teams           — all 48 teams
- *   GET  /api/groups          — all 12 groups with team codes
- *   GET  /api/groups/{group}  — single group details + standings + matches
- *   POST /api/groups/{matchId}/score  — set group match score
- *   GET  /api/standings       — all group standings
- *   GET  /api/advancement     — which teams advance (winners, runners-up, 3rd)
- *   GET  /api/bracket         — full knockout bracket
- *   POST /api/bracket/seed    — seed bracket from group results
- *   POST /api/bracket/{matchId}/score — set knockout score
- *   POST /api/reset           — reset everything
+ * GET /api/teams — all 48 teams
+ * GET /api/groups — all 12 groups with team codes
+ * GET /api/groups/{group} — single group details + standings + matches
+ * POST /api/groups/{matchId}/score — set group match score
+ * GET /api/standings — all group standings
+ * GET /api/advancement — which teams advance (winners, runners-up, 3rd)
+ * GET /api/bracket — full knockout bracket
+ * POST /api/bracket/seed — seed bracket from group results
+ * POST /api/bracket/{matchId}/score — set knockout score
+ * POST /api/reset — reset everything
  */
 @RestController
 @RequestMapping("/api")
@@ -61,10 +61,10 @@ public class TournamentController {
             @Value("${app.admin.email:jukkamic@gmail.com}") String adminEmail,
             @Value("${app.admin.dev-email:testuser@example.com}") String devAdminEmail,
             GroupStageService groupStageService,
-                                BracketService bracketService,
-                                BetfairIntegrationService betfairService,
-                                AppEventService appEvents,
-                                ActualResultsService actualResultsService) {
+            BracketService bracketService,
+            BetfairIntegrationService betfairService,
+            AppEventService appEvents,
+            ActualResultsService actualResultsService) {
         this.adminEmail = adminEmail;
         this.devAdminEmail = devAdminEmail;
         this.fallbackOddsPath = betfairService.getFallbackOddsPath();
@@ -156,7 +156,7 @@ public class TournamentController {
     @GetMapping("/standings")
     public Map<String, Object> getStandings() {
         Map<String, List<Map<String, Object>>> allStandings = new LinkedHashMap<>();
-        for (String group : List.of("A","B","C","D","E","F","G","H","I","J","K","L")) {
+        for (String group : List.of("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L")) {
             List<Map<String, Object>> standingsList = new ArrayList<>();
             for (GroupStanding gs : groupStageService.getSortedStandings(group)) {
                 Map<String, Object> s = new LinkedHashMap<>();
@@ -191,7 +191,7 @@ public class TournamentController {
         result.put("bestThirdTeamCodes", groupStageService.getBestThirdPlaceTeamCodes());
 
         // Eliminated groups
-        List<String> all = List.of("A","B","C","D","E","F","G","H","I","J","K","L");
+        List<String> all = List.of("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L");
         List<String> best = groupStageService.getBestThirdPlaceGroups();
         List<String> eliminated = all.stream()
                 .filter(g -> !best.contains(g))
@@ -282,9 +282,8 @@ public class TournamentController {
 
     // ── Fallback Odds Timestamp ──────────────────────────────────────────
 
-    private static final DateTimeFormatter FINNISH_FORMATTER =
-            DateTimeFormatter.ofPattern("d.M. HH:mm:ss")
-                    .withZone(ZoneId.of("Europe/Helsinki"));
+    private static final DateTimeFormatter FINNISH_FORMATTER = DateTimeFormatter.ofPattern("d.M. HH:mm:ss")
+            .withZone(ZoneId.of("Europe/Helsinki"));
 
     @GetMapping("/fallback-odds-timestamp")
     public Map<String, Object> getFallbackOdsTimestamp() {
@@ -335,7 +334,8 @@ public class TournamentController {
                 if (!node.isMissingNode() && !node.asText().isEmpty()) {
                     return node.asText();
                 }
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
         }
 
         // 2. Fallback: classpath resource (bundled in JAR)
@@ -349,7 +349,8 @@ public class TournamentController {
                     return node.asText();
                 }
             }
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         return null;
     }
@@ -437,6 +438,8 @@ public class TournamentController {
     @PostMapping("/reset")
     public Map<String, Object> resetAll() {
         groupStageService.resetAll();
+        getOverwritten();
+
         bracketService.resetAndReseed();
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("success", true);
@@ -533,14 +536,7 @@ public class TournamentController {
             updated++;
         }
 
-        // Overwrite with locked actual results
-        Map<String, int[]> locked = actualResultsService.getLockedScores();
-        int overwritten = 0;
-        for (var entry : locked.entrySet()) {
-            groupStageService.setGroupMatchScore(
-                    entry.getKey(), entry.getValue()[0], entry.getValue()[1]);
-            overwritten++;
-        }
+        int overwritten = getOverwritten();
 
         // Re-enrich matches after simulation (odds may have changed)
         matchesEnriched = false;
@@ -550,8 +546,21 @@ public class TournamentController {
         result.put("success", true);
         result.put("matchesSimulated", updated);
         result.put("lockedOverwritten", overwritten);
-        result.put("message", "Group stage simulated from Betfair odds (%d matches, %d locked results applied)".formatted(updated, overwritten));
+        result.put("message", "Group stage simulated from Betfair odds (%d matches, %d locked results applied)"
+                .formatted(updated, overwritten));
         return ResponseEntity.ok(result);
+    }
+
+    private int getOverwritten() {
+        // Overwrite with locked actual results
+        Map<String, int[]> locked = actualResultsService.getLockedScores();
+        int overwritten = 0;
+        for (var entry : locked.entrySet()) {
+            groupStageService.setGroupMatchScore(
+                    entry.getKey(), entry.getValue()[0], entry.getValue()[1]);
+            overwritten++;
+        }
+        return overwritten;
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────
@@ -590,9 +599,12 @@ public class TournamentController {
     private int compareByMatchDate(GroupMatch a, GroupMatch b) {
         String dateA = a.getMatchDate();
         String dateB = b.getMatchDate();
-        if (dateA == null && dateB == null) return 0;
-        if (dateA == null) return 1;
-        if (dateB == null) return -1;
+        if (dateA == null && dateB == null)
+            return 0;
+        if (dateA == null)
+            return 1;
+        if (dateB == null)
+            return -1;
         return dateA.compareTo(dateB);
     }
 
