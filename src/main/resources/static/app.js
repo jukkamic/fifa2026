@@ -453,9 +453,11 @@ async function loadGroupStage() {
                        ${isLocked ? '🔒' : '🔓'}
                    </button>`
                 : '';
+            const marketUrlTagStart = m.url ?  `<a href='${m.url}' target='_blank'>` : '';
+            const marketUrlTagEnd = m.url ? `</a>` : '';
             const tooltipText = buildMatchTooltip(m);
             const infoIcon = tooltipText
-? `<a href="${m.url}" target="_blank"><span class="match-info-icon" title="${tooltipText.replace(/"/g, '"').replace(/\n/g, '&#10;')}">i</span></a>`
+? `${marketUrlTagStart}<span class="match-info-icon" title="${tooltipText.replace(/"/g, '"').replace(/\n/g, '&#10;')}">i</span>${marketUrlTagEnd}`
                 : '';
             html += `<div class="group-match-row${lockedClass}">
                 <div class="group-match-teams">

@@ -81,8 +81,6 @@ public class BetfairIntegrationService {
     /** Cloudflare Access JWT for pushing odds to the production server. */
     private final String cloudflareJwt;
 
-    private final Map<String, String> marketURLs = new LinkedHashMap<>();
-
     /** Production server URL for the odds upload endpoint. */
     private static final String PROD_ODDS_UPLOAD_URL = "https://fifa2026.scaffoldkit.dev/api/admin/odds/upload";
 
@@ -392,7 +390,6 @@ public class BetfairIntegrationService {
                 String startTime = market.path("event").path("openDate").asText("");
                 String eventName = market.path("event").path("name").asText("");
                 String marketURL = createMarketURL(market);
-                this.marketURLs.put(marketId, marketURL);
 
                 marketIds.add(marketId);
 
@@ -414,16 +411,23 @@ public class BetfairIntegrationService {
         }
     }
 
+    /**
+     * Builds the human-readable Betfair Exchange URL for a market.
+     * <p>
+     * Works identically in local and production environments because it only
+     * reads from the market JSON node itself (available from both the live API
+     * and {@code fallback-odds.json}).
+     */
     private String createMarketURL(JsonNode market) {
-        String eventName = market.path("event").path("name").asText("");
-        String eventId = market.path("event").path("id").asText("");
-        String eventSlug = eventName.replaceAll(" ", "-");
-        String marketURL = "https://www.betfair.com/exchange/plus/en/football/fifa-world-cup/" + eventSlug + "-betting-" + eventId;
-        return marketURL;
-    }
+        JsonNode event = market.path("event");
+        String eventName = event.path("name").asText("");
+        String eventId = event.path("id").asText("");
 
-    public Map<String, String> getMarketUrlMap() {
-        return this.marketURLs;
+        // Betfair URL slug: "Mexico v South Africa" → "Mexico-v-South-Africa"
+        String eventSlug = eventName.replace(" ", "-").toLowerCase();
+
+        return "https://www.betfair.com/exchange/plus/en/football/fifa-world-cup/"
+                + eventSlug + "-betting-" + eventId;
     }
 
     private void fetchAndLogMarketBook(List<String> marketIds) {
@@ -471,9 +475,9 @@ public class BetfairIntegrationService {
             log.error("Failed to parse market book", e);
         }
 
-        log.info("═══════════════════════════════════════════════════════════");
+        log.info("===========================================================");
         log.info("  Betfair integration ready - connection verified.");
-        log.info("═══════════════════════════════════════════════════════════");
+        log.info("===========================================================");
     }
 
     // ── Match Metadata Enrichment (matchDate + odds) ────────────────────
@@ -687,7 +691,8 @@ public class BetfairIntegrationService {
             match.setOdds2(homeOdds);
         }
         match.setOddsDraw(drawOdds);
-        match.setMarketURL(this.marketURLs.get(marketId));
+        // NOTE: marketURL is already set during the catalogue scan above
+        // (see enrichMatchesWithBetfairData), so we don't touch it here.
     }
 
     // ── Diagnostic: dump Betfair runner names for World Cup markets ───────
