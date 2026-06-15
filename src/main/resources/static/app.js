@@ -376,6 +376,7 @@ function processGroupMatches(rawMatches) {
         // 2. Apply locked scores if they exist
         let s1 = match.score1;
         let s2 = match.score2;
+        let url = match.url;
         let locked = false;
 
         if (lockedMatches && lockedMatches[match.id]) {
@@ -388,7 +389,8 @@ function processGroupMatches(rawMatches) {
             matchDate: reliableDate,
             score1: s1,
             score2: s2,
-            isLocked: locked
+            isLocked: locked,
+            url: url
         };
     });
 
@@ -453,7 +455,7 @@ async function loadGroupStage() {
                 : '';
             const tooltipText = buildMatchTooltip(m);
             const infoIcon = tooltipText
-? `<span class="match-info-icon" title="${tooltipText.replace(/"/g, '"').replace(/\n/g, '&#10;')}">i</span>`
+? `<a href="${m.url}" target="_blank"><span class="match-info-icon" title="${tooltipText.replace(/"/g, '"').replace(/\n/g, '&#10;')}">i</span></a>`
                 : '';
             html += `<div class="group-match-row${lockedClass}">
                 <div class="group-match-teams">

@@ -577,6 +577,7 @@ public class TournamentController {
         m.put("team2", gm.getTeam2Code());
         m.put("score1", gm.getScore1());
         m.put("score2", gm.getScore2());
+        m.put("url", gm.getMarketURL());
         if (gm.getMatchDate() != null) {
             m.put("matchDate", gm.getMatchDate());
         }

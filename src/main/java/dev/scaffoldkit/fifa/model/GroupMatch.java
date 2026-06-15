@@ -18,6 +18,7 @@ public class GroupMatch {
     private Double odds1;
     private Double oddsDraw;
     private Double odds2;
+    private String marketURL;
 
     public GroupMatch(String id, String group, String team1Code, String team2Code) {
         this.id = id;
@@ -32,6 +33,8 @@ public class GroupMatch {
     public String getTeam2Code() { return team2Code; }
     public Integer getScore1() { return score1; }
     public Integer getScore2() { return score2; }
+    public String getMarketURL() { return this.marketURL; }
+    public void setMarketURL(String marketURL) { this.marketURL = marketURL; }
 
     public void setScore1(Integer score1) { this.score1 = score1; }
     public void setScore2(Integer score2) { this.score2 = score2; }

@@ -80,6 +80,8 @@ public class BetfairIntegrationService {
     /** Cloudflare Access JWT for pushing odds to the production server. */
     private final String cloudflareJwt;
 
+    private final Map<String, String> marketURLs = new LinkedHashMap<>();
+
     /** Production server URL for the odds upload endpoint. */
     private static final String PROD_ODDS_UPLOAD_URL = "https://fifa2026.scaffoldkit.dev/api/admin/odds/upload";
 
@@ -388,6 +390,10 @@ public class BetfairIntegrationService {
                 String marketName = market.path("marketName").asText();
                 String startTime = market.path("event").path("openDate").asText("");
                 String eventName = market.path("event").path("name").asText("");
+                String eventId = market.path("event").path("id").asText("");
+                String eventSlug = eventName.replaceAll(" ", "-");
+                String marketURL = "https://www.betfair.com/exchange/plus/en/football/fifa-world-cup/" + eventSlug + "-" + eventId;
+                this.marketURLs.put(marketId, marketURL);
 
                 marketIds.add(marketId);
 
@@ -395,6 +401,7 @@ public class BetfairIntegrationService {
                     log.info("  [{}/{}] {} | {} | {} | start={}",
                             logged + 1, count, marketId, eventName,
                             marketName, startTime);
+                    log.info(marketURL);
                     logged++;
                 }
             }
@@ -408,18 +415,22 @@ public class BetfairIntegrationService {
         }
     }
 
+    public Map<String, String> getMarketUrlMap() {
+        return this.marketURLs;
+    }
+
     private void fetchAndLogMarketBook(List<String> marketIds) {
-        log.info("→ Step 3: Fetching market book for {} market(s)...", marketIds.size());
+        log.info("Step 3: Fetching market book for {} market(s)...", marketIds.size());
 
         String bookJson = marketClient.listMarketBook(sessionToken, marketIds);
         if (bookJson == null) {
-            log.error("✗ Failed to fetch market book");
+            log.error("Failed to fetch market book");
             return;
         }
 
         try {
             var books = objectMapper.readTree(bookJson);
-            log.info("✓ Received market book data for {} market(s)", books.size());
+            log.info("Received market book data for {} market(s)", books.size());
 
             for (var book : books) {
                 String marketId = book.path("marketId").asText();
@@ -454,7 +465,7 @@ public class BetfairIntegrationService {
         }
 
         log.info("═══════════════════════════════════════════════════════════");
-        log.info("  Betfair integration ready – connection verified.");
+        log.info("  Betfair integration ready - connection verified.");
         log.info("═══════════════════════════════════════════════════════════");
     }
 
@@ -668,6 +679,7 @@ public class BetfairIntegrationService {
             match.setOdds2(homeOdds);
         }
         match.setOddsDraw(drawOdds);
+        match.setMarketURL(this.marketURLs.get(marketId));
     }
 
     // ── Diagnostic: dump Betfair runner names for World Cup markets ───────
