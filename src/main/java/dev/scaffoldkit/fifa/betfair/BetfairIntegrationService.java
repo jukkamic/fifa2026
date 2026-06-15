@@ -1,6 +1,7 @@
 package dev.scaffoldkit.fifa.betfair;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.scaffoldkit.fifa.model.GroupMatch;
 import dev.scaffoldkit.fifa.service.AppEventService;
@@ -390,9 +391,7 @@ public class BetfairIntegrationService {
                 String marketName = market.path("marketName").asText();
                 String startTime = market.path("event").path("openDate").asText("");
                 String eventName = market.path("event").path("name").asText("");
-                String eventId = market.path("event").path("id").asText("");
-                String eventSlug = eventName.replaceAll(" ", "-");
-                String marketURL = "https://www.betfair.com/exchange/plus/en/football/fifa-world-cup/" + eventSlug + "-" + eventId;
+                String marketURL = createMarketURL(market);
                 this.marketURLs.put(marketId, marketURL);
 
                 marketIds.add(marketId);
@@ -413,6 +412,14 @@ public class BetfairIntegrationService {
         } catch (Exception e) {
             log.error("Failed to parse market catalogue", e);
         }
+    }
+
+    private String createMarketURL(JsonNode market) {
+        String eventName = market.path("event").path("name").asText("");
+        String eventId = market.path("event").path("id").asText("");
+        String eventSlug = eventName.replaceAll(" ", "-");
+        String marketURL = "https://www.betfair.com/exchange/plus/en/football/fifa-world-cup/" + eventSlug + "-betting-" + eventId;
+        return marketURL;
     }
 
     public Map<String, String> getMarketUrlMap() {
@@ -574,6 +581,7 @@ public class BetfairIntegrationService {
                     String matchId = pairToMatchId.get(pairKey);
                     if (matchId != null) {
                         GroupMatch groupMatch = groupMatches.get(matchId);
+                        groupMatch.setMarketURL(createMarketURL(market));
                         marketSelections.put(marketId, selMap);
                         marketToMatch.put(marketId, groupMatch);
                         marketStartTimes.put(marketId, marketStartTime);
