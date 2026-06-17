@@ -1,6 +1,7 @@
 package dev.scaffoldkit.fifa.controller;
 
 import dev.scaffoldkit.fifa.betfair.BetfairIntegrationService;
+import dev.scaffoldkit.fifa.betfair.OddsUpdatedEvent;
 import dev.scaffoldkit.fifa.model.GroupMatch;
 import dev.scaffoldkit.fifa.model.GroupStanding;
 import dev.scaffoldkit.fifa.model.KnockoutMatch;
@@ -12,6 +13,7 @@ import dev.scaffoldkit.fifa.service.BracketService;
 import dev.scaffoldkit.fifa.service.GroupStageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -401,6 +403,10 @@ public class TournamentController {
             appEvents.emitInfo("BetfairUpdate",
                     "Fallback odds updated by admin (" + profile.getEmail() + ").");
 
+            // Invalidate the enrichment cache so the new odds are served on the
+            // next /api/group-matches request.
+            matchesEnriched = false;
+
             Map<String, Object> response = new LinkedHashMap<>();
             response.put("success", true);
             response.put("message", "Fallback odds saved to " + fallbackOddsPath.toAbsolutePath());
@@ -412,6 +418,20 @@ public class TournamentController {
             err.put("success", false);
             err.put("message", "Failed to write file: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
+        }
+    }
+
+    // ── Odds Cache Invalidation ──────────────────────────────────────────
+
+    /**
+     * Resets the matches-enrichment cache whenever odds data is updated (e.g.
+     * by the scheduled Betfair snapshot). The next {@code /api/group-matches}
+     * request will re-enrich matches with the fresh odds.
+     */
+    @EventListener
+    public void onOddsUpdated(OddsUpdatedEvent event) {
+        if (matchesEnriched) {
+            matchesEnriched = false;
         }
     }
 

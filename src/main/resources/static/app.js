@@ -863,8 +863,12 @@ async function pollAppEvents() {
             // Show new events (stagger slightly so they don't all appear at once)
             newEvents.forEach((event, i) => {
                 setTimeout(() => {
-                    if( event.category === "BetfairUpdate") {
+                    if (event.category === "BetfairUpdate") {
+                        // Odds data changed — refresh the timestamp label and
+                        // reload the group stage so the match tooltips show
+                        // the updated odds/percentages.
                         loadOddsSnapshotTimestamp();
+                        loadGroupStage();
                     }
                     showNotification(event.type, event.category, event.message);
                 }, i * 200);

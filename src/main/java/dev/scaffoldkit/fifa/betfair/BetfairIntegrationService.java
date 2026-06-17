@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ public class BetfairIntegrationService {
 
     private final AppEventService appEvents;
     private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * Live API clients — absent in the prod profile (Betfair blocked on
@@ -88,11 +90,13 @@ public class BetfairIntegrationService {
             ObjectProvider<BetfairAuthClient> authClientProvider,
             ObjectProvider<BetfairMarketClient> marketClientProvider,
             AppEventService appEvents,
+            ApplicationEventPublisher eventPublisher,
             @Value("${app.data.dir:./data}") String dataDir,
             @Value("${admin.cloudflare.jwt:}") String cloudflareJwt) {
         this.authClient = authClientProvider.getIfAvailable();
         this.marketClient = marketClientProvider.getIfAvailable();
         this.appEvents = appEvents;
+        this.eventPublisher = eventPublisher;
         this.liveApiAvailable = this.authClient != null && this.marketClient != null;
         this.fallbackOddsPath = Paths.get(dataDir, "fallback-odds.json");
         this.cloudflareJwt = cloudflareJwt;
@@ -210,6 +214,10 @@ public class BetfairIntegrationService {
 
             // ── Push to production server ─────────────────────────────────
             pushOddsToProduction(jsonPayload);
+
+            // Notify listeners (e.g. TournamentController) that odds data changed
+            // so any in-memory caches are invalidated.
+            eventPublisher.publishEvent(new OddsUpdatedEvent("Betfair odds snapshot"));
 
         } catch (Exception e) {
             log.error("Error during snapshot", e);
