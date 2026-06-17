@@ -22,7 +22,7 @@ class BetfairOddsSnapshotScheduler {
     private static final Logger log = LoggerFactory.getLogger(BetfairOddsSnapshotScheduler.class);
 
     /** Interval between the end of one snapshot and the start of the next. */
-    private static final long FIXED_DELAY_MS = 30 * 60 * 1000L;
+    private static final long FIXED_DELAY_MS = 13 * 60 * 1000L;
 
     /** Delay before the first scheduled snapshot (lets startup init settle). */
     private static final long INITIAL_DELAY_MS = 5 * 60 * 1000L;

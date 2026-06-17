@@ -745,6 +745,9 @@ async function resetAll() {
     await apiPost('/api/reset');
     await loadGroupStage();
     await loadBracket();
+    // Persist the now-reset (empty) state so stale predictions aren't restored
+    // on the next page load (see restoreSavedState).
+    debouncedSave();
 }
 
 // ===== BETFAIR SIMULATION =====
@@ -762,6 +765,7 @@ async function simulateBetfairGroups() {
             btn.classList.add('btn-success');
             await loadGroupStage();
             await loadBracket();
+            debouncedSave();
         } else {
             btn.innerHTML = '❌ Simulation failed';
         }
