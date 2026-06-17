@@ -316,20 +316,20 @@ function buildMatchTooltip(m) {
         return '⚽ Game played — result is final.';
     }
     const parts = [];
-    if (m.matchDate) {
-        try {
-            const d = new Date(m.matchDate);
-            const dateStr = d.toLocaleDateString('en-GB', {
-                weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
-            });
-            const timeStr = d.toLocaleTimeString('en-GB', {
-                hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
-            });
-            parts.push('📅 ' + dateStr + ', ' + timeStr);
-        } catch (e) {
-            parts.push('📅 ' + m.matchDate);
-        }
-    }
+    // if (m.matchDate) {
+    //     try {
+    //         const d = new Date(m.matchDate);
+    //         const dateStr = d.toLocaleDateString('en-GB', {
+    //             weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+    //         });
+    //         const timeStr = d.toLocaleTimeString('en-GB', {
+    //             hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+    //         });
+    //         parts.push('📅 ' + dateStr + ', ' + timeStr);
+    //     } catch (e) {
+    //         parts.push('📅 ' + m.matchDate);
+    //     }
+    // }
     if (m.odds1 != null && m.oddsDraw != null && m.odds2 != null) {
         const pHome = Math.round((1 / m.odds1) * 100);
         const pDraw = Math.round((1 / m.oddsDraw) * 100);
