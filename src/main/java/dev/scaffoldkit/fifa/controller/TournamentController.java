@@ -1,7 +1,9 @@
 package dev.scaffoldkit.fifa.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.scaffoldkit.fifa.betfair.BetfairIntegrationService;
 import dev.scaffoldkit.fifa.betfair.OddsUpdatedEvent;
+import dev.scaffoldkit.fifa.betfair.model.BetfairOddsSnapshot;
 import dev.scaffoldkit.fifa.model.GroupMatch;
 import dev.scaffoldkit.fifa.model.GroupStanding;
 import dev.scaffoldkit.fifa.model.KnockoutMatch;
@@ -53,6 +55,7 @@ public class TournamentController {
     private final String adminEmail;
     private final String devAdminEmail;
     private final Path fallbackOddsPath;
+    private final ObjectMapper objectMapper;
     private final GroupStageService groupStageService;
     private final BracketService bracketService;
     private final BetfairIntegrationService betfairService;
@@ -62,6 +65,7 @@ public class TournamentController {
     public TournamentController(
             @Value("${app.admin.email:jukkamic@gmail.com}") String adminEmail,
             @Value("${app.admin.dev-email:testuser@example.com}") String devAdminEmail,
+            ObjectMapper objectMapper,
             GroupStageService groupStageService,
             BracketService bracketService,
             BetfairIntegrationService betfairService,
@@ -69,6 +73,7 @@ public class TournamentController {
             ActualResultsService actualResultsService) {
         this.adminEmail = adminEmail;
         this.devAdminEmail = devAdminEmail;
+        this.objectMapper = objectMapper;
         this.fallbackOddsPath = betfairService.getFallbackOddsPath();
         this.groupStageService = groupStageService;
         this.bracketService = bracketService;
@@ -320,7 +325,8 @@ public class TournamentController {
     }
 
     /**
-     * Reads the {@code snapshotTimestamp} field from {@code fallback-odds.json}.
+     * Reads the {@code snapshotTimestamp} from {@code fallback-odds.json} by
+     * deserializing it into a {@link BetfairOddsSnapshot}.
      * Tries the persistent filesystem location first (writable by admin upload),
      * then falls back to the classpath resource (bundled in JAR).
      *
@@ -330,11 +336,10 @@ public class TournamentController {
         // 1. Try filesystem (persistent volume)
         if (Files.exists(fallbackOddsPath)) {
             try {
-                var tree = new com.fasterxml.jackson.databind.ObjectMapper()
-                        .readTree(fallbackOddsPath.toFile());
-                var node = tree.path("snapshotTimestamp");
-                if (!node.isMissingNode() && !node.asText().isEmpty()) {
-                    return node.asText();
+                BetfairOddsSnapshot snapshot = objectMapper.readValue(
+                        fallbackOddsPath.toFile(), BetfairOddsSnapshot.class);
+                if (snapshot.snapshotTimestamp() != null && !snapshot.snapshotTimestamp().isEmpty()) {
+                    return snapshot.snapshotTimestamp();
                 }
             } catch (Exception ignored) {
             }
@@ -344,11 +349,9 @@ public class TournamentController {
         try {
             var resource = new ClassPathResource("fallback-odds.json");
             try (var is = resource.getInputStream()) {
-                var tree = new com.fasterxml.jackson.databind.ObjectMapper()
-                        .readTree(is);
-                var node = tree.path("snapshotTimestamp");
-                if (!node.isMissingNode() && !node.asText().isEmpty()) {
-                    return node.asText();
+                BetfairOddsSnapshot snapshot = objectMapper.readValue(is, BetfairOddsSnapshot.class);
+                if (snapshot.snapshotTimestamp() != null && !snapshot.snapshotTimestamp().isEmpty()) {
+                    return snapshot.snapshotTimestamp();
                 }
             }
         } catch (Exception ignored) {
@@ -379,10 +382,9 @@ public class TournamentController {
             return ResponseEntity.badRequest().body(err);
         }
 
-        // Validate that it's valid JSON
+        // Validate that it's valid JSON by deserializing into the typed model
         try {
-            var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            mapper.readTree(jsonBody);
+            objectMapper.readValue(jsonBody, BetfairOddsSnapshot.class);
         } catch (Exception e) {
             Map<String, Object> err = new LinkedHashMap<>();
             err.put("success", false);

@@ -1,7 +1,10 @@
 package dev.scaffoldkit.fifa.betfair;
 
+import dev.scaffoldkit.fifa.betfair.model.BetfairMarketCatalog;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,14 +103,17 @@ class BetfairConnectionTest {
                 .as("Cannot test market catalogue without a valid session token")
                 .isNotNull();
 
-        String catalogue = marketClient.listMarketCatalogue(sessionToken);
+        List<BetfairMarketCatalog> catalogue = marketClient.listMarketCatalogue(sessionToken);
 
         assertThat(catalogue)
-                .as("Market catalogue should return JSON with marketId")
-                .isNotNull()
-                .contains("marketId");
+                .as("Market catalogue should return a non-empty list of markets")
+                .isNotEmpty();
 
-        log.info("✓ Market catalogue fetched successfully");
+        assertThat(catalogue.get(0).marketId())
+                .as("First market should have a marketId")
+                .isNotBlank();
+
+        log.info("✓ Market catalogue fetched successfully – {} markets", catalogue.size());
     }
 
     @Test

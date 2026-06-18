@@ -1,5 +1,6 @@
 package dev.scaffoldkit.fifa.betfair;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import dev.scaffoldkit.fifa.betfair.model.BetfairMarketBook;
+import dev.scaffoldkit.fifa.betfair.model.BetfairMarketCatalog;
 
 /**
  * Communicates with the Betfair Exchange Betting REST API.
@@ -59,9 +64,9 @@ class BetfairMarketClient {
      * Fetches the market catalogue for soccer match-odds markets.
      *
      * @param sessionToken the active Betfair session token
-     * @return raw JSON string of the market catalogue response
+     * @return list of market catalogue entries, or empty list on failure
      */
-    String listMarketCatalogue(String sessionToken) {
+    List<BetfairMarketCatalog> listMarketCatalogue(String sessionToken) {
         return listMarketCatalogue(sessionToken, null);
     }
 
@@ -72,9 +77,9 @@ class BetfairMarketClient {
      * @param sessionToken the active Betfair session token
      * @param textQuery    optional text to search for in market/event names (may be
      *                     null)
-     * @return raw JSON string of the market catalogue response
+     * @return list of market catalogue entries, or empty list on failure
      */
-    String listMarketCatalogue(String sessionToken, String textQuery) {
+    List<BetfairMarketCatalog> listMarketCatalogue(String sessionToken, String textQuery) {
         log.info("Fetching market catalogue for soccer match odds (textQuery={})", textQuery);
 
         HttpHeaders headers = apiHeaders(sessionToken);
@@ -107,14 +112,15 @@ class BetfairMarketClient {
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 log.debug("Market catalogue response received ({} chars)",
                         response.getBody().length());
-                return response.getBody();
+                return objectMapper.readValue(response.getBody(),
+                        new TypeReference<List<BetfairMarketCatalog>>() {});
             }
 
             log.error("listMarketCatalogue returned status: {}", response.getStatusCode());
-            return null;
+            return Collections.emptyList();
         } catch (Exception e) {
             log.error("Failed to fetch market catalogue", e);
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -123,9 +129,9 @@ class BetfairMarketClient {
      *
      * @param sessionToken the active Betfair session token
      * @param marketIds    the market IDs to fetch prices for
-     * @return raw JSON string of the market book response
+     * @return list of market book entries with current odds, or empty list on failure
      */
-    String listMarketBook(String sessionToken, List<String> marketIds) {
+    List<BetfairMarketBook> listMarketBook(String sessionToken, List<String> marketIds) {
         log.info("Fetching market book for {} market(s)", marketIds.size());
 
         HttpHeaders headers = apiHeaders(sessionToken);
@@ -146,14 +152,15 @@ class BetfairMarketClient {
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 log.debug("Market book response received ({} chars)",
                         response.getBody().length());
-                return response.getBody();
+                return objectMapper.readValue(response.getBody(),
+                        new TypeReference<List<BetfairMarketBook>>() {});
             }
 
             log.error("listMarketBook returned status: {}", response.getStatusCode());
-            return null;
+            return Collections.emptyList();
         } catch (Exception e) {
             log.error("Failed to fetch market book", e);
-            return null;
+            return Collections.emptyList();
         }
     }
 

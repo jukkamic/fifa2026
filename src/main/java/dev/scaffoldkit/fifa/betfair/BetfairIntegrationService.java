@@ -1,8 +1,13 @@
 package dev.scaffoldkit.fifa.betfair;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.scaffoldkit.fifa.betfair.model.BetfairEvent;
+import dev.scaffoldkit.fifa.betfair.model.BetfairExchangePrices;
+import dev.scaffoldkit.fifa.betfair.model.BetfairMarketBook;
+import dev.scaffoldkit.fifa.betfair.model.BetfairMarketCatalog;
+import dev.scaffoldkit.fifa.betfair.model.BetfairOddsSnapshot;
+import dev.scaffoldkit.fifa.betfair.model.BetfairRunnerBook;
+import dev.scaffoldkit.fifa.betfair.model.BetfairRunnerCatalog;
 import dev.scaffoldkit.fifa.model.GroupMatch;
 import dev.scaffoldkit.fifa.service.AppEventService;
 import jakarta.annotation.PostConstruct;
@@ -11,8 +16,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -20,15 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.regex.Pattern;
-
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.MediaType;
-import org.springframework.web.client.RestClient;
 
 /**
  * Top-level orchestrator for the Betfair Exchange API integration.
@@ -90,18 +96,18 @@ public class BetfairIntegrationService {
             ObjectProvider<BetfairAuthClient> authClientProvider,
             ObjectProvider<BetfairMarketClient> marketClientProvider,
             AppEventService appEvents,
+            ObjectMapper objectMapper,
             ApplicationEventPublisher eventPublisher,
             @Value("${app.data.dir:./data}") String dataDir,
             @Value("${admin.cloudflare.jwt:}") String cloudflareJwt) {
         this.authClient = authClientProvider.getIfAvailable();
         this.marketClient = marketClientProvider.getIfAvailable();
         this.appEvents = appEvents;
+        this.objectMapper = objectMapper;
         this.eventPublisher = eventPublisher;
         this.liveApiAvailable = this.authClient != null && this.marketClient != null;
         this.fallbackOddsPath = Paths.get(dataDir, "fallback-odds.json");
         this.cloudflareJwt = cloudflareJwt;
-        this.objectMapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     /**
@@ -169,42 +175,29 @@ public class BetfairIntegrationService {
         }
 
         try {
-            // We'll query "World Cup" and get the market catalogue, then fetch books for
-            // those markets,
-            // and combine them into a single JSON object.
-            String catalogueJson = marketClient.listMarketCatalogue(sessionToken);
-            if (catalogueJson == null) {
+            List<BetfairMarketCatalog> catalogue = marketClient.listMarketCatalogue(sessionToken);
+            if (catalogue.isEmpty()) {
                 log.error("Failed to fetch market catalogue for snapshot.");
                 throw new IllegalStateException("Failed to fetch market catalogue for snapshot.");
             }
 
-            var markets = objectMapper.readTree(catalogueJson);
             List<String> matchedMarketIds = new ArrayList<>();
-            for (var market : markets) {
-                matchedMarketIds.add(market.path("marketId").asText());
+            for (BetfairMarketCatalog market : catalogue) {
+                matchedMarketIds.add(market.marketId());
             }
 
-            var rootNode = objectMapper.createObjectNode();
-            rootNode.set("catalogue", markets);
-
-            var booksArray = objectMapper.createArrayNode();
-
+            // Fetch market books in batches (Betfair limit: 40 per call)
+            List<BetfairMarketBook> books = new ArrayList<>();
             int batchSize = 40;
             for (int i = 0; i < matchedMarketIds.size(); i += batchSize) {
                 List<String> batch = matchedMarketIds.subList(i, Math.min(i + batchSize, matchedMarketIds.size()));
-                String bookJson = marketClient.listMarketBook(sessionToken, batch);
-                if (bookJson != null) {
-                    var books = objectMapper.readTree(bookJson);
-                    for (var book : books) {
-                        booksArray.add(book);
-                    }
-                }
+                books.addAll(marketClient.listMarketBook(sessionToken, batch));
             }
 
-            rootNode.set("books", booksArray);
-            rootNode.put("snapshotTimestamp", java.time.Instant.now().toString());
+            BetfairOddsSnapshot snapshot = new BetfairOddsSnapshot(
+                    catalogue, books, Instant.now().toString());
 
-            String jsonPayload = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
+            String jsonPayload = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(snapshot);
 
             // ── Save to local file ────────────────────────────────────────
             Path path = Paths.get("src/main/resources/fallback-odds.json");
@@ -287,13 +280,13 @@ public class BetfairIntegrationService {
     }
 
     /**
-     * Fetches the soccer match-odds market catalogue and logs a summary.
+     * Fetches the soccer match-odds market catalogue.
      *
-     * @return raw JSON of the catalogue, or {@code null}
+     * @return list of market catalogue entries, or empty list if unavailable
      */
-    public String fetchMarketCatalogue() {
+    public List<BetfairMarketCatalog> fetchMarketCatalogue() {
         if (!liveApiAvailable)
-            return null;
+            return List.of();
         ensureAuthenticated();
         return marketClient.listMarketCatalogue(sessionToken);
     }
@@ -302,11 +295,11 @@ public class BetfairIntegrationService {
      * Fetches market book (odds) for the given market IDs.
      *
      * @param marketIds the Betfair market IDs
-     * @return raw JSON of the market book, or {@code null}
+     * @return list of market book entries, or empty list if unavailable
      */
-    public String fetchMarketBook(List<String> marketIds) {
+    public List<BetfairMarketBook> fetchMarketBook(List<String> marketIds) {
         if (!liveApiAvailable)
-            return null;
+            return List.of();
         ensureAuthenticated();
         return marketClient.listMarketBook(sessionToken, marketIds);
     }
@@ -329,19 +322,20 @@ public class BetfairIntegrationService {
     }
 
     /**
-     * Reads the fallback-odds.json content, trying the persistent filesystem
-     * location first (so the file can be updated without redeploy), then
-     * falling back to the classpath resource (bundled in the JAR).
+     * Reads and deserializes the fallback-odds.json into a typed
+     * {@link BetfairOddsSnapshot}, trying the persistent filesystem location
+     * first (so the file can be updated without redeploy), then falling back
+     * to the classpath resource (bundled in the JAR).
      *
-     * @return the JSON string, or {@code null} if no source is available
+     * @return the deserialized snapshot, or {@code null} if no source is available
      */
-    private String readFallbackOddsJson() {
+    private BetfairOddsSnapshot readFallbackOddsSnapshot() {
         // 1. Try filesystem (persistent volume in prod, local data dir in dev)
         if (Files.exists(fallbackOddsPath)) {
             try {
-                String json = Files.readString(fallbackOddsPath, java.nio.charset.StandardCharsets.UTF_8);
+                String json = Files.readString(fallbackOddsPath, StandardCharsets.UTF_8);
                 log.info("Read fallback-odds.json from filesystem: {}", fallbackOddsPath.toAbsolutePath());
-                return json;
+                return objectMapper.readValue(json, BetfairOddsSnapshot.class);
             } catch (Exception e) {
                 log.warn("Failed to read fallback-odds.json from filesystem ({}): {}",
                         fallbackOddsPath.toAbsolutePath(), e.getMessage());
@@ -352,10 +346,10 @@ public class BetfairIntegrationService {
         try {
             ClassPathResource resource = new ClassPathResource("fallback-odds.json");
             try (var is = resource.getInputStream()) {
-                String json = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 log.info("Read fallback-odds.json from classpath (filesystem file not found at {})",
                         fallbackOddsPath.toAbsolutePath());
-                return json;
+                return objectMapper.readValue(json, BetfairOddsSnapshot.class);
             }
         } catch (Exception e) {
             log.warn("Failed to read fallback-odds.json from classpath: {}", e.getMessage());
@@ -372,6 +366,8 @@ public class BetfairIntegrationService {
         return fallbackOddsPath;
     }
 
+    // ── Startup logging ──────────────────────────────────────────────────
+
     /**
      * Fetches the catalogue and logs a human-readable summary of discovered
      * markets, then fetches the market book for the first few and logs prices.
@@ -379,43 +375,39 @@ public class BetfairIntegrationService {
     private void fetchAndLogMarketCatalogue() {
         log.info("→ Step 2: Fetching soccer market catalogue...");
 
-        String catalogueJson = marketClient.listMarketCatalogue(sessionToken);
-        if (catalogueJson == null) {
+        List<BetfairMarketCatalog> markets = marketClient.listMarketCatalogue(sessionToken);
+        if (markets.isEmpty()) {
             log.error("✗ Failed to fetch market catalogue");
             return;
         }
 
-        try {
-            var markets = objectMapper.readTree(catalogueJson);
-            int count = markets.size();
-            log.info("✓ Received {} soccer match-odds market(s)", count);
+        int count = markets.size();
+        log.info("✓ Received {} soccer match-odds market(s)", count);
 
-            List<String> marketIds = new ArrayList<>();
-            int logged = 0;
-            for (var market : markets) {
-                String marketId = market.path("marketId").asText();
-                String marketName = market.path("marketName").asText();
-                String startTime = market.path("event").path("openDate").asText("");
-                String eventName = market.path("event").path("name").asText("");
-                String marketURL = createMarketURL(market);
+        List<String> marketIds = new ArrayList<>();
+        int logged = 0;
+        for (BetfairMarketCatalog market : markets) {
+            String marketId = market.marketId();
+            String marketName = market.marketName();
+            BetfairEvent event = market.event();
+            String startTime = event != null ? event.openDate() : "";
+            String eventName = event != null ? event.name() : "";
+            String marketURL = createMarketURL(market);
 
-                marketIds.add(marketId);
+            marketIds.add(marketId);
 
-                if (logged < 10) {
-                    log.info("  [{}/{}] {} | {} | {} | start={}",
-                            logged + 1, count, marketId, eventName,
-                            marketName, startTime);
-                    log.info(marketURL);
-                    logged++;
-                }
+            if (logged < 10) {
+                log.info("  [{}/{}] {} | {} | {} | start={}",
+                        logged + 1, count, marketId, eventName,
+                        marketName, startTime);
+                log.info(marketURL);
+                logged++;
             }
+        }
 
-            // Fetch odds for first batch of markets
-            if (!marketIds.isEmpty()) {
-                fetchAndLogMarketBook(marketIds.subList(0, Math.min(5, marketIds.size())));
-            }
-        } catch (Exception e) {
-            log.error("Failed to parse market catalogue", e);
+        // Fetch odds for first batch of markets
+        if (!marketIds.isEmpty()) {
+            fetchAndLogMarketBook(marketIds.subList(0, Math.min(5, marketIds.size())));
         }
     }
 
@@ -423,13 +415,16 @@ public class BetfairIntegrationService {
      * Builds the human-readable Betfair Exchange URL for a market.
      * <p>
      * Works identically in local and production environments because it only
-     * reads from the market JSON node itself (available from both the live API
-     * and {@code fallback-odds.json}).
+     * reads from the market model (available from both the live API and
+     * {@code fallback-odds.json}).
      */
-    private String createMarketURL(JsonNode market) {
-        JsonNode event = market.path("event");
-        String eventName = event.path("name").asText("");
-        String eventId = event.path("id").asText("");
+    private String createMarketURL(BetfairMarketCatalog market) {
+        BetfairEvent event = market.event();
+        if (event == null) {
+            return "";
+        }
+        String eventName = event.name();
+        String eventId = event.id();
 
         // Betfair URL slug: "Mexico v South Africa" → "Mexico-v-South-Africa"
         String eventSlug = eventName.replace(" ", "-").toLowerCase();
@@ -441,46 +436,41 @@ public class BetfairIntegrationService {
     private void fetchAndLogMarketBook(List<String> marketIds) {
         log.info("Step 3: Fetching market book for {} market(s)...", marketIds.size());
 
-        String bookJson = marketClient.listMarketBook(sessionToken, marketIds);
-        if (bookJson == null) {
+        List<BetfairMarketBook> books = marketClient.listMarketBook(sessionToken, marketIds);
+        if (books.isEmpty()) {
             log.error("Failed to fetch market book");
             return;
         }
 
-        try {
-            var books = objectMapper.readTree(bookJson);
-            log.info("Received market book data for {} market(s)", books.size());
+        log.info("Received market book data for {} market(s)", books.size());
 
-            for (var book : books) {
-                String marketId = book.path("marketId").asText();
-                boolean inPlay = book.path("inplay").asBoolean();
-                var runners = book.path("runners");
-                log.info("  Market {} | inPlay={} | {} runner(s)",
-                        marketId, inPlay, runners.size());
+        for (BetfairMarketBook book : books) {
+            String marketId = book.marketId();
+            boolean inPlay = book.inplay();
+            List<BetfairRunnerBook> runners = book.runners();
+            log.info("  Market {} | inPlay={} | {} runner(s)",
+                    marketId, inPlay, runners.size());
 
-                for (var runner : runners) {
-                    String runnerName = runner.path("runnerName").asText("");
-                    long selectionId = runner.path("selectionId").asLong();
+            for (BetfairRunnerBook runner : runners) {
+                long selectionId = runner.selectionId();
 
-                    // Best back price
-                    var ex = runner.path("ex");
-                    var availableToBack = ex.path("availableToBack");
-                    String bestBack = availableToBack.size() > 0
-                            ? availableToBack.get(0).path("price").asText()
-                            : "n/a";
+                // Best back price
+                BetfairExchangePrices ex = runner.ex();
+                String bestBack = "n/a";
+                String bestLay = "n/a";
 
-                    // Best lay price
-                    var availableToLay = ex.path("availableToLay");
-                    String bestLay = availableToLay.size() > 0
-                            ? availableToLay.get(0).path("price").asText()
-                            : "n/a";
-
-                    log.info("    Runner #{} ({}) | back={} | lay={}",
-                            selectionId, runnerName, bestBack, bestLay);
+                if (ex != null) {
+                    if (!ex.availableToBack().isEmpty()) {
+                        bestBack = String.valueOf(ex.availableToBack().get(0).price());
+                    }
+                    if (!ex.availableToLay().isEmpty()) {
+                        bestLay = String.valueOf(ex.availableToLay().get(0).price());
+                    }
                 }
+
+                log.info("    Runner #{} | back={} | lay={}",
+                        selectionId, bestBack, bestLay);
             }
-        } catch (Exception e) {
-            log.error("Failed to parse market book", e);
         }
 
         log.info("===========================================================");
@@ -521,26 +511,30 @@ public class BetfairIntegrationService {
             }
 
             // ── Fetch market catalogue (live if authenticated, else fallback) ─
-            String catalogueJson = null;
-            if (liveApiAvailable && sessionToken != null) {
-                try {
-                    catalogueJson = marketClient.listMarketCatalogue(sessionToken);
-                } catch (Exception e) {
-                    log.warn("Exception fetching market catalogue for enrichment: {}", e.getMessage());
-                }
-            }
-
-            var rootNode = objectMapper.createObjectNode();
+            List<BetfairMarketCatalog> markets;
+            List<BetfairMarketBook> fallbackBooks = null;
             boolean usingFallback = false;
 
-            if (catalogueJson == null) {
+            if (liveApiAvailable && sessionToken != null) {
                 try {
-                    String fallbackJson = readFallbackOddsJson();
-                    if (fallbackJson == null) {
+                    markets = marketClient.listMarketCatalogue(sessionToken);
+                } catch (Exception e) {
+                    log.warn("Exception fetching market catalogue for enrichment: {}", e.getMessage());
+                    markets = List.of();
+                }
+            } else {
+                markets = List.of();
+            }
+
+            if (markets.isEmpty()) {
+                try {
+                    BetfairOddsSnapshot snapshot = readFallbackOddsSnapshot();
+                    if (snapshot == null) {
                         log.warn("No fallback-odds.json found (filesystem or classpath)");
                         return;
                     }
-                    rootNode = (com.fasterxml.jackson.databind.node.ObjectNode) objectMapper.readTree(fallbackJson);
+                    markets = snapshot.catalogue();
+                    fallbackBooks = snapshot.books();
                     usingFallback = true;
                 } catch (Exception e) {
                     log.warn("Failed to read fallback-odds.json for enrichment: {}", e.getMessage());
@@ -548,30 +542,27 @@ public class BetfairIntegrationService {
                 }
             }
 
-            var markets = usingFallback ? rootNode.path("catalogue") : objectMapper.readTree(catalogueJson);
-            if (markets.isMissingNode() || markets.isEmpty())
+            if (markets.isEmpty())
                 return;
 
             // selectionId → RunnerMeta per market
             Map<String, Map<Long, RunnerMeta>> marketSelections = new LinkedHashMap<>();
             Map<String, GroupMatch> marketToMatch = new LinkedHashMap<>();
-            // marketId → marketStartTime
-            Map<String, String> marketStartTimes = new LinkedHashMap<>();
             List<String> matchedMarketIds = new ArrayList<>();
 
-            for (var market : markets) {
-                String marketId = market.path("marketId").asText();
-                String marketStartTime = market.path("marketStartTime").asText("");
-                var runners = market.path("runners");
+            for (BetfairMarketCatalog market : markets) {
+                String marketId = market.marketId();
+                String marketStartTime = market.marketStartTime();
+                List<BetfairRunnerCatalog> runners = market.runners();
 
                 Map<Long, RunnerMeta> selMap = new LinkedHashMap<>();
                 String homeCode = null;
                 String awayCode = null;
 
-                for (var runner : runners) {
-                    String runnerName = runner.path("runnerName").asText("").trim();
-                    long selectionId = runner.path("selectionId").asLong();
-                    int sortPriority = runner.path("sortPriority").asInt(0);
+                for (BetfairRunnerCatalog runner : runners) {
+                    String runnerName = runner.runnerName().trim();
+                    long selectionId = runner.selectionId();
+                    int sortPriority = runner.sortPriority();
 
                     if (runnerName.equalsIgnoreCase("Draw")
                             || runnerName.equalsIgnoreCase("The Draw")) {
@@ -596,11 +587,10 @@ public class BetfairIntegrationService {
                         groupMatch.setMarketURL(createMarketURL(market));
                         marketSelections.put(marketId, selMap);
                         marketToMatch.put(marketId, groupMatch);
-                        marketStartTimes.put(marketId, marketStartTime);
                         matchedMarketIds.add(marketId);
 
                         // Set matchDate on the GroupMatch
-                        if (!marketStartTime.isEmpty()) {
+                        if (marketStartTime != null && !marketStartTime.isEmpty()) {
                             groupMatch.setMatchDate(marketStartTime);
                         }
                     }
@@ -608,9 +598,8 @@ public class BetfairIntegrationService {
             }
 
             // ── Fetch market books and extract odds ──────────────────────
-            if (usingFallback) {
-                var books = rootNode.path("books");
-                for (var book : books) {
+            if (usingFallback && fallbackBooks != null) {
+                for (BetfairMarketBook book : fallbackBooks) {
                     enrichOddsFromBook(book, marketToMatch, marketSelections);
                 }
             } else {
@@ -618,17 +607,14 @@ public class BetfairIntegrationService {
                 for (int i = 0; i < matchedMarketIds.size(); i += batchSize) {
                     List<String> batch = matchedMarketIds.subList(
                             i, Math.min(i + batchSize, matchedMarketIds.size()));
-                    String bookJson = null;
+                    List<BetfairMarketBook> books;
                     try {
-                        bookJson = marketClient.listMarketBook(sessionToken, batch);
+                        books = marketClient.listMarketBook(sessionToken, batch);
                     } catch (Exception e) {
                         log.warn("Exception fetching market book for enrichment: {}", e.getMessage());
+                        books = List.of();
                     }
-                    if (bookJson == null)
-                        continue;
-
-                    var books = objectMapper.readTree(bookJson);
-                    for (var book : books) {
+                    for (BetfairMarketBook book : books) {
                         enrichOddsFromBook(book, marketToMatch, marketSelections);
                     }
                 }
@@ -643,13 +629,13 @@ public class BetfairIntegrationService {
     }
 
     /**
-     * Extracts best back odds from a market book node and sets them on the
+     * Extracts best back odds from a market book and sets them on the
      * corresponding GroupMatch, aligned to team1/team2 order.
      */
-    private void enrichOddsFromBook(com.fasterxml.jackson.databind.JsonNode book,
+    private void enrichOddsFromBook(BetfairMarketBook book,
             Map<String, GroupMatch> marketToMatch,
             Map<String, Map<Long, RunnerMeta>> marketSelections) {
-        String marketId = book.path("marketId").asText();
+        String marketId = book.marketId();
         GroupMatch match = marketToMatch.get(marketId);
         if (match == null)
             return;
@@ -662,16 +648,16 @@ public class BetfairIntegrationService {
         Double drawOdds = null;
         Double awayOdds = null;
 
-        for (var runner : book.path("runners")) {
-            long selId = runner.path("selectionId").asLong();
+        for (BetfairRunnerBook runner : book.runners()) {
+            long selId = runner.selectionId();
             RunnerMeta meta = selMap.get(selId);
             if (meta == null)
                 continue;
 
-            var backPrices = runner.path("ex").path("availableToBack");
-            if (backPrices.size() == 0)
+            BetfairExchangePrices ex = runner.ex();
+            if (ex == null || ex.availableToBack().isEmpty())
                 continue;
-            double bestBack = backPrices.get(0).path("price").asDouble();
+            double bestBack = ex.availableToBack().get(0).price();
             if (bestBack <= 1.0)
                 continue;
 
@@ -725,24 +711,19 @@ public class BetfairIntegrationService {
 
         for (String query : List.of("World Cup", "FIFA")) {
             try {
-                String json = marketClient.listMarketCatalogue(sessionToken, query);
-                if (json == null)
-                    continue;
+                List<BetfairMarketCatalog> markets = marketClient.listMarketCatalogue(sessionToken, query);
 
-                var markets = objectMapper.readTree(json);
-
-                for (var market : markets) {
+                for (BetfairMarketCatalog market : markets) {
                     // Only process MATCH_ODDS markets (team vs team)
-                    String marketName = market.path("marketName").asText();
-                    if (!"Match Odds".equals(marketName))
+                    if (!"Match Odds".equals(market.marketName()))
                         continue;
 
-                    var runners = market.path("runners");
-                    if (runners.isMissingNode() || runners.isEmpty())
+                    List<BetfairRunnerCatalog> runners = market.runners();
+                    if (runners == null || runners.isEmpty())
                         continue;
 
-                    for (var runner : runners) {
-                        String name = runner.path("runnerName").asText("").trim();
+                    for (BetfairRunnerCatalog runner : runners) {
+                        String name = runner.runnerName().trim();
                         if (name.isBlank())
                             continue;
                         if (looksLikeTeamName(name)) {
@@ -861,32 +842,36 @@ public class BetfairIntegrationService {
             }
 
             // ── Fetch market catalogue (live if authenticated, else fallback) ─
-            String catalogueJson = null;
-            if (liveApiAvailable && sessionToken != null) {
-                try {
-                    catalogueJson = marketClient.listMarketCatalogue(sessionToken);
-                } catch (Exception e) {
-                    log.warn("Exception fetching market catalogue: {}", e.getMessage());
-                }
-            }
-
-            var rootNode = objectMapper.createObjectNode();
+            List<BetfairMarketCatalog> markets;
+            List<BetfairMarketBook> fallbackBooks = null;
             boolean usingFallback = false;
 
-            if (catalogueJson == null) {
+            if (liveApiAvailable && sessionToken != null) {
+                try {
+                    markets = marketClient.listMarketCatalogue(sessionToken);
+                } catch (Exception e) {
+                    log.warn("Exception fetching market catalogue: {}", e.getMessage());
+                    markets = List.of();
+                }
+            } else {
+                markets = List.of();
+            }
+
+            if (markets.isEmpty()) {
                 log.info("No live market catalogue available (liveApi={}, sessionToken={}). " +
                         "Falling back to local snapshot...", liveApiAvailable,
                         sessionToken != null ? "present" : "null");
                 try {
-                    String fallbackJson = readFallbackOddsJson();
-                    if (fallbackJson == null) {
+                    BetfairOddsSnapshot snapshot = readFallbackOddsSnapshot();
+                    if (snapshot == null) {
                         log.error("No fallback-odds.json found (filesystem or classpath)");
                         appEvents.emitError("Betfair",
                                 "Failed to load odds data. Using equal-probability simulation.");
                         groupMatches.forEach((id, m) -> results.put(id, simulateWithFallback(random)));
                         return results;
                     }
-                    rootNode = (com.fasterxml.jackson.databind.node.ObjectNode) objectMapper.readTree(fallbackJson);
+                    markets = snapshot.catalogue();
+                    fallbackBooks = snapshot.books();
                     usingFallback = true;
                     appEvents.emitInfo("Betfair",
                             "Using saved odds snapshot (live Betfair data unavailable). " +
@@ -900,8 +885,7 @@ public class BetfairIntegrationService {
                 }
             }
 
-            var markets = usingFallback ? rootNode.path("catalogue") : objectMapper.readTree(catalogueJson);
-            if (markets.isMissingNode() || markets.isEmpty()) {
+            if (markets.isEmpty()) {
                 log.warn("No market catalogue found – using fallback for all matches");
                 groupMatches.forEach((id, m) -> results.put(id, simulateWithFallback(random)));
                 return results;
@@ -916,18 +900,18 @@ public class BetfairIntegrationService {
             Map<String, GroupMatch> marketToMatch = new LinkedHashMap<>();
             List<String> matchedMarketIds = new ArrayList<>();
 
-            for (var market : markets) {
-                String marketId = market.path("marketId").asText();
-                var runners = market.path("runners");
+            for (BetfairMarketCatalog market : markets) {
+                String marketId = market.marketId();
+                List<BetfairRunnerCatalog> runners = market.runners();
 
                 Map<Long, RunnerMeta> selMap = new LinkedHashMap<>();
                 String homeCode = null;
                 String awayCode = null;
 
-                for (var runner : runners) {
-                    String runnerName = runner.path("runnerName").asText("").trim();
-                    long selectionId = runner.path("selectionId").asLong();
-                    int sortPriority = runner.path("sortPriority").asInt(0);
+                for (BetfairRunnerCatalog runner : runners) {
+                    String runnerName = runner.runnerName().trim();
+                    long selectionId = runner.selectionId();
+                    int sortPriority = runner.sortPriority();
 
                     if (runnerName.equalsIgnoreCase("Draw")
                             || runnerName.equalsIgnoreCase("The Draw")) {
@@ -968,9 +952,8 @@ public class BetfairIntegrationService {
                     matchedMarketIds.size());
 
             // ── Batch-fetch market books (Betfair limit: 40 per call) ─────
-            if (usingFallback) {
-                var books = rootNode.path("books");
-                for (var book : books) {
+            if (usingFallback && fallbackBooks != null) {
+                for (BetfairMarketBook book : fallbackBooks) {
                     processBookNode(book, marketToMatchId, marketToMatch, marketSelections, random, results);
                 }
             } else {
@@ -978,17 +961,15 @@ public class BetfairIntegrationService {
                 for (int i = 0; i < matchedMarketIds.size(); i += batchSize) {
                     List<String> batch = matchedMarketIds.subList(
                             i, Math.min(i + batchSize, matchedMarketIds.size()));
-                    String bookJson = null;
+                    List<BetfairMarketBook> books;
                     try {
-                        bookJson = marketClient.listMarketBook(sessionToken, batch);
+                        books = marketClient.listMarketBook(sessionToken, batch);
                     } catch (Exception e) {
                         log.warn("Exception fetching market book: {}", e.getMessage());
+                        books = List.of();
                     }
-                    if (bookJson == null)
-                        continue;
 
-                    var books = objectMapper.readTree(bookJson);
-                    for (var book : books) {
+                    for (BetfairMarketBook book : books) {
                         processBookNode(book, marketToMatchId, marketToMatch, marketSelections, random, results);
                     }
                 }
@@ -1022,12 +1003,12 @@ public class BetfairIntegrationService {
         return results;
     }
 
-    private void processBookNode(com.fasterxml.jackson.databind.JsonNode book,
+    private void processBookNode(BetfairMarketBook book,
             Map<String, String> marketToMatchId,
             Map<String, GroupMatch> marketToMatch,
             Map<String, Map<Long, RunnerMeta>> marketSelections,
             Random random, Map<String, int[]> results) {
-        String marketId = book.path("marketId").asText();
+        String marketId = book.marketId();
         String matchId = marketToMatchId.get(marketId);
         if (matchId == null)
             return;
@@ -1040,16 +1021,16 @@ public class BetfairIntegrationService {
         Double drawOdds = null;
         Double awayOdds = null;
 
-        for (var runner : book.path("runners")) {
-            long selId = runner.path("selectionId").asLong();
+        for (BetfairRunnerBook runner : book.runners()) {
+            long selId = runner.selectionId();
             RunnerMeta meta = selMap.get(selId);
             if (meta == null)
                 continue;
 
-            var backPrices = runner.path("ex").path("availableToBack");
-            if (backPrices.size() == 0)
+            BetfairExchangePrices ex = runner.ex();
+            if (ex == null || ex.availableToBack().isEmpty())
                 continue;
-            double bestBack = backPrices.get(0).path("price").asDouble();
+            double bestBack = ex.availableToBack().get(0).price();
             if (bestBack <= 1.0)
                 continue; // invalid / no-market
 
