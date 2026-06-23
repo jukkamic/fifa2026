@@ -26,7 +26,7 @@ public class ActualResultsService {
     private final ObjectMapper objectMapper;
     private final File dataFile;
 
-    /** matchId → [score1, score2] */
+    /** matchId -> [score1, score2] */
     private Map<String, int[]> lockedScores = new LinkedHashMap<>();
 
     public ActualResultsService(ObjectMapper objectMapper,

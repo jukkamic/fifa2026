@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
  * On application startup this service:
  * <ol>
  * <li>Authenticates with Betfair via mutual-TLS certlogin</li>
- * <li>Fetches the soccer market catalogue (Event Type 1 – MATCH_ODDS)</li>
+ * <li>Fetches the soccer market catalogue (Event Type 1 - MATCH_ODDS)</li>
  * <li>Fetches market book data (current best back/lay prices)</li>
  * <li>Logs key data at each step for verification</li>
  * </ol>
@@ -122,7 +122,7 @@ public class BetfairIntegrationService {
     void init() {
         if (!liveApiAvailable) {
             log.info("===========================================================");
-            log.info("  Betfair Integration Service – PRODUCTION MODE");
+            log.info("  Betfair Integration Service - PRODUCTION MODE");
             log.info("  Live Betfair API is disabled (blocked on Railway.app).");
             log.info("  All odds features will use fallback-odds.json.");
             log.info("===========================================================");
@@ -130,7 +130,7 @@ public class BetfairIntegrationService {
         }
 
         log.info("===========================================================");
-        log.info("  Betfair Integration Service – initialising...");
+        log.info("  Betfair Integration Service - initialising...");
         log.info("===========================================================");
 
         try {
@@ -141,7 +141,7 @@ public class BetfairIntegrationService {
                         "Successfully connected to Betfair Exchange API.");
             }
         } catch (Exception e) {
-            log.warn("Betfair integration did not initialise – the app will continue " +
+            log.warn("Betfair integration did not initialise - the app will continue " +
                     "without live odds. Reason: {}", e.getMessage());
             appEvents.emitInfo("Betfair",
                     "Betfair API is not available. Odds features will use saved data. " +
@@ -264,16 +264,16 @@ public class BetfairIntegrationService {
             return false;
         }
 
-        log.info("→ Step 1: Authenticating with Betfair (mTLS certlogin)...");
+        log.info("Step 1: Authenticating with Betfair (mTLS certlogin)...");
         sessionToken = authClient.login();
 
         if (sessionToken != null) {
-            log.info("✓ Authentication successful – session token length: {}",
+            log.info("Authentication successful - session token length: {}",
                     sessionToken.length());
             return true;
         }
 
-        log.error("✗ Authentication failed – check credentials and certificates");
+        log.error("Authentication failed - check credentials and certificates");
         appEvents.emitWarning("Betfair",
                 "Authentication with Betfair API failed. Check credentials and certificates.");
         return false;
@@ -317,7 +317,7 @@ public class BetfairIntegrationService {
     private void ensureAuthenticated() {
         if (sessionToken == null) {
             throw new IllegalStateException(
-                    "Not authenticated – call authenticate() first");
+                    "Not authenticated - call authenticate() first");
         }
     }
 
@@ -373,16 +373,16 @@ public class BetfairIntegrationService {
      * markets, then fetches the market book for the first few and logs prices.
      */
     private void fetchAndLogMarketCatalogue() {
-        log.info("→ Step 2: Fetching soccer market catalogue...");
+        log.info("Step 2: Fetching soccer market catalogue...");
 
         List<BetfairMarketCatalog> markets = marketClient.listMarketCatalogue(sessionToken);
         if (markets.isEmpty()) {
-            log.error("✗ Failed to fetch market catalogue");
+            log.error("Failed to fetch market catalogue");
             return;
         }
 
         int count = markets.size();
-        log.info("✓ Received {} soccer match-odds market(s)", count);
+        log.info("Received {} soccer match-odds market(s)", count);
 
         List<String> marketIds = new ArrayList<>();
         int logged = 0;
@@ -426,7 +426,7 @@ public class BetfairIntegrationService {
         String eventName = event.name();
         String eventId = event.id();
 
-        // Betfair URL slug: "Mexico v South Africa" → "Mexico-v-South-Africa"
+        // Betfair URL slug: "Mexico v South Africa" "Mexico-v-South-Africa"
         String eventSlug = eventName.replace(" ", "-").toLowerCase();
 
         return "https://www.betfair.com/exchange/plus/en/football/fifa-world-cup/"
@@ -494,7 +494,7 @@ public class BetfairIntegrationService {
      * aligned to the GroupMatch's team1/team2 order</li>
      * </ul>
      *
-     * @param groupMatches the full map of match-id → {@link GroupMatch}
+     * @param groupMatches the full map of match-id {@link GroupMatch}
      */
     public void enrichMatchesWithBetfairData(Map<String, GroupMatch> groupMatches) {
         if (liveApiAvailable && sessionToken == null) {
@@ -502,7 +502,7 @@ public class BetfairIntegrationService {
         }
 
         try {
-            // ── Build reverse lookup: sorted team-pair → match-id ─────────
+            // ── Build reverse lookup: sorted team-pair match-id ─────────
             Map<String, String> pairToMatchId = new LinkedHashMap<>();
             for (var entry : groupMatches.entrySet()) {
                 GroupMatch match = entry.getValue();
@@ -545,7 +545,7 @@ public class BetfairIntegrationService {
             if (markets.isEmpty())
                 return;
 
-            // selectionId → RunnerMeta per market
+            // selectionId RunnerMeta per market
             Map<String, Map<Long, RunnerMeta>> marketSelections = new LinkedHashMap<>();
             Map<String, GroupMatch> marketToMatch = new LinkedHashMap<>();
             List<String> matchedMarketIds = new ArrayList<>();
@@ -807,7 +807,7 @@ public class BetfairIntegrationService {
      * <li>Maps Betfair runner names to internal FIFA team codes</li>
      * <li>Retrieves best Back prices via {@code listMarketBook} (batched, max
      * 40)</li>
-     * <li>Converts decimal odds → implied probabilities, normalises to sum =
+     * <li>Converts decimal odds implied probabilities, normalises to sum =
      * 1.0</li>
      * <li>Rolls a random double to pick the outcome (Team A win / Draw / Team B
      * win)</li>
@@ -818,9 +818,9 @@ public class BetfairIntegrationService {
      * <b>Fallback:</b> If no odds are available for a match (or the market
      * book is empty), the three outcomes default to an equal 33.3 % probability.
      *
-     * @param groupMatches the full map of match-id → {@link GroupMatch} from
+     * @param groupMatches the full map of match-id {@link GroupMatch} from
      *                     {@link dev.scaffoldkit.fifa.service.GroupStageService}
-     * @return a map of match-id → {@code int[2]} where {@code [0]} is team 1's
+     * @return a map of match-id {@code int[2]} where {@code [0]} is team 1's
      *         score and {@code [1]} is team 2's score
      */
     public Map<String, int[]> simulateGroupStageOdds(Map<String, GroupMatch> groupMatches) {
@@ -833,7 +833,7 @@ public class BetfairIntegrationService {
         }
 
         try {
-            // ── Build reverse lookup: sorted team-pair → match-id ─────────
+            // ── Build reverse lookup: sorted team-pair match-id ─────────
             Map<String, String> pairToMatchId = new LinkedHashMap<>();
             for (var entry : groupMatches.entrySet()) {
                 GroupMatch match = entry.getValue();
@@ -886,14 +886,14 @@ public class BetfairIntegrationService {
             }
 
             if (markets.isEmpty()) {
-                log.warn("No market catalogue found – using fallback for all matches");
+                log.warn("No market catalogue found - using fallback for all matches");
                 groupMatches.forEach((id, m) -> results.put(id, simulateWithFallback(random)));
                 return results;
             }
             log.info(" simulateGroupStageOdds: received {} market(s) from Betfair (fallback={})", markets.size(),
                     usingFallback);
 
-            // selectionId → RunnerMeta (FIFA code + sortPriority), per market
+            // selectionId RunnerMeta (FIFA code + sortPriority), per market
             // sortPriority 1 = Home, 2 = Away, 3 = Draw — per Betfair API spec
             Map<String, Map<Long, RunnerMeta>> marketSelections = new LinkedHashMap<>();
             Map<String, String> marketToMatchId = new LinkedHashMap<>();
@@ -940,7 +940,7 @@ public class BetfairIntegrationService {
                         marketToMatch.put(marketId, groupMatch);
                         matchedMarketIds.add(marketId);
 
-                        log.debug("  Market {} → match {} | Betfair Home={} Away={} | " +
+                        log.debug("  Market {} match {} | Betfair Home={} Away={} | " +
                                 "GroupMatch team1={} team2={}",
                                 marketId, matchId, homeCode, awayCode,
                                 groupMatch.getTeam1Code(), groupMatch.getTeam2Code());
@@ -985,11 +985,11 @@ public class BetfairIntegrationService {
                 }
             }
 
-            log.info(" simulateGroupStageOdds: done – {} from odds, {} from fallback",
+            log.info(" simulateGroupStageOdds: done - {} from odds, {} from fallback",
                     oddsBased, groupMatches.size() - oddsBased);
 
         } catch (Exception e) {
-            log.error("Error during Betfair group stage simulation – filling gaps with fallback", e);
+            log.error("Error during Betfair group stage simulation - filling gaps with fallback", e);
             appEvents.emitError("Betfair",
                     "Error during odds simulation: " + shortenMessage(e.getMessage()) +
                             ". Unresolved matches use equal probability.");
@@ -1043,7 +1043,7 @@ public class BetfairIntegrationService {
 
         // Map Betfair Home/Away to the GroupMatch's team1/team2 order.
         // Betfair's sortPriority 1 (Home) corresponds to the first team listed
-        // in the event name (e.g. "Mexico v South Africa" → Mexico is Home).
+        // in the event name (e.g. "Mexico v South Africa" Mexico is Home).
         // We match markets to group matches by sorted team-pair (order-independent),
         // so we must now align odds with the group match's team1/team2 slots.
         Double team1Odds;
@@ -1078,7 +1078,7 @@ public class BetfairIntegrationService {
         int[] score = simulateMatch(random, team1Odds, drawOdds, team2Odds);
         results.put(matchId, score);
 
-        log.debug("  {} ({} vs {}): odds T1={} D={} T2={} → {}-{}",
+        log.debug("  {} ({} vs {}): odds T1={} D={} T2={} -> {}-{}",
                 matchId, match.getTeam1Code(), match.getTeam2Code(),
                 team1Odds, drawOdds, team2Odds, score[0], score[1]);
     }
@@ -1096,7 +1096,7 @@ public class BetfairIntegrationService {
             // Fallback: equal coin-flip
             p1 = pDraw = p2 = 1.0 / 3.0;
         } else {
-            // Convert decimal odds → implied probability, then normalise
+            // Convert decimal odds implied probability, then normalise
             p1 = 1.0 / team1Odds;
             pDraw = 1.0 / drawOdds;
             p2 = 1.0 / team2Odds;

@@ -77,7 +77,7 @@ class BetfairConnectionTest {
                 .isNotNull()
                 .contains("loginStatus");
 
-        log.info("✓ Betfair connection OK – HTTP {} – body: {}", response.getStatusCode(), response.getBody());
+        log.info("Betfair connection OK - HTTP {} - body: {}", response.getStatusCode(), response.getBody());
     }
 
     @Test
@@ -88,11 +88,11 @@ class BetfairConnectionTest {
 
         assertThat(sessionToken)
                 .as("Betfair login should return a session token. " +
-                        "If null, check logs – common causes: wrong credentials, " +
+                        "If null, check logs - common causes: wrong credentials, " +
                         "ACCOUNT_PENDING_PASSWORD_CHANGE, expired certificate")
                 .isNotNull();
 
-        log.info("✓ Betfair authentication OK – session token acquired");
+        log.info("Betfair authentication OK - session token acquired");
     }
 
     @Test
@@ -113,7 +113,7 @@ class BetfairConnectionTest {
                 .as("First market should have a marketId")
                 .isNotBlank();
 
-        log.info("✓ Market catalogue fetched successfully – {} markets", catalogue.size());
+        log.info("Market catalogue fetched successfully - {} markets", catalogue.size());
     }
 
     @Test
@@ -127,6 +127,6 @@ class BetfairConnectionTest {
         assertThat(properties.apiKey()).isNotBlank();
         assertThat(properties.username()).isNotBlank();
 
-        log.info("✓ SSL configuration loaded – mTLS RestTemplates created successfully");
+        log.info("SSL configuration loaded - mTLS RestTemplates created successfully");
     }
 }
