@@ -9,3 +9,7 @@ We're developing on a Windows machine inside VSCode so the terminal will be a Po
 ```
 
 and not "gradlew.bat"
+
+## No special characters
+
+Do not use unicode characters to write comments or log output. They can be used as UI elements.

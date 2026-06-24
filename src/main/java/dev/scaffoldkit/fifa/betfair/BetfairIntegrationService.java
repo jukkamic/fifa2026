@@ -784,17 +784,17 @@ public class BetfairIntegrationService {
 
     /** Realistic score-lines for a Team A (home) win. */
     private static final int[][] TEAM_A_WIN_SCORES = {
-            { 1, 0 }, { 2, 0 }, { 2, 1 }, { 3, 0 }, { 3, 1 }, { 1, 0 }, { 2, 1 }, { 1, 0 }
+            { 1, 0 }, { 2, 0 }, { 2, 1 }, { 3, 0 }, { 3, 1 }, { 1, 0 }, { 2, 1 }, { 1, 0 }, {3, 2}, {4, 1}, {4, 2}, {5, 1}, {5, 2}
     };
 
     /** Realistic score-lines for a draw. */
     private static final int[][] DRAW_SCORES = {
-            { 0, 0 }, { 1, 1 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, { 1, 1 }
+            { 0, 0 }, { 1, 1 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, { 1, 1 }, {3, 3}, {4, 4}
     };
 
     /** Realistic score-lines for a Team B (away) win. */
     private static final int[][] TEAM_B_WIN_SCORES = {
-            { 0, 1 }, { 0, 2 }, { 1, 2 }, { 0, 3 }, { 1, 3 }, { 0, 1 }, { 1, 2 }, { 0, 1 }
+            { 0, 1 }, { 0, 2 }, { 1, 2 }, { 0, 3 }, { 1, 3 }, { 0, 1 }, { 1, 2 }, { 0, 1 }, {2, 3}, {1, 4}, {2, 4}, {1, 5}, {2, 5}
     };
 
     /**

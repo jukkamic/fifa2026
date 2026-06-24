@@ -23,13 +23,13 @@ public class GroupStageService {
     /** All 48 teams keyed by FIFA code. */
     private final Map<String, Team> teams = new LinkedHashMap<>();
 
-    /** Teams in each group: groupLetter → ordered list of 4 team codes. */
+    /** Teams in each group: groupLetter -> ordered list of 4 team codes. */
     private final Map<String, List<String>> groups = new LinkedHashMap<>();
 
     /** All group matches keyed by match ID (e.g. "A1", "A2", … "L6"). */
     private final Map<String, GroupMatch> groupMatches = new LinkedHashMap<>();
 
-    /** Standings per group: groupLetter → teamCode → standing. */
+    /** Standings per group: groupLetter -> teamCode -> standing. */
     private final Map<String, Map<String, GroupStanding>> standings = new LinkedHashMap<>();
 
     @PostConstruct
@@ -305,7 +305,7 @@ public class GroupStageService {
     }
 
     /**
-     * Returns all 12 group winners as a map: group → winner team code.
+     * Returns all 12 group winners as a map: group -> winner team code.
      */
     public Map<String, String> getAllGroupWinners() {
         Map<String, String> result = new LinkedHashMap<>();
@@ -316,7 +316,7 @@ public class GroupStageService {
     }
 
     /**
-     * Returns all 12 group runners-up as a map: group → runner-up team code.
+     * Returns all 12 group runners-up as a map: group -> runner-up team code.
      */
     public Map<String, String> getAllRunnersUp() {
         Map<String, String> result = new LinkedHashMap<>();
@@ -327,7 +327,7 @@ public class GroupStageService {
     }
 
     /**
-     * Returns all 12 third-place teams as a map: group → 3rd-place team code.
+     * Returns all 12 third-place teams as a map: group -> 3rd-place team code.
      */
     public Map<String, String> getAllThirdPlaces() {
         Map<String, String> result = new LinkedHashMap<>();

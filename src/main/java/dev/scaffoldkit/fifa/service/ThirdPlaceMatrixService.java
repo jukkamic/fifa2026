@@ -1,167 +1,101 @@
 package dev.scaffoldkit.fifa.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
- * Implements the official FIFA 2026 Annex C third-place advancement matrix.
+ * Implements the official 2026 FIFA World Cup third-place advancement rules
+ * for the Round of 32 bracket.
  *
- * From 12 groups (A-L), 8 third-place teams advance. The 4 groups whose
- * third-place teams do NOT advance form a 4-letter key (sorted alphabetically).
- * This key determines which group WINNERS face which third-place teams
- * in the Round of 32.
+ * <p>From 12 groups (A–L), 8 third-place teams advance. The 8 groups whose
+ * third-place teams advance form an 8-letter key (sorted alphabetically).
+ * This key selects a precomputed opponent mapping from the official Annex C
+ * table, which is loaded once at startup from {@code annex_c.json} and held
+ * in an in-memory cache for O(1) lookups.
  *
- * Uses a deterministic algorithm that produces valid pairings by assigning
- * the 8 advancing third-place groups to the 8 bracket positions with the
- * constraint that no group winner faces a third-place team from its own group.
+ * <p>Each entry in the table maps a third-place GROUP to the group winner it
+ * faces in the Round of 32 (e.g. {@code "E" -> "A"} means the third-place team
+ * from group E plays the winner of group A).
  */
 @Service
 public class ThirdPlaceMatrixService {
 
-    private static final String[] ALL_GROUPS = {
-            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"
-    };
+    private static final Logger log = LoggerFactory.getLogger(ThirdPlaceMatrixService.class);
+
+    private final ObjectMapper objectMapper;
+    private final Resource annexCResource;
 
     /**
-     * The 8 group winners who face third-place teams in the R32 bracket.
-     * Order matches the bracket template in BracketService:
-     *   Left:  W_A, W_C, W_E, W_G
-     *   Right: W_I, W_K, W_F, W_H
+     * In-memory cache of the Annex C matrix: key = the 8 advancing
+     * third-place group letters sorted alphabetically (e.g. "EFGHIJKL"),
+     * value = mapping of third-place group -> winner group.
      */
-    private static final String[] THIRD_FACING_WINNERS = {
-            "A", "C", "E", "G", "I", "K", "F", "H"
-    };
+    private final Map<String, Map<String, String>> matrixCache = new HashMap<>();
+
+    public ThirdPlaceMatrixService(ObjectMapper objectMapper,
+                                   @Value("classpath:annex_c.json") Resource annexCResource) {
+        this.objectMapper = objectMapper;
+        this.annexCResource = annexCResource;
+    }
 
     /**
-     * Result of the 3rd-place matrix lookup.
+     * Loads the Annex C matrix from the classpath JSON file at startup.
      */
-    public record ThirdPlaceSlot(
-            String winnerGroup,
-            String thirdPlaceGroup
-    ) {}
+    @PostConstruct
+    public void init() {
+        try (InputStream is = annexCResource.getInputStream()) {
+            String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            Map<String, Map<String, String>> loaded = objectMapper.readValue(
+                    json, new TypeReference<Map<String, Map<String, String>>>() {});
+            matrixCache.putAll(loaded);
+            log.info("Loaded Annex C third-place matrix: {} combinations", matrixCache.size());
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to load Annex C matrix from annex_c.json", e);
+        }
+    }
 
     /**
-     * Complete result of the matrix lookup: all 8 third-place advancement slots.
-     */
-    public record MatrixResult(
-            List<ThirdPlaceSlot> slots,
-            List<String> eliminatedGroups
-    ) {}
-
-    /**
-     * Looks up the third-place advancement assignments based on which 4 groups
-     * are eliminated (their 3rd-place teams don't advance).
+     * Looks up the third-place opponent mapping for the 8 advancing
+     * third-place teams.
      *
-     * Uses a deterministic algorithm:
-     * 1. Identify the 8 advancing groups (those not eliminated)
-     * 2. Map them to bracket positions using a rotation that avoids
-     *    same-group matchups (winner cannot face own group's 3rd-place team)
+     * <p>The group letters of the 8 advancing third-place teams are sorted
+     * strictly alphabetically and concatenated into a single 8-character key
+     * (e.g. "EFGHIJKL"), which is then used for an O(1) lookup against the
+     * cached Annex C matrix.
      *
-     * @param eliminatedGroups sorted list of exactly 4 group letters
-     * @return MatrixResult with 8 slots mapping winners to 3rd-place opponents
+     * @param advancingThirdPlaceGroups the 8 groups whose third-place teams
+     *                                  advance to the Round of 32
+     * @return mapping of third-place group -> winner group, as defined by
+     *         Annex C for this combination of advancing groups
      */
-    public MatrixResult lookup(List<String> eliminatedGroups) {
-        if (eliminatedGroups.size() != 4) {
+    public Map<String, String> solve(Collection<String> advancingThirdPlaceGroups) {
+        if (advancingThirdPlaceGroups == null || advancingThirdPlaceGroups.size() != 8) {
             throw new IllegalArgumentException(
-                    "Exactly 4 groups must be eliminated, got: " + eliminatedGroups.size());
+                    "Exactly 8 advancing third-place groups are required, got: "
+                            + (advancingThirdPlaceGroups == null ? "null" : advancingThirdPlaceGroups.size()));
         }
 
-        List<String> sorted = new ArrayList<>(eliminatedGroups);
+        List<String> sorted = new ArrayList<>(advancingThirdPlaceGroups);
         Collections.sort(sorted);
+        String key = String.join("", sorted);
 
-        Set<String> eliminatedSet = new HashSet<>(sorted);
-
-        // The 8 groups whose third-place teams advance (in alphabetical order)
-        List<String> advancing = new ArrayList<>();
-        for (String g : ALL_GROUPS) {
-            if (!eliminatedSet.contains(g)) {
-                advancing.add(g);
-            }
+        Map<String, String> mapping = matrixCache.get(key);
+        if (mapping == null) {
+            throw new IllegalStateException(
+                    "No Annex C entry found for third-place key: " + key);
         }
 
-        // Assign third-place groups to winner positions
-        // using a derangement-based approach
-        List<String> assignment = assignThirdPlaces(advancing);
-
-        List<ThirdPlaceSlot> result = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            result.add(new ThirdPlaceSlot(THIRD_FACING_WINNERS[i], assignment.get(i)));
-        }
-
-        return new MatrixResult(result, sorted);
-    }
-
-    /**
-     * Assigns 8 advancing third-place groups to the 8 winner bracket positions.
-     * Ensures no winner faces its own group's third-place team.
-     *
-     * Uses a rotation-based derangement: tries offset 1..7 until a valid
-     * assignment is found (no position maps to itself).
-     */
-    private List<String> assignThirdPlaces(List<String> advancing) {
-        // Build index mapping: for each winner position, find its index in the advancing list
-        // Then try rotation offsets until no conflict
-        int n = 8;
-
-        // Map each winner to its position in the advancing list (if present)
-        int[] winnerAdvIdx = new int[n];
-        for (int i = 0; i < n; i++) {
-            winnerAdvIdx[i] = advancing.indexOf(THIRD_FACING_WINNERS[i]);
-        }
-
-        // Try rotation offsets 1 through 7
-        for (int offset = 1; offset < n; offset++) {
-            String[] assignment = new String[n];
-            boolean valid = true;
-
-            for (int i = 0; i < n; i++) {
-                int srcIdx = (i + offset) % n;
-                String thirdGroup = advancing.get(srcIdx);
-
-                // Check constraint: winner cannot face own group's 3rd
-                if (THIRD_FACING_WINNERS[i].equals(thirdGroup)) {
-                    valid = false;
-                    break;
-                }
-                assignment[i] = thirdGroup;
-            }
-
-            if (valid) {
-                return Arrays.asList(assignment);
-            }
-        }
-
-        // Fallback: if no rotation works (shouldn't happen with 8 groups),
-        // use a greedy assignment
-        return greedyAssignment(advancing);
-    }
-
-    /**
-     * Greedy fallback: assign third-place groups one by one,
-     * picking the first available group that doesn't conflict.
-     */
-    private List<String> greedyAssignment(List<String> advancing) {
-        String[] assignment = new String[8];
-        Set<String> used = new HashSet<>();
-
-        for (int i = 0; i < 8; i++) {
-            for (String g : advancing) {
-                if (!used.contains(g) && !THIRD_FACING_WINNERS[i].equals(g)) {
-                    assignment[i] = g;
-                    used.add(g);
-                    break;
-                }
-            }
-        }
-
-        return Arrays.asList(assignment);
-    }
-
-    /**
-     * Returns the fixed list of winners who face third-place teams.
-     */
-    public List<String> getThirdFacingWinners() {
-        return Arrays.asList(THIRD_FACING_WINNERS);
+        return mapping;
     }
 }

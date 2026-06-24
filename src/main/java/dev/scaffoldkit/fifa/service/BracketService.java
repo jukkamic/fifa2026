@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 /**
- * Manages the 32-team knockout bracket (R32 → R16 → QF → SF → Final).
+ * Manages the 32-team knockout bracket (R32 -> R16 -> QF -> SF -> Final).
  *
  * The bracket is split into left and right halves:
- * - Left side:  16 teams → 8 R32 → 4 R16 → 2 QF → 1 SF
- * - Right side: 16 teams → 8 R32 → 4 R16 → 2 QF → 1 SF
+ * - Left side:  16 teams -> 8 R32 -> 4 R16 -> 2 QF -> 1 SF
+ * - Right side: 16 teams -> 8 R32 -> 4 R16 -> 2 QF -> 1 SF
  * - Center: Final (winner of left SF vs winner of right SF)
  *
  * 32 advancing teams: 12 group winners + 12 runners-up + 8 best third-place teams.
@@ -46,7 +46,7 @@ public class BracketService {
         buildBracket();
     }
 
-    // ── Bracket Construction ─────────────────────────────────────────────
+    // == Bracket Construction ==============================================
 
     private void buildBracket() {
         matches.clear();
@@ -95,24 +95,24 @@ public class BracketService {
         matches.get(sfId).setNextSlot(slot);
     }
 
-    // ── Seed the Bracket ────────────────────────────────────────────────
+    // == Seed the Bracket ==================================================
 
     /**
      * Populates all R32 matches from current group standings.
      *
-     * Bracket template (avoids same-group rematches in early rounds):
+     * Official 2026 FIFA World Cup Round of 32 bracket (Matches 73-88):
      *
      * LEFT SIDE:
-     *   M0: W_A  vs 3rd_X    M4: W_E  vs 3rd_Z
-     *   M1: W_C  vs 3rd_Y    M5: W_G  vs 3rd_W
-     *   M2: W_B  vs 2nd_D    M6: 2nd_B vs 2nd_H
-     *   M3: W_D  vs 2nd_A    M7: 2nd_F vs 2nd_J
+     *   M73: 2nd_A vs 2nd_B            M77: W_I  vs 3rd(C/D/F/G/H)
+     *   M74: W_E   vs 3rd(A/B/C/D/F)   M78: 2nd_E vs 2nd_I
+     *   M75: W_F   vs 2nd_C            M79: W_A  vs 3rd(C/E/F/H/I)
+     *   M76: W_C   vs 2nd_F            M80: W_L  vs 3rd(E/H/I/J/K)
      *
      * RIGHT SIDE:
-     *   M8:  W_I  vs 3rd_P   M12: W_F  vs 3rd_S
-     *   M9:  W_K  vs 3rd_Q   M13: W_H  vs 3rd_T
-     *   M10: W_J  vs 2nd_G   M14: 2nd_E vs 2nd_C
-     *   M11: W_L  vs 2nd_I   M15: 2nd_K vs 2nd_L
+     *   M81: W_D   vs 3rd(B/E/F/I/J)   M85: W_B  vs 3rd(E/F/G/I/J)
+     *   M82: W_G   vs 3rd(A/E/H/I/J)   M86: W_J  vs 2nd_H
+     *   M83: 2nd_K vs 2nd_L            M87: W_K  vs 3rd(D/E/I/J/L)
+     *   M84: W_H   vs 2nd_J            M88: 2nd_D vs 2nd_G
      */
     public void seedBracket() {
         // Clear everything
@@ -127,27 +127,15 @@ public class BracketService {
         Map<String, String> runnersUp = groupStageService.getAllRunnersUp();
         List<String> bestThirdGroups = groupStageService.getBestThirdPlaceGroups();
 
-        // Determine the 4 eliminated groups
-        List<String> allGroups = List.of("A","B","C","D","E","F","G","H","I","J","K","L");
-        List<String> eliminatedGroups = new ArrayList<>();
-        for (String g : allGroups) {
-            if (!bestThirdGroups.contains(g)) {
-                eliminatedGroups.add(g);
-            }
-        }
-
-        // Look up the 3rd-place matrix: maps thirdPlaceGroup → winnerGroup
-        Map<String, String> thirdToWinner = new LinkedHashMap<>();
-        if (eliminatedGroups.size() == 4) {
-            var result = thirdPlaceMatrixService.lookup(eliminatedGroups);
-            for (var slot : result.slots()) {
-                thirdToWinner.put(slot.thirdPlaceGroup(), slot.winnerGroup());
-            }
-        }
-        // Reverse: winnerGroup → thirdPlaceGroup (for easy lookup)
+        // annex_c.json maps third-place group -> winner group. Invert it here to
+        // get winner group -> third-place group, so each group winner's opponent
+        // can be resolved by a direct key lookup.
         Map<String, String> winnerToThird = new LinkedHashMap<>();
-        for (var entry : thirdToWinner.entrySet()) {
-            winnerToThird.put(entry.getValue(), entry.getKey());
+        if (bestThirdGroups.size() == 8) {
+            Map<String, String> thirdToWinner = thirdPlaceMatrixService.solve(bestThirdGroups);
+            for (Map.Entry<String, String> entry : thirdToWinner.entrySet()) {
+                winnerToThird.put(entry.getValue(), entry.getKey());
+            }
         }
 
         // Resolve 3rd-place team code for a given group
@@ -156,41 +144,41 @@ public class BracketService {
                 groupStageService.getGroupThirdPlace(group);
 
         // Use list indices instead of hardcoded IDs (lists are populated by buildBracket)
-        // ── LEFT SIDE ─────────────────────────────────────────────
-        // L0: W_A vs 3rd(from matrix for A's bracket slot)
-        setMatch(leftR32.get(0), winners.get("A"), resolveThird("A", winnerToThird, thirdCode));
-        // L1: W_C vs 3rd(from matrix for C's bracket slot)
-        setMatch(leftR32.get(1), winners.get("C"), resolveThird("C", winnerToThird, thirdCode));
-        // L2: W_B vs 2nd_D
-        setMatch(leftR32.get(2), winners.get("B"), runnersUp.get("D"));
-        // L3: W_D vs 2nd_A
-        setMatch(leftR32.get(3), winners.get("D"), runnersUp.get("A"));
-        // L4: W_E vs 3rd(from matrix for E's bracket slot)
-        setMatch(leftR32.get(4), winners.get("E"), resolveThird("E", winnerToThird, thirdCode));
-        // L5: W_G vs 3rd(from matrix for G's bracket slot)
-        setMatch(leftR32.get(5), winners.get("G"), resolveThird("G", winnerToThird, thirdCode));
-        // L6: 2nd_B vs 2nd_H
-        setMatch(leftR32.get(6), runnersUp.get("B"), runnersUp.get("H"));
-        // L7: 2nd_F vs 2nd_J
-        setMatch(leftR32.get(7), runnersUp.get("F"), runnersUp.get("J"));
+        // -- LEFT SIDE (Matches 73-80) -------------------------------------
+        // L0 (M73): 2nd_A vs 2nd_B
+        setMatch(leftR32.get(0), runnersUp.get("A"), runnersUp.get("B"));
+        // L1 (M74): W_E vs 3rd(A/B/C/D/F)
+        setMatch(leftR32.get(1), winners.get("E"), resolveThird("E", winnerToThird, thirdCode));
+        // L2 (M75): W_F vs 2nd_C
+        setMatch(leftR32.get(2), winners.get("F"), runnersUp.get("C"));
+        // L3 (M76): W_C vs 2nd_F
+        setMatch(leftR32.get(3), winners.get("C"), runnersUp.get("F"));
+        // L4 (M77): W_I vs 3rd(C/D/F/G/H)
+        setMatch(leftR32.get(4), winners.get("I"), resolveThird("I", winnerToThird, thirdCode));
+        // L5 (M78): 2nd_E vs 2nd_I
+        setMatch(leftR32.get(5), runnersUp.get("E"), runnersUp.get("I"));
+        // L6 (M79): W_A vs 3rd(C/E/F/H/I)
+        setMatch(leftR32.get(6), winners.get("A"), resolveThird("A", winnerToThird, thirdCode));
+        // L7 (M80): W_L vs 3rd(E/H/I/J/K)
+        setMatch(leftR32.get(7), winners.get("L"), resolveThird("L", winnerToThird, thirdCode));
 
-        // ── RIGHT SIDE ────────────────────────────────────────────
-        // R0: W_I vs 3rd(from matrix for I's bracket slot)
-        setMatch(rightR32.get(0), winners.get("I"), resolveThird("I", winnerToThird, thirdCode));
-        // R1: W_K vs 3rd(from matrix for K's bracket slot)
-        setMatch(rightR32.get(1), winners.get("K"), resolveThird("K", winnerToThird, thirdCode));
-        // R2: W_J vs 2nd_G
-        setMatch(rightR32.get(2), winners.get("J"), runnersUp.get("G"));
-        // R3: W_L vs 2nd_I
-        setMatch(rightR32.get(3), winners.get("L"), runnersUp.get("I"));
-        // R4: W_F vs 3rd(from matrix for F's bracket slot)
-        setMatch(rightR32.get(4), winners.get("F"), resolveThird("F", winnerToThird, thirdCode));
-        // R5: W_H vs 3rd(from matrix for H's bracket slot)
-        setMatch(rightR32.get(5), winners.get("H"), resolveThird("H", winnerToThird, thirdCode));
-        // R6: 2nd_E vs 2nd_C
-        setMatch(rightR32.get(6), runnersUp.get("E"), runnersUp.get("C"));
-        // R7: 2nd_K vs 2nd_L
-        setMatch(rightR32.get(7), runnersUp.get("K"), runnersUp.get("L"));
+        // -- RIGHT SIDE (Matches 81-88) ------------------------------------
+        // R0 (M81): W_D vs 3rd(B/E/F/I/J)
+        setMatch(rightR32.get(0), winners.get("D"), resolveThird("D", winnerToThird, thirdCode));
+        // R1 (M82): W_G vs 3rd(A/E/H/I/J)
+        setMatch(rightR32.get(1), winners.get("G"), resolveThird("G", winnerToThird, thirdCode));
+        // R2 (M83): 2nd_K vs 2nd_L
+        setMatch(rightR32.get(2), runnersUp.get("K"), runnersUp.get("L"));
+        // R3 (M84): W_H vs 2nd_J
+        setMatch(rightR32.get(3), winners.get("H"), runnersUp.get("J"));
+        // R4 (M85): W_B vs 3rd(E/F/G/I/J)
+        setMatch(rightR32.get(4), winners.get("B"), resolveThird("B", winnerToThird, thirdCode));
+        // R5 (M86): W_J vs 2nd_H
+        setMatch(rightR32.get(5), winners.get("J"), runnersUp.get("H"));
+        // R6 (M87): W_K vs 3rd(D/E/I/J/L)
+        setMatch(rightR32.get(6), winners.get("K"), resolveThird("K", winnerToThird, thirdCode));
+        // R7 (M88): 2nd_D vs 2nd_G
+        setMatch(rightR32.get(7), runnersUp.get("D"), runnersUp.get("G"));
     }
 
     /**
@@ -214,7 +202,7 @@ public class BracketService {
         }
     }
 
-    // ── Score Management ────────────────────────────────────────────────
+    // == Score Management ==================================================
 
     /**
      * Sets a knockout match score and propagates the winner forward.
@@ -281,7 +269,7 @@ public class BracketService {
         }
     }
 
-    // ── Getters ──────────────────────────────────────────────────────────
+    // == Getters ===========================================================
 
     public Map<Integer, KnockoutMatch> getMatches() {
         return Collections.unmodifiableMap(matches);
