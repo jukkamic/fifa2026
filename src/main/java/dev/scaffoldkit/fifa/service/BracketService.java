@@ -100,19 +100,27 @@ public class BracketService {
     /**
      * Populates all R32 matches from current group standings.
      *
-     * Official 2026 FIFA World Cup Round of 32 bracket (Matches 73-88):
+     * <p>Matches are placed into the left/right R32 lists in topological order
+     * so that the standard adjacent binary-tree progression (indices 0 and 1
+     * feed R16[0], 2 and 3 feed R16[1], ...) routes teams to the Final
+     * without crossing the wrong paths.
      *
-     * LEFT SIDE:
-     *   M73: 2nd_A vs 2nd_B            M77: W_I  vs 3rd(C/D/F/G/H)
-     *   M74: W_E   vs 3rd(A/B/C/D/F)   M78: 2nd_E vs 2nd_I
-     *   M75: W_F   vs 2nd_C            M79: W_A  vs 3rd(C/E/F/H/I)
-     *   M76: W_C   vs 2nd_F            M80: W_L  vs 3rd(E/H/I/J/K)
+     * <p>Official 2026 FIFA World Cup Round of 32 bracket (Matches 73-88),
+     * shown here in the order they occupy the R32 lists:
      *
-     * RIGHT SIDE:
-     *   M81: W_D   vs 3rd(B/E/F/I/J)   M85: W_B  vs 3rd(E/F/G/I/J)
-     *   M82: W_G   vs 3rd(A/E/H/I/J)   M86: W_J  vs 2nd_H
-     *   M83: 2nd_K vs 2nd_L            M87: W_K  vs 3rd(D/E/I/J/L)
-     *   M84: W_H   vs 2nd_J            M88: 2nd_D vs 2nd_G
+     * <pre>
+     * LEFT SIDE (list indices 0-7):
+     *   idx0 (M74): W_E   vs 3rd(A/B/C/D/F)   idx4 (M83): 2nd_K vs 2nd_L
+     *   idx1 (M77): W_I   vs 3rd(C/D/F/G/H)   idx5 (M84): W_H   vs 2nd_J
+     *   idx2 (M73): 2nd_A vs 2nd_B            idx6 (M81): W_D   vs 3rd(B/E/F/I/J)
+     *   idx3 (M75): W_F   vs 2nd_C            idx7 (M82): W_G   vs 3rd(A/E/H/I/J)
+     *
+     * RIGHT SIDE (list indices 0-7):
+     *   idx0 (M76): W_C   vs 2nd_F            idx4 (M86): W_J   vs 2nd_H
+     *   idx1 (M78): 2nd_E vs 2nd_I            idx5 (M88): 2nd_D vs 2nd_G
+     *   idx2 (M79): W_A   vs 3rd(C/E/F/H/I)   idx6 (M85): W_B   vs 3rd(E/F/G/I/J)
+     *   idx3 (M80): W_L   vs 3rd(E/H/I/J/K)   idx7 (M87): W_K   vs 3rd(D/E/I/J/L)
+     * </pre>
      */
     public void seedBracket() {
         // Clear everything
@@ -143,42 +151,45 @@ public class BracketService {
         java.util.function.Function<String, String> thirdCode = group ->
                 groupStageService.getGroupThirdPlace(group);
 
-        // Use list indices instead of hardcoded IDs (lists are populated by buildBracket)
-        // -- LEFT SIDE (Matches 73-80) -------------------------------------
-        // L0 (M73): 2nd_A vs 2nd_B
-        setMatch(leftR32.get(0), runnersUp.get("A"), runnersUp.get("B"));
-        // L1 (M74): W_E vs 3rd(A/B/C/D/F)
-        setMatch(leftR32.get(1), winners.get("E"), resolveThird("E", winnerToThird, thirdCode));
-        // L2 (M75): W_F vs 2nd_C
-        setMatch(leftR32.get(2), winners.get("F"), runnersUp.get("C"));
-        // L3 (M76): W_C vs 2nd_F
-        setMatch(leftR32.get(3), winners.get("C"), runnersUp.get("F"));
-        // L4 (M77): W_I vs 3rd(C/D/F/G/H)
-        setMatch(leftR32.get(4), winners.get("I"), resolveThird("I", winnerToThird, thirdCode));
-        // L5 (M78): 2nd_E vs 2nd_I
-        setMatch(leftR32.get(5), runnersUp.get("E"), runnersUp.get("I"));
-        // L6 (M79): W_A vs 3rd(C/E/F/H/I)
-        setMatch(leftR32.get(6), winners.get("A"), resolveThird("A", winnerToThird, thirdCode));
-        // L7 (M80): W_L vs 3rd(E/H/I/J/K)
-        setMatch(leftR32.get(7), winners.get("L"), resolveThird("L", winnerToThird, thirdCode));
+        // Use list indices instead of hardcoded IDs (lists are populated by buildBracket).
+        // Matches are placed in topological order so the standard adjacent
+        // binary-tree progression (0&1, 2&3, ...) routes teams to the Final
+        // correctly without crossing the wrong paths.
+        // -- LEFT SIDE (indices 0-7) ---------------------------------------
+        // L0 (M74): W_E vs 3rd(A/B/C/D/F)
+        setMatch(leftR32.get(0), winners.get("E"), resolveThird("E", winnerToThird, thirdCode));
+        // L1 (M77): W_I vs 3rd(C/D/F/G/H)
+        setMatch(leftR32.get(1), winners.get("I"), resolveThird("I", winnerToThird, thirdCode));
+        // L2 (M73): 2nd_A vs 2nd_B
+        setMatch(leftR32.get(2), runnersUp.get("A"), runnersUp.get("B"));
+        // L3 (M75): W_F vs 2nd_C
+        setMatch(leftR32.get(3), winners.get("F"), runnersUp.get("C"));
+        // L4 (M83): 2nd_K vs 2nd_L
+        setMatch(leftR32.get(4), runnersUp.get("K"), runnersUp.get("L"));
+        // L5 (M84): W_H vs 2nd_J
+        setMatch(leftR32.get(5), winners.get("H"), runnersUp.get("J"));
+        // L6 (M81): W_D vs 3rd(B/E/F/I/J)
+        setMatch(leftR32.get(6), winners.get("D"), resolveThird("D", winnerToThird, thirdCode));
+        // L7 (M82): W_G vs 3rd(A/E/H/I/J)
+        setMatch(leftR32.get(7), winners.get("G"), resolveThird("G", winnerToThird, thirdCode));
 
-        // -- RIGHT SIDE (Matches 81-88) ------------------------------------
-        // R0 (M81): W_D vs 3rd(B/E/F/I/J)
-        setMatch(rightR32.get(0), winners.get("D"), resolveThird("D", winnerToThird, thirdCode));
-        // R1 (M82): W_G vs 3rd(A/E/H/I/J)
-        setMatch(rightR32.get(1), winners.get("G"), resolveThird("G", winnerToThird, thirdCode));
-        // R2 (M83): 2nd_K vs 2nd_L
-        setMatch(rightR32.get(2), runnersUp.get("K"), runnersUp.get("L"));
-        // R3 (M84): W_H vs 2nd_J
-        setMatch(rightR32.get(3), winners.get("H"), runnersUp.get("J"));
-        // R4 (M85): W_B vs 3rd(E/F/G/I/J)
-        setMatch(rightR32.get(4), winners.get("B"), resolveThird("B", winnerToThird, thirdCode));
-        // R5 (M86): W_J vs 2nd_H
-        setMatch(rightR32.get(5), winners.get("J"), runnersUp.get("H"));
-        // R6 (M87): W_K vs 3rd(D/E/I/J/L)
-        setMatch(rightR32.get(6), winners.get("K"), resolveThird("K", winnerToThird, thirdCode));
-        // R7 (M88): 2nd_D vs 2nd_G
-        setMatch(rightR32.get(7), runnersUp.get("D"), runnersUp.get("G"));
+        // -- RIGHT SIDE (indices 8-15) -------------------------------------
+        // R0/idx8  (M76): W_C vs 2nd_F
+        setMatch(rightR32.get(0), winners.get("C"), runnersUp.get("F"));
+        // R1/idx9  (M78): 2nd_E vs 2nd_I
+        setMatch(rightR32.get(1), runnersUp.get("E"), runnersUp.get("I"));
+        // R2/idx10 (M79): W_A vs 3rd(C/E/F/H/I)
+        setMatch(rightR32.get(2), winners.get("A"), resolveThird("A", winnerToThird, thirdCode));
+        // R3/idx11 (M80): W_L vs 3rd(E/H/I/J/K)
+        setMatch(rightR32.get(3), winners.get("L"), resolveThird("L", winnerToThird, thirdCode));
+        // R4/idx12 (M86): W_J vs 2nd_H
+        setMatch(rightR32.get(4), winners.get("J"), runnersUp.get("H"));
+        // R5/idx13 (M88): 2nd_D vs 2nd_G
+        setMatch(rightR32.get(5), runnersUp.get("D"), runnersUp.get("G"));
+        // R6/idx14 (M85): W_B vs 3rd(E/F/G/I/J)
+        setMatch(rightR32.get(6), winners.get("B"), resolveThird("B", winnerToThird, thirdCode));
+        // R7/idx15 (M87): W_K vs 3rd(D/E/I/J/L)
+        setMatch(rightR32.get(7), winners.get("K"), resolveThird("K", winnerToThird, thirdCode));
     }
 
     /**

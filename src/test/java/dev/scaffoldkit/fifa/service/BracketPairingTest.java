@@ -70,65 +70,65 @@ class BracketPairingTest {
         // --- Seed the bracket from group results ---
         bracketService.seedBracket();
 
-        // ===== LEFT SIDE (M73-M80) =====
+        // ===== LEFT SIDE (indices 0-7, topological order) =====
 
-        // M73: 2nd_A vs 2nd_B
-        assertR32("left", 0, runnersUp.get("A"), runnersUp.get("B"), "M73: 2nd_A vs 2nd_B");
-
-        // M74: W_E vs 3rd (winner E's third-place opponent per Annex C)
-        assertR32("left", 1, winners.get("E"),
+        // idx0 (M74): W_E vs 3rd (winner E's third-place opponent per Annex C)
+        assertR32("left", 0, winners.get("E"),
                 thirdPlaces.get(winnerToThird.get("E")), "M74: W_E vs 3rd");
 
-        // M75: W_F vs 2nd_C
-        assertR32("left", 2, winners.get("F"), runnersUp.get("C"), "M75: W_F vs 2nd_C");
-
-        // M76: W_C vs 2nd_F
-        assertR32("left", 3, winners.get("C"), runnersUp.get("F"), "M76: W_C vs 2nd_F");
-
-        // M77: W_I vs 3rd
-        assertR32("left", 4, winners.get("I"),
+        // idx1 (M77): W_I vs 3rd
+        assertR32("left", 1, winners.get("I"),
                 thirdPlaces.get(winnerToThird.get("I")), "M77: W_I vs 3rd");
 
-        // M78: 2nd_E vs 2nd_I
-        assertR32("left", 5, runnersUp.get("E"), runnersUp.get("I"), "M78: 2nd_E vs 2nd_I");
+        // idx2 (M73): 2nd_A vs 2nd_B
+        assertR32("left", 2, runnersUp.get("A"), runnersUp.get("B"), "M73: 2nd_A vs 2nd_B");
 
-        // M79: W_A vs 3rd
-        assertR32("left", 6, winners.get("A"),
-                thirdPlaces.get(winnerToThird.get("A")), "M79: W_A vs 3rd");
+        // idx3 (M75): W_F vs 2nd_C
+        assertR32("left", 3, winners.get("F"), runnersUp.get("C"), "M75: W_F vs 2nd_C");
 
-        // M80: W_L vs 3rd
-        assertR32("left", 7, winners.get("L"),
-                thirdPlaces.get(winnerToThird.get("L")), "M80: W_L vs 3rd");
+        // idx4 (M83): 2nd_K vs 2nd_L
+        assertR32("left", 4, runnersUp.get("K"), runnersUp.get("L"), "M83: 2nd_K vs 2nd_L");
 
-        // ===== RIGHT SIDE (M81-M88) =====
+        // idx5 (M84): W_H vs 2nd_J
+        assertR32("left", 5, winners.get("H"), runnersUp.get("J"), "M84: W_H vs 2nd_J");
 
-        // M81: W_D vs 3rd
-        assertR32("right", 0, winners.get("D"),
+        // idx6 (M81): W_D vs 3rd
+        assertR32("left", 6, winners.get("D"),
                 thirdPlaces.get(winnerToThird.get("D")), "M81: W_D vs 3rd");
 
-        // M82: W_G vs 3rd
-        assertR32("right", 1, winners.get("G"),
+        // idx7 (M82): W_G vs 3rd
+        assertR32("left", 7, winners.get("G"),
                 thirdPlaces.get(winnerToThird.get("G")), "M82: W_G vs 3rd");
 
-        // M83: 2nd_K vs 2nd_L
-        assertR32("right", 2, runnersUp.get("K"), runnersUp.get("L"), "M83: 2nd_K vs 2nd_L");
+        // ===== RIGHT SIDE (indices 8-15, topological order) =====
 
-        // M84: W_H vs 2nd_J
-        assertR32("right", 3, winners.get("H"), runnersUp.get("J"), "M84: W_H vs 2nd_J");
+        // idx8  (M76): W_C vs 2nd_F
+        assertR32("right", 0, winners.get("C"), runnersUp.get("F"), "M76: W_C vs 2nd_F");
 
-        // M85: W_B vs 3rd
-        assertR32("right", 4, winners.get("B"),
+        // idx9  (M78): 2nd_E vs 2nd_I
+        assertR32("right", 1, runnersUp.get("E"), runnersUp.get("I"), "M78: 2nd_E vs 2nd_I");
+
+        // idx10 (M79): W_A vs 3rd
+        assertR32("right", 2, winners.get("A"),
+                thirdPlaces.get(winnerToThird.get("A")), "M79: W_A vs 3rd");
+
+        // idx11 (M80): W_L vs 3rd
+        assertR32("right", 3, winners.get("L"),
+                thirdPlaces.get(winnerToThird.get("L")), "M80: W_L vs 3rd");
+
+        // idx12 (M86): W_J vs 2nd_H
+        assertR32("right", 4, winners.get("J"), runnersUp.get("H"), "M86: W_J vs 2nd_H");
+
+        // idx13 (M88): 2nd_D vs 2nd_G
+        assertR32("right", 5, runnersUp.get("D"), runnersUp.get("G"), "M88: 2nd_D vs 2nd_G");
+
+        // idx14 (M85): W_B vs 3rd
+        assertR32("right", 6, winners.get("B"),
                 thirdPlaces.get(winnerToThird.get("B")), "M85: W_B vs 3rd");
 
-        // M86: W_J vs 2nd_H
-        assertR32("right", 5, winners.get("J"), runnersUp.get("H"), "M86: W_J vs 2nd_H");
-
-        // M87: W_K vs 3rd
-        assertR32("right", 6, winners.get("K"),
+        // idx15 (M87): W_K vs 3rd
+        assertR32("right", 7, winners.get("K"),
                 thirdPlaces.get(winnerToThird.get("K")), "M87: W_K vs 3rd");
-
-        // M88: 2nd_D vs 2nd_G
-        assertR32("right", 7, runnersUp.get("D"), runnersUp.get("G"), "M88: 2nd_D vs 2nd_G");
     }
 
     // == Assertion Helper ==================================================
