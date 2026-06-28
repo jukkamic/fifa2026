@@ -6,7 +6,7 @@ See BETFAIR.md
 ## Standalone Betfair odds updater
 
 ### Build
-.\gradlew.bat standaloneJar
+.\gradlew.bat standaloneJar --no-daemon --no-configuration-cache
 
 ### Run a single snapshot
 java -jar build/libs/fifa-0.0.1-SNAPSHOT-standalone.jar

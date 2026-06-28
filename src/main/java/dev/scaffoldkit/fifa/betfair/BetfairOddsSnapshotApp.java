@@ -35,7 +35,9 @@ import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -67,10 +69,15 @@ import java.util.concurrent.TimeUnit;
  * <li>{@code --output <path>} - Output file path (default:
  * ./fallback-odds.json)</li>
  * <li>{@code --no-push} - Skip pushing to the production server</li>
+ * <li>{@code --env-file <path>} - Path to a .env file (default: ./.env)</li>
  * <li>{@code --help} - Show usage information</li>
  * </ul>
  *
- * <h3>Configuration (Environment Variables)</h3>
+ * <h3>Configuration</h3>
+ * <p>
+ * The app reads configuration from a {@code .env} file in the current working
+ * directory (or a custom path via {@code --env-file}), with real environment
+ * variables taking precedence. Supported keys:
  * <ul>
  * <li>{@code BETFAIR_CERT_PATH} - Path to directory containing the {@code ssl/}
  * certificate folder</li>
@@ -103,6 +110,13 @@ public class BetfairOddsSnapshotApp {
     private static final int DEFAULT_INTERVAL_MINUTES = 13;
     private static final int BATCH_SIZE = 40;
 
+    /**
+     * Lazily-populated merged view of configuration: values from the local
+     * {@code .env} file overlaid with real process environment variables
+     * (process env wins). Populated once by {@link #loadMergedEnv(String)}.
+     */
+    private static Map<String, String> mergedEnv;
+
     // ── Entry Point ────────────────────────────────────────────────────────
 
     public static void main(String[] args) {
@@ -128,13 +142,16 @@ public class BetfairOddsSnapshotApp {
         log.info("Mode: {}", config.loop ? "LOOP (interval=" + config.intervalMinutes + " min)" : "ONCE");
         log.info("Output: {}", config.outputPath);
 
+        // Load merged config: .env file first, then real env vars override
+        mergedEnv = loadMergedEnv(config.envFilePath);
+
         BetfairProperties props;
         try {
-            props = loadConfigFromEnv();
+            props = loadConfig();
         } catch (IllegalStateException e) {
             log.error("Configuration error: {}", e.getMessage());
             log.error("");
-            log.error("Required environment variables:");
+            log.error("Required configuration (set in .env or as environment variables):");
             log.error("  BETFAIR_CERT_PATH  - Path to directory containing ssl/ folder");
             log.error("  BETFAIR_API_KEY    - Betfair API key");
             log.error("  BETFAIR_USERNAME   - Betfair username");
@@ -146,10 +163,7 @@ public class BetfairOddsSnapshotApp {
             return;
         }
 
-        String cloudflareJwt = System.getenv("ADMIN_CLOUDFLARE_JWT");
-        if (cloudflareJwt == null) {
-            cloudflareJwt = "";
-        }
+        String cloudflareJwt = getConfig("ADMIN_CLOUDFLARE_JWT", "");
 
         RestTemplate authRestTemplate;
         RestTemplate apiRestTemplate;
@@ -422,28 +436,101 @@ public class BetfairOddsSnapshotApp {
         }
     }
 
-    // ── Configuration ──────────────────────────────────────────────────────
+    // ── Configuration (env vars + .env file) ───────────────────────────────
 
     /**
-     * Loads Betfair configuration from environment variables.
+     * Loads configuration from a {@code .env} file (in the current working
+     * directory unless overridden by {@code --env-file}), then overlays real
+     * process environment variables on top (process env wins).
      *
-     * @throws IllegalStateException if any required variable is missing
+     * <p>
+     * The {@code .env} file format is one {@code KEY=VALUE} per line. Blank
+     * lines and lines starting with {@code #} are ignored. Surrounding quotes
+     * ({@code "} or {@code '}) are stripped from values.
+     *
+     * @param envFilePath path to the .env file (default: {@code ./.env})
+     * @return a merged map of configuration values (never null)
      */
-    private static BetfairProperties loadConfigFromEnv() {
-        String certPath = System.getenv("BETFAIR_CERT_PATH");
-        String apiKey = System.getenv("BETFAIR_API_KEY");
-        String username = System.getenv("BETFAIR_USERNAME");
-        String password = System.getenv("BETFAIR_PASSWORD");
+    private static Map<String, String> loadMergedEnv(String envFilePath) {
+        // 1. Start with an empty map
+        Map<String, String> result = new LinkedHashMap<>();
+
+        // 2. Load .env file if it exists
+        Path dotenv = Path.of(envFilePath);
+        if (Files.exists(dotenv)) {
+            try {
+                List<String> lines = Files.readAllLines(dotenv, StandardCharsets.UTF_8);
+                for (String line : lines) {
+                    String trimmed = line.trim();
+                    // Skip blank lines and comments
+                    if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+                        continue;
+                    }
+                    // Must contain an = sign
+                    int eq = trimmed.indexOf('=');
+                    if (eq <= 0) {
+                        continue;
+                    }
+                    String key = trimmed.substring(0, eq).trim();
+                    String value = trimmed.substring(eq + 1).trim();
+                    // Strip surrounding quotes (either single or double)
+                    if (value.length() >= 2) {
+                        char first = value.charAt(0);
+                        char last = value.charAt(value.length() - 1);
+                        if ((first == '"' && last == '"') || (first == '\'' && last == '\'')) {
+                            value = value.substring(1, value.length() - 1);
+                        }
+                    }
+                    result.put(key, value);
+                }
+                log.info("Loaded configuration from {}", dotenv.toAbsolutePath());
+            } catch (IOException e) {
+                log.warn("Could not read .env file ({}): {}", dotenv.toAbsolutePath(),
+                        e.getMessage());
+            }
+        } else {
+            log.debug("No .env file found at {} - using environment variables only",
+                    dotenv.toAbsolutePath());
+        }
+
+        // 3. Overlay real process environment variables (these win)
+        System.getenv().forEach((k, v) -> result.put(k, v));
+
+        return result;
+    }
+
+    /**
+     * Reads a configuration value from the merged env (.env + process env),
+     * returning a default value if the key is absent or blank.
+     */
+    private static String getConfig(String key, String defaultValue) {
+        String value = mergedEnv.get(key);
+        if (value == null || value.isBlank()) {
+            return defaultValue;
+        }
+        return value;
+    }
+
+    /**
+     * Loads Betfair configuration from the merged environment (.env + process).
+     *
+     * @throws IllegalStateException if any required value is missing
+     */
+    private static BetfairProperties loadConfig() {
+        String certPath = getConfig("BETFAIR_CERT_PATH", "");
+        String apiKey = getConfig("BETFAIR_API_KEY", "");
+        String username = getConfig("BETFAIR_USERNAME", "");
+        String password = getConfig("BETFAIR_PASSWORD", "");
 
         List<String> missing = new ArrayList<>();
-        if (certPath == null || certPath.isBlank()) missing.add("BETFAIR_CERT_PATH");
-        if (apiKey == null || apiKey.isBlank()) missing.add("BETFAIR_API_KEY");
-        if (username == null || username.isBlank()) missing.add("BETFAIR_USERNAME");
-        if (password == null || password.isBlank()) missing.add("BETFAIR_PASSWORD");
+        if (certPath.isBlank()) missing.add("BETFAIR_CERT_PATH");
+        if (apiKey.isBlank()) missing.add("BETFAIR_API_KEY");
+        if (username.isBlank()) missing.add("BETFAIR_USERNAME");
+        if (password.isBlank()) missing.add("BETFAIR_PASSWORD");
 
         if (!missing.isEmpty()) {
             throw new IllegalStateException(
-                    "Missing required environment variables: " + String.join(", ", missing));
+                    "Missing required configuration: " + String.join(", ", missing));
         }
 
         return new BetfairProperties(apiKey, username, password, certPath);
@@ -478,6 +565,11 @@ public class BetfairOddsSnapshotApp {
                         config.outputPath = args[++i];
                     }
                 }
+                case "--env-file" -> {
+                    if (i + 1 < args.length) {
+                        config.envFilePath = args[++i];
+                    }
+                }
                 default -> {
                     if (args[i].startsWith("--")) {
                         log.warn("Unknown option: {}", args[i]);
@@ -504,10 +596,11 @@ public class BetfairOddsSnapshotApp {
                   --interval <min>      Interval between snapshots in loop mode (default: 13)
                   --initial-delay <min> Delay before first snapshot in loop mode (default: 0)
                   --output <path>       Output file path (default: ./fallback-odds.json)
+                  --env-file <path>     Path to a .env file (default: ./.env)
                   --no-push             Skip pushing to the production server
                   --help, -h            Show this help message
 
-                Environment Variables:
+                Configuration (set in ./.env or as environment variables):
                   BETFAIR_CERT_PATH     Path to directory containing ssl/ folder
                   BETFAIR_API_KEY       Betfair API key
                   BETFAIR_USERNAME      Betfair username
@@ -649,6 +742,7 @@ public class BetfairOddsSnapshotApp {
         int intervalMinutes = DEFAULT_INTERVAL_MINUTES;
         int initialDelayMinutes = 0;
         String outputPath = "./fallback-odds.json";
+        String envFilePath = "./.env";
         boolean noPush = false;
     }
 }

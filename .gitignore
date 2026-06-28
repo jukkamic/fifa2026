@@ -9,6 +9,7 @@ build/
 .data/
 data/
 src/main/resources/fallback-odds.json
+fallback-odds.json
 
 ### SSL Credentials
 ssl/
