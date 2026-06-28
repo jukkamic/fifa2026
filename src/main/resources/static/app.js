@@ -255,7 +255,10 @@ async function restoreSavedState() {
 
         const bracketEntriesToRestore = hasBracket
             ? Object.entries(savedState.bracket)
-                .filter(([_, scores]) => scores.score1 !== null && scores.score2 !== null)
+                // Skip matches that are locked (canonical result wins over user prediction)
+                .filter(([matchId, scores]) =>
+                    scores.score1 !== null && scores.score2 !== null
+                    && !lockedMatches.hasOwnProperty(koLockKey(matchId)))
                 .sort(([a], [b]) => parseInt(a) - parseInt(b))
             : [];
 
@@ -614,7 +617,7 @@ function getWinner(match) {
     return null;
 }
 
-function renderTeamRow(teamCode, score, matchId, slot, isWinner, isLoser, tabIndexMap) {
+function renderTeamRow(teamCode, score, matchId, slot, isWinner, isLoser, tabIndexMap, isLocked) {
     if (!teamCode) {
         return `<div class="team-row empty">
             <span class="team-flag">⚽</span>
@@ -628,7 +631,9 @@ function renderTeamRow(teamCode, score, matchId, slot, isWinner, isLoser, tabInd
     if (isLoser) classes += ' loser';
 
     const scoreVal = score !== null && score !== undefined ? score : '';
-    const tabIdx = tabIndexMap && tabIndexMap[`${matchId}-${slot}`];
+    const disabledAttr = isLocked ? ' disabled' : '';
+    // Locked inputs should not be in the tab order
+    const tabIdx = !isLocked && tabIndexMap && tabIndexMap[`${matchId}-${slot}`];
     const tabAttr = tabIdx ? `tabindex="${tabIdx}"` : '';
 
     return `<div class="${classes}">
@@ -639,23 +644,51 @@ function renderTeamRow(teamCode, score, matchId, slot, isWinner, isLoser, tabInd
                ${tabAttr}
                onchange="setKnockoutScore(${matchId}, ${slot}, this)"
                onkeydown="handleKnockoutTab(event, ${matchId}, ${slot})"
-               onfocus="this.select()">
+               onfocus="this.select()"${disabledAttr}>
     </div>`;
+}
+
+// Key used in lockedMatches for a knockout match (e.g. match 5 -> "KO5")
+function koLockKey(matchId) {
+    return 'KO' + matchId;
 }
 
 function renderMatch(match, tabIndexMap) {
     if (!match) return '';
-    const winner = getWinner(match);
+
+    const lockKey = koLockKey(match.id);
+    const isLocked = lockedMatches.hasOwnProperty(lockKey);
+
+    // Override scores with locked values when present (canonical result)
+    let s1 = match.score1;
+    let s2 = match.score2;
+    if (isLocked) {
+        s1 = lockedMatches[lockKey][0];
+        s2 = lockedMatches[lockKey][1];
+    }
+
+    const winner = isLocked ? getWinner({ ...match, score1: s1, score2: s2 }) : getWinner(match);
     const isTeam1Winner = winner && winner === match.team1;
     const isTeam2Winner = winner && winner === match.team2;
 
     let cls = 'match';
     if (match.round === 'Final') cls += ' match-final';
+    if (isLocked) cls += ' match-locked';
 
     // Betfair betting page link icon with odds tooltip (only when URL is available)
-    const tooltipText = buildMatchTooltip(match);
+    const tooltipText = buildMatchTooltip(isLocked ? { ...match, isLocked: true } : match);
     const infoIcon = (match.url && tooltipText)
         ? `<a href="${match.url}" target="_blank" class="match-betting-link" title="${tooltipText.replace(/"/g, '"').replace(/\n/g, '&#10;')}"><span class="match-info-icon match-info-icon-bracket">i</span></a>`
+        : '';
+
+    // Admin lock button (only for admins; must have both teams assigned)
+    const canLock = isAdmin && match.team1 && match.team2;
+    const lockBtn = canLock
+        ? `<button class="lock-btn lock-btn-bracket ${isLocked ? 'locked' : 'unlocked'}"
+                   onclick="toggleKnockoutLock(${match.id}, this)"
+                   title="${isLocked ? 'Unlock match result' : 'Lock match result'}">
+              ${isLocked ? '🔒' : '🔓'}
+           </button>`
         : '';
 
     let html = '';
@@ -663,10 +696,10 @@ function renderMatch(match, tabIndexMap) {
         html += `<div class="match-final-label">🏆 Final</div>`;
     }
 
-    html += renderTeamRow(match.team1, match.score1, match.id, 1,
-        isTeam1Winner, isTeam2Winner && !isTeam1Winner, tabIndexMap);
-    html += renderTeamRow(match.team2, match.score2, match.id, 2,
-        isTeam2Winner, isTeam1Winner && !isTeam2Winner, tabIndexMap);
+    html += renderTeamRow(match.team1, s1, match.id, 1,
+        isTeam1Winner, isTeam2Winner && !isTeam1Winner, tabIndexMap, isLocked);
+    html += renderTeamRow(match.team2, s2, match.id, 2,
+        isTeam2Winner, isTeam1Winner && !isTeam2Winner, tabIndexMap, isLocked);
 
     return `
         <div class="match-wrap">
@@ -675,7 +708,7 @@ function renderMatch(match, tabIndexMap) {
                     ${html}
                 </div>
                 <div class="match-info-col">
-                    ${infoIcon}
+                    <span>${infoIcon}</span><span>${lockBtn}</span>
                 </div>
             </div>
         </div>`;
@@ -896,6 +929,54 @@ async function pollAppEvents() {
 }
 
 // ===== ADMIN LOCK/UNLOCK =====
+
+/**
+ * Locks/unlocks a knockout match result (admin only). Uses the "KO" prefix
+ * in the actual-results store to avoid colliding with group match IDs.
+ * After locking/unlocking, the bracket is reloaded so that advancement
+ * (winner highlighting, next-round team placement) reflects the change.
+ */
+async function toggleKnockoutLock(matchId, btnEl) {
+    const matchEl = btnEl.closest('.match');
+    if (!matchEl) return;
+    const inputs = matchEl.querySelectorAll('.score-input');
+    const lockKey = koLockKey(matchId);
+    const isCurrentlyLocked = lockedMatches.hasOwnProperty(lockKey);
+
+    if (isCurrentlyLocked) {
+        // Unlock: call DELETE endpoint
+        const res = await fetch(`/api/admin/lock-score/${lockKey}`, { method: 'DELETE' });
+        if (res.ok) {
+            delete lockedMatches[lockKey];
+            // Reload bracket to re-enable inputs and update advancement
+            await loadBracket();
+        }
+    } else {
+        // Lock: need both scores filled and a decided result (no draws in KO)
+        const s1 = inputs[0].value !== '' ? parseInt(inputs[0].value) : null;
+        const s2 = inputs[1].value !== '' ? parseInt(inputs[1].value) : null;
+        if (s1 === null || s2 === null) {
+            showNotification('WARNING', 'Admin', 'Both scores must be filled before locking.');
+            return;
+        }
+        if (s1 === s2) {
+            showNotification('WARNING', 'Admin', 'Knockout matches cannot end in a draw. Enter a decisive result.');
+            return;
+        }
+        const res = await fetch(`/api/admin/lock-score/${lockKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ score1: s1, score2: s2 })
+        });
+        if (res.ok) {
+            lockedMatches[lockKey] = [s1, s2];
+            // Persist to user-based storage as well (same as group stage)
+            debouncedSave();
+            // Reload bracket to disable inputs and update advancement
+            await loadBracket();
+        }
+    }
+}
 
 async function toggleLock(matchId, btnEl) {
     const row = btnEl.closest('.group-match-row');

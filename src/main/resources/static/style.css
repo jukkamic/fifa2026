@@ -355,10 +355,28 @@ body {
     opacity: 0.8;
 }
 
+/* Lock button inside the bracket match card */
+.lock-btn-bracket {
+    font-size: 11px;
+    padding: 1px 2px;
+    margin-top: 4px;
+}
+
 .group-match-row.match-locked {
     background: rgba(34, 197, 94, 0.05);
     border-left: 2px solid var(--win);
     padding-left: 4px;
+}
+
+/* Locked knockout match card */
+.match.match-locked {
+    border-color: var(--win);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+}
+
+.match.match-locked.match-final {
+    border-color: var(--win);
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.2);
 }
 
 /* ===== MATCH INFO ICON (tooltip with date & odds) ===== */
@@ -518,6 +536,7 @@ body {
 /* The right side holding the info icon */
 .match-info-col {
     display: flex;
+    flex-direction: column;
     align-items: center;
     /* Centers the icon vertically */
     justify-content: center;

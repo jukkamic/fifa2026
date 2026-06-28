@@ -215,6 +215,7 @@ public class TournamentController {
 
     @GetMapping("/bracket")
     public Map<String, Object> getBracket() {
+        applyLockedKnockoutScoresIfNeeded();
         ensureKnockoutMatchesEnriched();
 
         Map<String, Object> result = new LinkedHashMap<>();
@@ -531,6 +532,36 @@ public class TournamentController {
         }
     }
 
+    /**
+     * Prefix used for knockout match IDs in the actual-results store, so they
+     * are distinct from group-stage match IDs (e.g. "KO5" vs "A1").
+     */
+    static final String KO_LOCK_PREFIX = "KO";
+
+    /**
+     * Re-applies all locked (actual) knockout results to the bracket.
+     * Called before serving {@code /api/bracket} so that canonical results
+     * survive a server restart and override any stale user predictions.
+     * <p>
+     * This is idempotent: matches whose scores already match the locked values
+     * are skipped, so repeated calls are cheap and non-destructive.
+     */
+    private void applyLockedKnockoutScoresIfNeeded() {
+        Map<String, int[]> locked = actualResultsService.getLockedScores();
+        // Iterate in bracket order (R32, R16, QF, SF, Final) so that
+        // advancement chains are rebuilt top-to-bottom.
+        for (KnockoutMatch km : bracketService.getMatches().values()) {
+            String lockKey = KO_LOCK_PREFIX + km.getId();
+            int[] scores = locked.get(lockKey);
+            if (scores == null) continue;
+            // Skip if the match already has the correct locked score
+            if (km.hasResult() && km.getScore1() == scores[0] && km.getScore2() == scores[1]) {
+                continue;
+            }
+            bracketService.setKnockoutScore(km.getId(), scores[0], scores[1]);
+        }
+    }
+
     @GetMapping("/group-matches")
     public Map<String, Object> getAllGroupMatches() {
         ensureMatchesEnriched();
@@ -615,10 +646,12 @@ public class TournamentController {
     }
 
     private int getOverwritten() {
-        // Overwrite with locked actual results
+        // Overwrite with locked actual results (group stage only; knockout
+        // results are applied lazily by applyLockedKnockoutScoresIfNeeded()).
         Map<String, int[]> locked = actualResultsService.getLockedScores();
         int overwritten = 0;
         for (var entry : locked.entrySet()) {
+            if (entry.getKey().startsWith(KO_LOCK_PREFIX)) continue;
             groupStageService.setGroupMatchScore(
                     entry.getKey(), entry.getValue()[0], entry.getValue()[1]);
             overwritten++;
