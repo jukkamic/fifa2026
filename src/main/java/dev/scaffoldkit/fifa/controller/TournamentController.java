@@ -151,6 +151,9 @@ public class TournamentController {
 
         groupStageService.setGroupMatchScore(matchId, score1, score2);
 
+        // Group results may affect bracket seeding — invalidate knockout URLs
+        knockoutEnriched = false;
+
         // Return updated standings and advancement info
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("success", true);
@@ -212,6 +215,8 @@ public class TournamentController {
 
     @GetMapping("/bracket")
     public Map<String, Object> getBracket() {
+        ensureKnockoutMatchesEnriched();
+
         Map<String, Object> result = new LinkedHashMap<>();
 
         List<Map<String, Object>> matchList = new ArrayList<>();
@@ -235,6 +240,8 @@ public class TournamentController {
     @PostMapping("/bracket/seed")
     public Map<String, Object> seedBracket() {
         bracketService.seedBracket();
+        // Seeding assigns teams to knockout matches — invalidate URLs
+        knockoutEnriched = false;
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("success", true);
         result.put("message", "Bracket seeded from group stage results");
@@ -249,6 +256,9 @@ public class TournamentController {
         Integer score2 = body.get("score2");
 
         bracketService.setKnockoutScore(matchId, score1, score2);
+
+        // A score may resolve a team for the next match — invalidate knockout URLs
+        knockoutEnriched = false;
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("success", true);
@@ -405,9 +415,10 @@ public class TournamentController {
             appEvents.emitInfo("BetfairUpdate",
                     "Fallback odds updated by admin (" + profile.getEmail() + ").");
 
-            // Invalidate the enrichment cache so the new odds are served on the
-            // next /api/group-matches request.
+            // Invalidate the enrichment caches so the new odds are served on the
+            // next /api/group-matches and /api/bracket requests.
             matchesEnriched = false;
+            knockoutEnriched = false;
 
             Map<String, Object> response = new LinkedHashMap<>();
             response.put("success", true);
@@ -434,6 +445,9 @@ public class TournamentController {
     public void onOddsUpdated(OddsUpdatedEvent event) {
         if (matchesEnriched) {
             matchesEnriched = false;
+        }
+        if (knockoutEnriched) {
+            knockoutEnriched = false;
         }
     }
 
@@ -463,6 +477,10 @@ public class TournamentController {
         getOverwritten();
 
         bracketService.resetAndReseed();
+
+        // Reset invalidates all team assignments — clear enrichment caches
+        matchesEnriched = false;
+        knockoutEnriched = false;
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("success", true);
         result.put("message", "All data reset");
@@ -488,6 +506,27 @@ public class TournamentController {
                 matchesEnriched = true;
             } catch (Exception e) {
                 // Enrichment failure is non-fatal — matches will just lack dates/odds
+            }
+        }
+    }
+
+    /**
+     * Tracks whether knockout matches have been enriched with Betfair betting
+     * URLs during this request cycle.
+     */
+    private volatile boolean knockoutEnriched = false;
+
+    /**
+     * Enriches knockout matches with Betfair betting page URLs once per cycle.
+     * Re-enriches when invalidated (after seeding, score changes, odds updates).
+     */
+    private void ensureKnockoutMatchesEnriched() {
+        if (!knockoutEnriched) {
+            try {
+                betfairService.enrichKnockoutMatchesWithBetfairURLs(bracketService.getMatches());
+                knockoutEnriched = true;
+            } catch (Exception e) {
+                // Enrichment failure is non-fatal — matches will just lack URLs
             }
         }
     }
@@ -560,8 +599,10 @@ public class TournamentController {
 
         int overwritten = getOverwritten();
 
-        // Re-enrich matches after simulation (odds may have changed)
+        // Re-enrich matches after simulation (odds may have changed).
+        // Group results also affect bracket seeding, so invalidate knockout too.
         matchesEnriched = false;
+        knockoutEnriched = false;
         ensureMatchesEnriched();
 
         Map<String, Object> result = new LinkedHashMap<>();
@@ -643,6 +684,16 @@ public class TournamentController {
         m.put("score2", km.getScore2());
         m.put("nextMatchId", km.getNextMatchId());
         m.put("nextSlot", km.getNextSlot());
+        m.put("url", km.getMarketURL());
+        if (km.getOdds1() != null) {
+            m.put("odds1", km.getOdds1());
+        }
+        if (km.getOddsDraw() != null) {
+            m.put("oddsDraw", km.getOddsDraw());
+        }
+        if (km.getOdds2() != null) {
+            m.put("odds2", km.getOdds2());
+        }
         if (km.hasResult() && km.getWinnerCode() != null) {
             m.put("winner", km.getWinnerCode());
         }

@@ -17,6 +17,10 @@ public class KnockoutMatch {
     private final int matchIndex;
     private Integer nextMatchId;  // ID of the next match the winner advances to
     private Integer nextSlot;     // 1 or 2 — which slot in the next match
+    private String marketURL;     // Betfair Exchange betting page URL (if available)
+    private Double odds1;         // Best back odds for team 1 (from Betfair)
+    private Double oddsDraw;      // Best back odds for a draw (from Betfair)
+    private Double odds2;         // Best back odds for team 2 (from Betfair)
 
     public KnockoutMatch(int id, String round, String side, int matchIndex) {
         this.id = id;
@@ -35,6 +39,10 @@ public class KnockoutMatch {
     public int getMatchIndex() { return matchIndex; }
     public Integer getNextMatchId() { return nextMatchId; }
     public Integer getNextSlot() { return nextSlot; }
+    public String getMarketURL() { return marketURL; }
+    public Double getOdds1() { return odds1; }
+    public Double getOddsDraw() { return oddsDraw; }
+    public Double getOdds2() { return odds2; }
 
     public void setTeam1Code(String team1Code) { this.team1Code = team1Code; }
     public void setTeam2Code(String team2Code) { this.team2Code = team2Code; }
@@ -42,6 +50,10 @@ public class KnockoutMatch {
     public void setScore2(Integer score2) { this.score2 = score2; }
     public void setNextMatchId(Integer nextMatchId) { this.nextMatchId = nextMatchId; }
     public void setNextSlot(Integer nextSlot) { this.nextSlot = nextSlot; }
+    public void setMarketURL(String marketURL) { this.marketURL = marketURL; }
+    public void setOdds1(Double odds1) { this.odds1 = odds1; }
+    public void setOddsDraw(Double oddsDraw) { this.oddsDraw = oddsDraw; }
+    public void setOdds2(Double odds2) { this.odds2 = odds2; }
 
     public boolean hasResult() {
         return score1 != null && score2 != null;

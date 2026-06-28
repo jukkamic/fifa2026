@@ -9,6 +9,7 @@ import dev.scaffoldkit.fifa.betfair.model.BetfairOddsSnapshot;
 import dev.scaffoldkit.fifa.betfair.model.BetfairRunnerBook;
 import dev.scaffoldkit.fifa.betfair.model.BetfairRunnerCatalog;
 import dev.scaffoldkit.fifa.model.GroupMatch;
+import dev.scaffoldkit.fifa.model.KnockoutMatch;
 import dev.scaffoldkit.fifa.service.AppEventService;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -687,6 +688,231 @@ public class BetfairIntegrationService {
         match.setOddsDraw(drawOdds);
         // NOTE: marketURL is already set during the catalogue scan above
         // (see enrichMatchesWithBetfairData), so we don't touch it here.
+    }
+
+    // ── Knockout Match Enrichment (betting URLs + odds) ──────────────────
+
+    /**
+     * Enriches knockout matches with Betfair metadata: betting page URL and
+     * best back odds. Only matches where both teams are resolved (non-null)
+     * are enriched. Uses live data if available, otherwise falls back to
+     * {@code fallback-odds.json}.
+     *
+     * <p>
+     * Sets the following fields on each matched {@link KnockoutMatch}:
+     * <ul>
+     * <li>{@code marketURL} — Betfair Exchange betting page URL</li>
+     * <li>{@code odds1} / {@code oddsDraw} / {@code odds2} — best back prices,
+     * aligned to the KnockoutMatch's team1/team2 order</li>
+     * </ul>
+     *
+     * <p>
+     * Existing values are cleared first so stale data doesn't persist when
+     * teams change.
+     *
+     * @param knockoutMatches the full map of match-id {@link KnockoutMatch}
+     */
+    public void enrichKnockoutMatchesWithBetfairURLs(Map<Integer, KnockoutMatch> knockoutMatches) {
+        // Always clear first so stale data doesn't persist when teams change
+        for (KnockoutMatch km : knockoutMatches.values()) {
+            km.setMarketURL(null);
+            km.setOdds1(null);
+            km.setOddsDraw(null);
+            km.setOdds2(null);
+        }
+
+        // Build reverse lookup only for matches with both teams resolved
+        Map<String, Integer> pairToMatchId = new LinkedHashMap<>();
+        for (var entry : knockoutMatches.entrySet()) {
+            KnockoutMatch match = entry.getValue();
+            if (match.getTeam1Code() == null || match.getTeam2Code() == null) {
+                continue;
+            }
+            String key = sortedPair(match.getTeam1Code(), match.getTeam2Code());
+            pairToMatchId.put(key, entry.getKey());
+        }
+
+        if (pairToMatchId.isEmpty()) {
+            return;
+        }
+
+        if (liveApiAvailable && sessionToken == null) {
+            authenticate();
+        }
+
+        try {
+            // ── Fetch market catalogue (live if authenticated, else fallback) ─
+            List<BetfairMarketCatalog> markets;
+            List<BetfairMarketBook> fallbackBooks = null;
+            boolean usingFallback = false;
+
+            if (liveApiAvailable && sessionToken != null) {
+                try {
+                    markets = marketClient.listMarketCatalogue(sessionToken);
+                } catch (Exception e) {
+                    log.warn("Exception fetching market catalogue for knockout enrichment: {}",
+                            e.getMessage());
+                    markets = List.of();
+                }
+            } else {
+                markets = List.of();
+            }
+
+            if (markets.isEmpty()) {
+                try {
+                    BetfairOddsSnapshot snapshot = readFallbackOddsSnapshot();
+                    if (snapshot == null) {
+                        log.debug("No fallback-odds.json found for knockout enrichment");
+                        return;
+                    }
+                    markets = snapshot.catalogue();
+                    fallbackBooks = snapshot.books();
+                    usingFallback = true;
+                } catch (Exception e) {
+                    log.warn("Failed to read fallback-odds.json for knockout enrichment: {}",
+                            e.getMessage());
+                    return;
+                }
+            }
+
+            if (markets.isEmpty())
+                return;
+
+            // selectionId RunnerMeta per market, and market→match mapping
+            Map<String, Map<Long, RunnerMeta>> marketSelections = new LinkedHashMap<>();
+            Map<String, KnockoutMatch> marketToMatch = new LinkedHashMap<>();
+            List<String> matchedMarketIds = new ArrayList<>();
+
+            for (BetfairMarketCatalog market : markets) {
+                String marketId = market.marketId();
+                List<BetfairRunnerCatalog> runners = market.runners();
+
+                Map<Long, RunnerMeta> selMap = new LinkedHashMap<>();
+                String homeCode = null;
+                String awayCode = null;
+
+                for (BetfairRunnerCatalog runner : runners) {
+                    String runnerName = runner.runnerName().trim();
+                    long selectionId = runner.selectionId();
+                    int sortPriority = runner.sortPriority();
+
+                    if (runnerName.equalsIgnoreCase("Draw")
+                            || runnerName.equalsIgnoreCase("The Draw")) {
+                        selMap.put(selectionId, new RunnerMeta("DRAW", sortPriority));
+                        continue;
+                    }
+                    String fifaCode = BetfairNamesToCodes.BETFAIR_TO_FIFA.get(runnerName);
+                    if (fifaCode != null) {
+                        selMap.put(selectionId, new RunnerMeta(fifaCode, sortPriority));
+                        if (sortPriority == 1)
+                            homeCode = fifaCode;
+                        else if (sortPriority == 2)
+                            awayCode = fifaCode;
+                    }
+                }
+
+                if (homeCode != null && awayCode != null) {
+                    String pairKey = sortedPair(homeCode, awayCode);
+                    Integer matchId = pairToMatchId.get(pairKey);
+                    if (matchId != null) {
+                        KnockoutMatch km = knockoutMatches.get(matchId);
+                        km.setMarketURL(createMarketURL(market));
+                        marketSelections.put(marketId, selMap);
+                        marketToMatch.put(marketId, km);
+                        matchedMarketIds.add(marketId);
+                    }
+                }
+            }
+
+            // ── Fetch market books and extract odds ──────────────────────
+            if (usingFallback && fallbackBooks != null) {
+                for (BetfairMarketBook book : fallbackBooks) {
+                    enrichKnockoutOddsFromBook(book, marketToMatch, marketSelections);
+                }
+            } else {
+                int batchSize = 40;
+                for (int i = 0; i < matchedMarketIds.size(); i += batchSize) {
+                    List<String> batch = matchedMarketIds.subList(
+                            i, Math.min(i + batchSize, matchedMarketIds.size()));
+                    List<BetfairMarketBook> books;
+                    try {
+                        books = marketClient.listMarketBook(sessionToken, batch);
+                    } catch (Exception e) {
+                        log.warn("Exception fetching market book for knockout enrichment: {}",
+                                e.getMessage());
+                        books = List.of();
+                    }
+                    for (BetfairMarketBook book : books) {
+                        enrichKnockoutOddsFromBook(book, marketToMatch, marketSelections);
+                    }
+                }
+            }
+
+            log.debug("enrichKnockoutMatchesWithBetfairURLs: enriched {} knockout match(es) with URLs/odds",
+                    matchedMarketIds.size());
+
+        } catch (Exception e) {
+            log.warn("Failed to enrich knockout matches with Betfair data: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Extracts best back odds from a market book and sets them on the
+     * corresponding KnockoutMatch, aligned to team1/team2 order.
+     */
+    private void enrichKnockoutOddsFromBook(BetfairMarketBook book,
+            Map<String, KnockoutMatch> marketToMatch,
+            Map<String, Map<Long, RunnerMeta>> marketSelections) {
+        String marketId = book.marketId();
+        KnockoutMatch match = marketToMatch.get(marketId);
+        if (match == null)
+            return;
+
+        Map<Long, RunnerMeta> selMap = marketSelections.get(marketId);
+        if (selMap == null)
+            return;
+
+        Double homeOdds = null;
+        Double drawOdds = null;
+        Double awayOdds = null;
+
+        for (BetfairRunnerBook runner : book.runners()) {
+            long selId = runner.selectionId();
+            RunnerMeta meta = selMap.get(selId);
+            if (meta == null)
+                continue;
+
+            BetfairExchangePrices ex = runner.ex();
+            if (ex == null || ex.availableToBack().isEmpty())
+                continue;
+            double bestBack = ex.availableToBack().get(0).price();
+            if (bestBack <= 1.0)
+                continue;
+
+            switch (meta.sortPriority()) {
+                case 1 -> homeOdds = bestBack;
+                case 2 -> awayOdds = bestBack;
+                case 3 -> drawOdds = bestBack;
+            }
+        }
+
+        // Align odds to KnockoutMatch team1/team2 order
+        String homeCode = null;
+        for (var entry : selMap.entrySet()) {
+            if (entry.getValue().sortPriority() == 1 && !"DRAW".equals(entry.getValue().fifaCode())) {
+                homeCode = entry.getValue().fifaCode();
+                break;
+            }
+        }
+
+        if (homeCode != null && homeCode.equals(match.getTeam1Code())) {
+            match.setOdds1(homeOdds);
+            match.setOdds2(awayOdds);
+        } else {
+            match.setOdds1(awayOdds);
+            match.setOdds2(homeOdds);
+        }
+        match.setOddsDraw(drawOdds);
     }
 
     // ── Diagnostic: dump Betfair runner names for World Cup markets ───────

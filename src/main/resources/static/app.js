@@ -652,6 +652,12 @@ function renderMatch(match, tabIndexMap) {
     let cls = 'match';
     if (match.round === 'Final') cls += ' match-final';
 
+    // Betfair betting page link icon with odds tooltip (only when URL is available)
+    const tooltipText = buildMatchTooltip(match);
+    const infoIcon = (match.url && tooltipText)
+        ? `<a href="${match.url}" target="_blank" class="match-betting-link" title="${tooltipText.replace(/"/g, '"').replace(/\n/g, '&#10;')}"><span class="match-info-icon match-info-icon-bracket">i</span></a>`
+        : '';
+
     let html = '';
     if (match.round === 'Final') {
         html += `<div class="match-final-label">🏆 Final</div>`;
@@ -662,7 +668,7 @@ function renderMatch(match, tabIndexMap) {
     html += renderTeamRow(match.team2, match.score2, match.id, 2,
         isTeam2Winner, isTeam1Winner && !isTeam2Winner, tabIndexMap);
 
-    return `<div class="match-wrap"><div class="${cls}" data-match="${match.id}">${html}</div></div>`;
+    return `<div class="match-wrap"><div class="${cls}" data-match="${match.id}">${html}${infoIcon}</div></div>`;
 }
 
 function renderRound(matchList, label, side, tabIndexMap) {

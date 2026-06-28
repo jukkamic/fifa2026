@@ -392,6 +392,31 @@ body {
     background: #fff;
 }
 
+/* ===== BRACKET BETTING LINK ICON ===== */
+.match-betting-link {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    text-decoration: none;
+    z-index: 1;
+    line-height: 0;
+}
+
+.match-info-icon-bracket {
+    margin-left: 0;
+    opacity: 0.4;
+}
+
+.match:hover .match-info-icon-bracket {
+    opacity: 0.85;
+}
+
+.match-info-icon-bracket:hover {
+    opacity: 1 !important;
+    transform: scale(1.2);
+    background: #fff;
+}
+
 .match-separator {
     color: var(--text-muted);
     font-size: 11px;
@@ -469,6 +494,7 @@ body {
 }
 
 .match {
+    position: relative;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 8px;
