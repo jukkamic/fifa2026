@@ -668,7 +668,17 @@ function renderMatch(match, tabIndexMap) {
     html += renderTeamRow(match.team2, match.score2, match.id, 2,
         isTeam2Winner, isTeam1Winner && !isTeam2Winner, tabIndexMap);
 
-    return `<div class="match-wrap"><div class="${cls}" data-match="${match.id}">${html}${infoIcon}</div></div>`;
+    return `
+        <div class="match-wrap">
+            <div class="${cls}" data-match="${match.id}">
+                <div class="match-teams-col">
+                    ${html}
+                </div>
+                <div class="match-info-col">
+                    ${infoIcon}
+                </div>
+            </div>
+        </div>`;
 }
 
 function renderRound(matchList, label, side, tabIndexMap) {

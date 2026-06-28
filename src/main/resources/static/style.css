@@ -1,5 +1,7 @@
 /* ===== RESET & BASE ===== */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -219,7 +221,7 @@ body {
 }
 
 .group-card-header {
-    background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05));
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
     padding: 10px 14px;
     font-size: 13px;
     font-weight: 700;
@@ -251,7 +253,7 @@ body {
 
 .standings-table td {
     padding: 5px 8px;
-    border-bottom: 1px solid rgba(42,58,92,0.3);
+    border-bottom: 1px solid rgba(42, 58, 92, 0.3);
 }
 
 .standings-table td:not(:first-child) {
@@ -283,7 +285,7 @@ body {
 }
 
 .group-match-row:hover {
-    background: rgba(59,130,246,0.08);
+    background: rgba(59, 130, 246, 0.08);
 }
 
 .group-match-teams {
@@ -394,7 +396,6 @@ body {
 
 /* ===== BRACKET BETTING LINK ICON ===== */
 .match-betting-link {
-    position: absolute;
     bottom: 2px;
     right: 2px;
     text-decoration: none;
@@ -499,9 +500,32 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    width: 120px;
+    width: 140px;
     transition: all 0.2s ease;
     cursor: default;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.match-teams-col {
+    flex-grow: 1;
+    /* Takes up remaining space */
+    display: flex;
+    flex-direction: column;
+}
+
+/* The right side holding the info icon */
+.match-info-col {
+    display: flex;
+    align-items: center;
+    /* Centers the icon vertically */
+    justify-content: center;
+    padding: 0 6px;
+    border-left: 1px solid var(--border-color);
+    /* Adds a clean separator line */
+    background: rgba(0, 0, 0, 0.1);
+    /* Optional: subtle darker background for the button area */
 }
 
 .match:hover {
@@ -701,10 +725,21 @@ body {
 }
 
 /* ===== ROUND HEIGHTS ===== */
-.round-32 { min-height: 560px; }
-.round-16 { min-height: 560px; }
-.round-qf { min-height: 560px; }
-.round-sf { min-height: 560px; }
+.round-32 {
+    min-height: 560px;
+}
+
+.round-16 {
+    min-height: 560px;
+}
+
+.round-qf {
+    min-height: 560px;
+}
+
+.round-sf {
+    min-height: 560px;
+}
 
 .match-list {
     display: flex;
@@ -796,9 +831,17 @@ body {
     margin-bottom: 3px;
 }
 
-.notification-info .notification-category { color: var(--accent-glow); }
-.notification-warning .notification-category { color: var(--gold-glow); }
-.notification-error .notification-category { color: var(--lose); }
+.notification-info .notification-category {
+    color: var(--accent-glow);
+}
+
+.notification-warning .notification-category {
+    color: var(--gold-glow);
+}
+
+.notification-error .notification-category {
+    color: var(--lose);
+}
 
 .notification-message {
     color: var(--text-secondary);
@@ -856,6 +899,7 @@ body {
         opacity: 0;
         transform: translateX(40px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
